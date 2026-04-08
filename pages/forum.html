@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习论坛 - AI 租易用 | 交流分享 共同进步</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        /* Page Hero */
+        .page-hero {
+            padding: 10rem 5% 3rem;
+            text-align: center;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .page-hero p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+        
+        .breadcrumb a:hover { color: var(--primary); }
+        
+        /* Search Bar */
+        .search-section {
+            max-width: 700px;
+            margin: -2rem auto 3rem;
+            padding: 0 5%;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            background: var(--bg-card);
+            padding: 0.75rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .search-input:focus { outline: none; }
+        
+        .search-input::placeholder { color: var(--text-muted); }
+        
+        /* Forum Layout */
+        .forum-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2rem;
+        }
+        
+        /* Categories */
+        .categories { display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        .category-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        
+        .category-header {
+            padding: 1.25rem 1.5rem;
+            background: rgba(14, 165, 233, 0.08);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .category-icon { font-size: 1.5rem; }
+        
+        .category-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+        
+        .topic-list { list-style: none; }
+        
+        .topic-item {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+        
+        .topic-item:last-child { border-bottom: none; }
+        
+        .topic-item:hover { background: rgba(255,255,255,0.02); }
+        
+        .topic-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .topic-content { flex: 1; min-width: 0; }
+        
+        .topic-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+        
+        .topic-title:hover { color: var(--primary); }
+        
+        .topic-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .topic-stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .topic-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        
+        .tag-beginner { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
+        .tag-advanced { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .tag-project { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .tag-discussion { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+        .tag-hot { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        
+        /* Sidebar */
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        .sidebar-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 1.5rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        .quick-links { list-style: none; }
+        
+        .quick-links li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        
+        .quick-links li:last-child { border-bottom: none; }
+        
+        .quick-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+        
+        .quick-links a:hover { color: var(--primary); }
+        
+        .rules-list {
+            list-style: none;
+            counter-reset: rule-counter;
+        }
+        
+        .rules-list li {
+            padding: 0.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .rules-list li::before {
+            counter-increment: rule-counter;
+            content: counter(rule-counter);
+            position: absolute;
+            left: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        /* New Topic Button */
+        .new-topic-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        .new-topic-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 50px rgba(14, 165, 233, 0.5);
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 3rem 5%;
+            background: #0B1120;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 4rem;
+        }
+        
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .forum-container { grid-template-columns: 1fr; }
+            .sidebar { order: -1; }
+            .page-hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="homepage.html" class="logo">🚀 AI 租易用</a>
+        <ul class="nav-links">
+            <li><a href="../homepage.html">首页</a></li>
+            <li><a href="rental/index.html">设备租赁</a></li>
+            <li><a href="compute/index.html">算力套餐</a></li>
+            <li><a href="forum.html" class="active">学习论坛</a></li>
+            <li><a href="enterprise/index.html">企业后台</a></li>
+            <li><a href="distribution/index.html">分销合作</a></li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">免费试用</a>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="breadcrumb">
+            <a href="../homepage.html">首页</a>
+            <span>/</span>
+            <span>学习论坛</span>
+        </div>
+        <h1>📚 学习论坛</h1>
+        <p>交流分享，共同进步，打造最活跃的 AI 开发者社区</p>
+    </section>
+
+    <!-- Search -->
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="搜索话题、问题或用户...">
+            <button class="btn btn-primary">搜索</button>
+        </div>
+    </div>
+
+    <!-- Forum Container -->
+    <div class="forum-container">
+        <!-- Main Content -->
+        <main class="categories">
+            <!-- Beginner Category -->
+            <div class="category-card">
+                <div class="category-header">
+                    <span class="category-icon">🎯</span>
+                    <h2 class="category-title">新手入门</h2>
+                </div>
+                <ul class="topic-list">
+                    <li class="topic-item">
+                        <div class="topic-avatar">李</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-beginner">新手</span>
+                                第一次使用 GPU 服务器，需要注意什么？求大神指点！
+                            </h3>
+                            <div class="topic-meta">
+                                <span>李明 · 2 小时前</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 23</span>
+                                    <span class="topic-stat">👁️ 156</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="topic-item">
+                        <div class="topic-avatar">王</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-beginner">新手</span>
+                                如何配置深度学习环境？完整教程分享
+                            </h3>
+                            <div class="topic-meta">
+                                <span>王开发 · 5 小时前</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 45</span>
+                                    <span class="topic-stat">👁️ 320</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="topic-item">
+                        <div class="topic-avatar">张</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-beginner">新手</span>
+                                算力点怎么用最划算？经验分享
+                            </h3>
+                            <div class="topic-meta">
+                                <span>张三 · 昨天</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 18</span>
+                                    <span class="topic-stat">👁️ 98</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Advanced Category -->
+            <div class="category-card">
+                <div class="category-header">
+                    <span class="category-icon">🚀</span>
+                    <h2 class="category-title">技术进阶</h2>
+                </div>
+                <ul class="topic-list">
+                    <li class="topic-item">
+                        <div class="topic-avatar">陈</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-advanced">进阶</span>
+                                <span class="tag tag-hot">热门</span>
+                                大模型分布式训练实战指南（附代码）
+                            </h3>
+                            <div class="topic-meta">
+                                <span>陈专家 · 3 小时前</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 67</span>
+                                    <span class="topic-stat">👁️ 445</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="topic-item">
+                        <div class="topic-avatar">刘</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-advanced">进阶</span>
+                                模型量化技巧：从 FP16 到 INT8 的完整实践
+                            </h3>
+                            <div class="topic-meta">
+                                <span>刘工 · 昨天</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 34</span>
+                                    <span class="topic-stat">👁️ 267</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Projects Category -->
+            <div class="category-card">
+                <div class="category-header">
+                    <span class="category-icon">💼</span>
+                    <h2 class="category-title">项目展示</h2>
+                </div>
+                <ul class="topic-list">
+                    <li class="topic-item">
+                        <div class="topic-avatar">赵</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-project">项目</span>
+                                <span class="tag tag-hot">热门</span>
+                                用 A100 训练的文生图模型，效果惊艳！开源分享
+                            </h3>
+                            <div class="topic-meta">
+                                <span>赵大神 · 6 小时前</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 89</span>
+                                    <span class="topic-stat">👁️ 678</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="topic-item">
+                        <div class="topic-avatar">孙</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-project">项目</span>
+                                开源项目：基于租赁 GPU 的推理服务部署方案
+                            </h3>
+                            <div class="topic-meta">
+                                <span>孙工 · 2 天前</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 56</span>
+                                    <span class="topic-stat">👁️ 423</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Discussion Category -->
+            <div class="category-card">
+                <div class="category-header">
+                    <span class="category-icon">💬</span>
+                    <h2 class="category-title">自由讨论</h2>
+                </div>
+                <ul class="topic-list">
+                    <li class="topic-item">
+                        <div class="topic-avatar">周</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-discussion">讨论</span>
+                                2026 年 AI 发展趋势预测，你怎么看？
+                            </h3>
+                            <div class="topic-meta">
+                                <span>周同学 · 4 小时前</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 124</span>
+                                    <span class="topic-stat">👁️ 892</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="topic-item">
+                        <div class="topic-avatar">吴</div>
+                        <div class="topic-content">
+                            <h3 class="topic-title">
+                                <span class="tag tag-discussion">讨论</span>
+                                大家最近都在做什么有趣的项目？来聊聊~
+                            </h3>
+                            <div class="topic-meta">
+                                <span>吴老师 · 昨天</span>
+                                <div class="topic-stats">
+                                    <span class="topic-stat">💬 78</span>
+                                    <span class="topic-stat">👁️ 534</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Stats -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">📊 社区概况</h3>
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">8,520</div>
+                        <div class="stat-label">注册用户</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">12,340</div>
+                        <div class="stat-label">主题总数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">45,678</div>
+                        <div class="stat-label">回复总数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">今日在线</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">🔗 快捷入口</h3>
+                <ul class="quick-links">
+                    <li><a href="#guide">📖 新手指南</a></li>
+                    <li><a href="#faq">❓ 常见问题</a></li>
+                    <li><a href="#api-docs">📄 API 文档</a></li>
+                    <li><a href="#examples">💡 代码示例</a></li>
+                    <li><a href="#blog">📝 技术博客</a></li>
+                </ul>
+            </div>
+
+            <!-- Rules -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">📋 论坛规则</h3>
+                <ul class="rules-list">
+                    <li>尊重他人，文明发言</li>
+                    <li>禁止广告和垃圾信息</li>
+                    <li>技术讨论请尽量详细</li>
+                    <li>分享知识，互相帮助</li>
+                    <li>违规内容将被删除</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <!-- New Topic Button -->
+    <button class="new-topic-btn" title="发布新话题">+</button>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2024 AI 租易用。All rights reserved.</p>
+    </footer>
+</body>
+</html>

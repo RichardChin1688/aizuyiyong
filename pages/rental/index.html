@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备租赁 - AI 租易用 | 预装 OpenClaw 的 AI 设备</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(14, 165, 233, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        /* Hero Section */
+        .page-hero {
+            padding: 10rem 5% 4rem;
+            text-align: center;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .page-hero p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+        
+        .breadcrumb a:hover { color: var(--primary); }
+        
+        .breadcrumb .separator { color: var(--text-muted); }
+        
+        /* Filter Section */
+        .filter-section {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            padding: 0 5%;
+        }
+        
+        .filter-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-select {
+            flex: 1;
+            min-width: 150px;
+            padding: 0.875rem 1.25rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        
+        .filter-select:focus { outline: none; border-color: var(--primary); }
+        
+        /* Device Grid */
+        .device-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 2rem;
+        }
+        
+        .device-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .device-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(14, 165, 233, 0.4);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+        }
+        
+        .device-image {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .device-image::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, transparent 60%, rgba(11, 17, 32, 0.8) 100%);
+        }
+        
+        .device-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(245, 158, 11, 0.9);
+            color: white;
+            padding: 0.4rem 0.875rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 1;
+        }
+        
+        .device-info { padding: 1.75rem; }
+        
+        .device-category {
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .device-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        
+        .device-specs {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+        }
+        
+        .device-specs ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .device-specs li {
+            background: rgba(14, 165, 233, 0.1);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .device-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .device-price {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .device-price span {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #111827 100%);
+            margin-top: 5rem;
+        }
+        
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        
+        .feature-desc { color: var(--text-muted); font-size: 0.95rem; }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 5%;
+            text-align: center;
+        }
+        
+        .cta-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 3.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .cta-card h2 { font-size: 2rem; margin-bottom: 1rem; }
+        
+        .cta-card p { color: var(--text-muted); margin-bottom: 2rem; }
+        
+        /* Footer */
+        .footer {
+            padding: 3rem 5%;
+            background: #0B1120;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .page-hero h1 { font-size: 2rem; }
+            .device-grid { grid-template-columns: 1fr; }
+            .filter-card { flex-direction: column; }
+            .filter-select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="../../homepage.html" class="logo">🚀 AI 租易用</a>
+        <ul class="nav-links">
+            <li><a href="../../homepage.html">首页</a></li>
+            <li><a href="index.html" class="active">设备租赁</a></li>
+            <li><a href="../compute/index.html">算力套餐</a></li>
+            <li><a href="../forum.html">学习论坛</a></li>
+            <li><a href="../enterprise/index.html">企业后台</a></li>
+            <li><a href="../distribution/index.html">分销合作</a></li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">免费试用</a>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="breadcrumb">
+            <a href="../../homepage.html">首页</a>
+            <span class="separator">/</span>
+            <span>设备租赁</span>
+        </div>
+        <h1>🖥️ 高端 AI 设备租赁</h1>
+        <p>预装 OpenClaw 的即租即用 AI 设备，无需配置，开箱即用</p>
+    </section>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <div class="filter-card">
+            <select class="filter-select">
+                <option>设备类型</option>
+                <option>AI 工作站</option>
+                <option>开发板</option>
+                <option>边缘设备</option>
+                <option>机器人平台</option>
+            </select>
+            <select class="filter-select">
+                <option>租赁周期</option>
+                <option>日租</option>
+                <option>周租</option>
+                <option>月租</option>
+                <option>年租</option>
+            </select>
+            <select class="filter-select">
+                <option>价格区间</option>
+                <option>¥0 - ¥200/天</option>
+                <option>¥200 - ¥500/天</option>
+                <option>¥500+/天</option>
+            </select>
+            <button class="btn btn-primary">筛选</button>
+        </div>
+    </div>
+
+    <!-- Device Grid -->
+    <div class="device-grid">
+        <!-- Device 1 -->
+        <div class="device-card">
+            <div class="device-image">
+                🖥️
+                <span class="device-badge">热门</span>
+            </div>
+            <div class="device-info">
+                <div class="device-category">AI 工作站</div>
+                <h3 class="device-title">AI 开发电脑 Pro</h3>
+                <div class="device-specs">
+                    <ul>
+                        <li>RTX 4090 24GB</li>
+                        <li>64GB DDR5</li>
+                        <li>2TB NVMe</li>
+                        <li>OpenClaw 预装</li>
+                    </ul>
+                </div>
+                <div class="device-footer">
+                    <div class="device-price">¥299<span>/天</span></div>
+                    <a href="#order" class="btn btn-primary">立即租赁</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device 2 -->
+        <div class="device-card">
+            <div class="device-image">
+                📟
+            </div>
+            <div class="device-info">
+                <div class="device-category">开发板</div>
+                <h3 class="device-title">Jetson Orin NX</h3>
+                <div class="device-specs">
+                    <ul>
+                        <li>100 TOPS AI</li>
+                        <li>16GB LPDDR5</li>
+                        <li>低功耗设计</li>
+                        <li>边缘计算首选</li>
+                    </ul>
+                </div>
+                <div class="device-footer">
+                    <div class="device-price">¥99<span>/天</span></div>
+                    <a href="#order" class="btn btn-primary">立即租赁</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device 3 -->
+        <div class="device-card">
+            <div class="device-image">
+                🤖
+                <span class="device-badge">新品</span>
+            </div>
+            <div class="device-info">
+                <div class="device-category">机器人平台</div>
+                <h3 class="device-title">四足机器人</h3>
+                <div class="device-specs">
+                    <ul>
+                        <li>ROS2 支持</li>
+                        <li>激光雷达</li>
+                        <li>视觉 SLAM</li>
+                        <li>户外防水</li>
+                    </ul>
+                </div>
+                <div class="device-footer">
+                    <div class="device-price">¥599<span>/天</span></div>
+                    <a href="#order" class="btn btn-primary">立即租赁</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device 4 -->
+        <div class="device-card">
+            <div class="device-image">
+                ⚡
+            </div>
+            <div class="device-info">
+                <div class="device-category">AI 工作站</div>
+                <h3 class="device-title">双卡 A100 工作站</h3>
+                <div class="device-specs">
+                    <ul>
+                        <li>2×A100 80GB</li>
+                        <li>128GB DDR4</li>
+                        <li>大模型训练</li>
+                        <li>液冷散热</li>
+                    </ul>
+                </div>
+                <div class="device-footer">
+                    <div class="device-price">¥1,299<span>/天</span></div>
+                    <a href="#order" class="btn btn-primary">立即租赁</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device 5 -->
+        <div class="device-card">
+            <div class="device-image">
+                📱
+            </div>
+            <div class="device-info">
+                <div class="device-category">边缘设备</div>
+                <h3 class="device-title">边缘 AI 盒子</h3>
+                <div class="device-specs">
+                    <ul>
+                        <li>32 TOPS</li>
+                        <li>8GB 内存</li>
+                        <li>多路摄像头</li>
+                        <li>工业级设计</li>
+                    </ul>
+                </div>
+                <div class="device-footer">
+                    <div class="device-price">¥79<span>/天</span></div>
+                    <a href="#order" class="btn btn-primary">立即租赁</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device 6 -->
+        <div class="device-card">
+            <div class="device-image">
+                🎯
+            </div>
+            <div class="device-info">
+                <div class="device-category">开发板</div>
+                <h3 class="device-title">Raspberry Pi AI Kit</h3>
+                <div class="device-specs">
+                    <ul>
+                        <li>13 TOPS NPU</li>
+                        <li>8GB RAM</li>
+                        <li>GPIO 扩展</li>
+                        <li>入门首选</li>
+                    </ul>
+                </div>
+                <div class="device-footer">
+                    <div class="device-price">¥49<span>/天</span></div>
+                    <a href="#order" class="btn btn-primary">立即租赁</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">🚀</div>
+                <h3 class="feature-title">即租即用</h3>
+                <p class="feature-desc">预装 OpenClaw 和常用 AI 框架，收到设备即可开始开发</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔧</div>
+                <h3 class="feature-title">技术支持</h3>
+                <p class="feature-desc">专业团队 24/7 在线，解决设备配置和使用问题</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💰</div>
+                <h3 class="feature-title">灵活计费</h3>
+                <p class="feature-desc">日租/周租/月租多种方案，按需选择，成本可控</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📦</div>
+                <h3 class="feature-title">全国配送</h3>
+                <p class="feature-desc">顺丰包邮，次日达覆盖主要城市，押金可退</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-card">
+            <h2>需要企业级定制方案？</h2>
+            <p>批量租赁、长期合作、私有化部署，联系我们获取专属优惠</p>
+            <a href="#enterprise" class="btn btn-primary">联系企业销售 →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2024 AI 租易用。All rights reserved.</p>
+    </footer>
+</body>
+</html>

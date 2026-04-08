@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算力套餐 - AI 租易用 | 灵活充值 按需使用</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+            --gradient-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 70% 30%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        .btn-gold {
+            background: var(--gradient-gold);
+            color: white;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4); }
+        
+        /* Page Hero */
+        .page-hero {
+            padding: 10rem 5% 3rem;
+            text-align: center;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+        
+        .breadcrumb a:hover { color: var(--primary); }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .page-hero p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+        
+        /* Balance Card */
+        .balance-section {
+            max-width: 800px;
+            margin: -2rem auto 4rem;
+            padding: 0 5%;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .balance-card {
+            background: var(--gradient);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(14, 165, 233, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .balance-info h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+        
+        .balance-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        
+        .balance-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Pricing Section */
+        .pricing-section {
+            padding: 4rem 5% 6rem;
+        }
+        
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+        
+        .section-tag {
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        .pricing-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.08);
+            padding: 2.5rem;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(14, 165, 233, 0.4);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 0 40px rgba(14, 165, 233, 0.2);
+        }
+        
+        .pricing-card.featured::before {
+            content: '最受欢迎';
+            position: absolute;
+            top: 1.5rem;
+            right: -30px;
+            background: var(--gradient);
+            color: white;
+            padding: 0.4rem 3rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .plan-price {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-price span {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        .plan-period {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-features li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .plan-features li::before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+        
+        .plan-features li.unavailable {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+        
+        .plan-features li.unavailable::before {
+            content: '✗';
+            color: var(--text-muted);
+        }
+        
+        .plan-btn {
+            width: 100%;
+            text-align: center;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 5%;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #111827 100%);
+        }
+        
+        .steps-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+        
+        .step-item {
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+        }
+        
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            padding: 6rem 5%;
+        }
+        
+        .faq-grid {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 1.5rem 2rem;
+        }
+        
+        .faq-question {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .faq-question::before {
+            content: '❓';
+        }
+        
+        .faq-answer {
+            color: var(--text-muted);
+            line-height: 1.7;
+            padding-left: 2rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 5%;
+            text-align: center;
+        }
+        
+        .cta-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 3.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .cta-card h2 { font-size: 2rem; margin-bottom: 1rem; }
+        
+        .cta-card p { color: var(--text-muted); margin-bottom: 2rem; }
+        
+        /* Footer */
+        .footer {
+            padding: 3rem 5%;
+            background: #0B1120;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .page-hero h1 { font-size: 2rem; }
+            .balance-card { flex-direction: column; text-align: center; }
+            .balance-amount { font-size: 2.5rem; }
+            .pricing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="../../homepage.html" class="logo">🚀 AI 租易用</a>
+        <ul class="nav-links">
+            <li><a href="../../homepage.html">首页</a></li>
+            <li><a href="../rental/index.html">设备租赁</a></li>
+            <li><a href="index.html" class="active">算力套餐</a></li>
+            <li><a href="../forum.html">学习论坛</a></li>
+            <li><a href="../enterprise/index.html">企业后台</a></li>
+            <li><a href="../distribution/index.html">分销合作</a></li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">免费试用</a>
+    </nav>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="breadcrumb">
+            <a href="../../homepage.html">首页</a>
+            <span>/</span>
+            <span>算力套餐</span>
+        </div>
+        <h1>⚡ 灵活算力套餐</h1>
+        <p>Token 永不过期 · 按需充值 · 即刻到账</p>
+    </section>
+
+    <!-- Balance Card -->
+    <div class="balance-section">
+        <div class="balance-card">
+            <div class="balance-info">
+                <h3>当前 Token 余额</h3>
+                <div class="balance-amount">10,000</div>
+            </div>
+            <div class="balance-actions">
+                <a href="#detail" class="btn" style="background:rgba(255,255,255,0.2);color:white;">查看详情</a>
+                <a href="#topup" class="btn" style="background:white;color:#0EA5E9;">立即充值</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section">
+        <div class="section-header">
+            <span class="section-tag">PRICING PLANS</span>
+            <h2 class="section-title">选择适合您的套餐</h2>
+            <p class="section-desc">灵活充值，用多少充多少，Token 永久有效</p>
+        </div>
+        
+        <div class="pricing-grid">
+            <!-- Starter Plan -->
+            <div class="pricing-card">
+                <h3 class="plan-name">入门版</h3>
+                <p class="plan-desc">适合个人学习和小型项目</p>
+                <div class="plan-price">¥99<span></span></div>
+                <p class="plan-period">一次性充值</p>
+                <ul class="plan-features">
+                    <li>10,000 Token</li>
+                    <li>基础模型访问</li>
+                    <li>社区技术支持</li>
+                    <li>标准 API 速率</li>
+                    <li class="unavailable">优先推理队列</li>
+                </ul>
+                <a href="#order" class="btn btn-primary plan-btn">立即充值</a>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="pricing-card featured">
+                <h3 class="plan-name">专业版</h3>
+                <p class="plan-desc">适合开发者和小型团队</p>
+                <div class="plan-price">¥299<span></span></div>
+                <p class="plan-period">一次性充值</p>
+                <ul class="plan-features">
+                    <li>50,000 Token</li>
+                    <li>全部模型访问</li>
+                    <li>优先技术支持</li>
+                    <li>优先推理队列</li>
+                    <li>API 速率提升 2 倍</li>
+                </ul>
+                <a href="#order" class="btn btn-gold plan-btn">立即充值</a>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card">
+                <h3 class="plan-name">企业版</h3>
+                <p class="plan-desc">适合企业和大规模应用</p>
+                <div class="plan-price">¥999<span></span></div>
+                <p class="plan-period">一次性充值</p>
+                <ul class="plan-features">
+                    <li>200,000 Token</li>
+                    <li>全部模型访问</li>
+                    <li>专属客户成功经理</li>
+                    <li>最高优先级推理</li>
+                    <li>API 速率提升 5 倍</li>
+                    <li>定制模型支持</li>
+                </ul>
+                <a href="#enterprise" class="btn btn-primary plan-btn">联系销售</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="section-header">
+            <span class="section-tag">HOW IT WORKS</span>
+            <h2 class="section-title">三步开始使用</h2>
+        </div>
+        <div class="steps-grid">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <h3 class="step-title">选择套餐</h3>
+                <p class="step-desc">根据用量需求选择合适的 Token 套餐</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <h3 class="step-title">在线支付</h3>
+                <p class="step-desc">支持支付宝、微信、银联等多种支付方式</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <h3 class="step-title">即刻使用</h3>
+                <p class="step-desc">充值成功后 Token 即时到账，立即可用</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="section-header">
+            <span class="section-tag">FAQ</span>
+            <h2 class="section-title">常见问题</h2>
+        </div>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <div class="faq-question">Token 会过期吗？</div>
+                <p class="faq-answer">不会！您充值的 Token 永久有效，没有使用期限，随时可以使用。</p>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">如何查看 Token 消耗？</div>
+                <p class="faq-answer">在用户中心可以实时查看 Token 使用明细，包括每次 API 调用的消耗记录。</p>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">支持退款吗？</div>
+                <p class="faq-answer">充值后 7 天内未使用可申请全额退款。已使用的 Token 不支持退款。</p>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">企业采购有优惠吗？</div>
+                <p class="faq-answer">批量采购可享受专属折扣，请联系企业销售获取定制报价方案。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-card">
+            <h2>需要大额充值或定制方案？</h2>
+            <p>企业客户可享受专属折扣和定制化服务，联系我们获取最优方案</p>
+            <a href="#enterprise" class="btn btn-primary">联系企业销售 →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2024 AI 租易用。All rights reserved.</p>
+    </footer>
+</body>
+</html>
