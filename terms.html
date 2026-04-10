@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务条款 - AI 租易用</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 12rem 5% 4rem;
+        }
+        
+        .content-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 3rem;
+        }
+        
+        .content-card h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .content-card .update-time {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .content-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 2.5rem 0 1rem;
+            color: var(--text-light);
+        }
+        
+        .content-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--primary);
+        }
+        
+        .content-card p {
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+        
+        .content-card ul, .content-card ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-muted);
+        }
+        
+        .content-card li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .content-card a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .content-card a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            padding: 4rem 5% 3rem;
+            background: #0B1120;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .footer-section { margin-bottom: 1.5rem; }
+        
+        .footer-section-title {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .footer-section-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        
+        .footer-section-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-section-links a:hover { color: var(--primary); }
+        
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: center;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container { display: none; }
+            .content-card { padding: 2rem; }
+            .content-card h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo-wrapper">
+            <a href="index.html" class="logo">🚀 AI 租易用</a>
+        </div>
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="rental.html">设备租赁</a></li>
+                <li><a href="token.html">Token 工厂</a></li>
+                <li><a href="services.html">AI 技术服务</a></li>
+                <li><a href="community.html">OPC 社区</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <a href="user.html" class="btn btn-primary">用户中心</a>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="content-card">
+            <h1>服务条款</h1>
+            <p class="update-time">最后更新时间：2026 年 4 月 10 日</p>
+
+            <h2>引言</h2>
+            <p>欢迎使用 AI 租易用服务！本服务条款（以下简称"本条款"）是您与 AI 租易用平台之间关于使用本服务的法律协议。请您在注册或使用本服务前仔细阅读本条款。</p>
+            <p>一旦您注册账户或使用本服务，即表示您已阅读、理解并同意受本条款的约束。如果您不同意本条款的任何内容，请立即停止使用本服务。</p>
+
+            <h2>一、服务说明</h2>
+            <h3>1.1 服务内容</h3>
+            <p>AI 租易用提供以下服务：</p>
+            <ul>
+                <li><strong>设备租赁：</strong>提供 AI 相关设备的租赁服务，包括笔记本电脑、服务器、开发设备等</li>
+                <li><strong>Token 工厂：</strong>提供大模型 API 调用服务，按 Token 使用量计费</li>
+                <li><strong>AI 技术服务：</strong>提供 AI 定制开发、技术咨询、解决方案设计等服务</li>
+                <li><strong>OPC 社区：</strong>提供技术交流、知识分享、问题解答的社区平台</li>
+            </ul>
+
+            <h3>1.2 服务变更</h3>
+            <p>我们保留随时修改、暂停或终止部分或全部服务的权利，包括但不限于：</p>
+            <ul>
+                <li>调整服务内容和功能</li>
+                <li>变更服务收费标准</li>
+                <li>暂停或终止特定服务</li>
+            </ul>
+            <p>对于服务的重大变更，我们将尽可能提前通知用户。</p>
+
+            <h2>二、账户注册与使用</h2>
+            <h3>2.1 注册资格</h3>
+            <p>您必须满足以下条件才能注册使用本服务：</p>
+            <ul>
+                <li>年满 18 周岁，具有完全民事行为能力</li>
+                <li>提供真实、准确、完整的注册信息</li>
+                <li>不使用他人身份或虚假信息注册</li>
+            </ul>
+
+            <h3>2.2 账户安全</h3>
+            <p>您有责任：</p>
+            <ul>
+                <li>妥善保管账户密码，不向他人泄露</li>
+                <li>对账户下的所有活动承担责任</li>
+                <li>发现账户被盗用时立即通知我们</li>
+            </ul>
+
+            <h3>2.3 账户注销</h3>
+            <p>您可以随时申请注销账户。注销后：</p>
+            <ul>
+                <li>账户信息将被删除或匿名化处理</li>
+                <li>未完成的订单或服务将被终止</li>
+                <li>根据法律法规要求，部分信息可能需要保留</li>
+            </ul>
+
+            <h2>三、租赁服务条款</h2>
+            <h3>3.1 租赁流程</h3>
+            <ol>
+                <li>选择设备并提交租赁订单</li>
+                <li>完成实名认证和信用评估</li>
+                <li>支付租金和押金（如需）</li>
+                <li>签署电子租赁合同</li>
+                <li>接收设备并开始使用</li>
+                <li>租期结束后归还设备</li>
+            </ol>
+
+            <h3>3.2 用户义务</h3>
+            <p>在租赁期间，您应当：</p>
+            <ul>
+                <li>妥善保管和使用租赁设备</li>
+                <li>不得擅自转租、抵押、出售设备</li>
+                <li>不得对设备进行拆解、改装</li>
+                <li>按时支付租金</li>
+                <li>租期结束后按时归还设备</li>
+            </ul>
+
+            <h3>3.3 损坏赔偿</h3>
+            <p>如设备在租赁期间发生损坏或丢失：</p>
+            <ul>
+                <li>正常磨损：无需赔偿</li>
+                <li>人为损坏：按维修费用赔偿</li>
+                <li>设备丢失：按设备采购价赔偿</li>
+                <li>从押金中扣除相应费用，不足部分需补足</li>
+            </ul>
+
+            <h2>四、Token 服务条款</h2>
+            <h3>4.1 Token 购买</h3>
+            <ul>
+                <li>Token 一经售出，除特殊情况外不支持退款</li>
+                <li>Token 有有效期，请在有效期内使用</li>
+                <li>Token 不可转让、不可兑换现金</li>
+            </ul>
+
+            <h3>4.2 使用规范</h3>
+            <p>您不得利用 Token 服务：</p>
+            <ul>
+                <li>生成违法、有害、侵权内容</li>
+                <li>进行自动化批量请求攻击</li>
+                <li>逆向工程或破解 API</li>
+                <li>将服务用于任何非法目的</li>
+            </ul>
+
+            <h2>五、知识产权</h2>
+            <h3>5.1 平台权利</h3>
+            <p>AI 租用易平台的所有内容（包括但不限于文字、图片、代码、设计）均受知识产权法保护，归平台或相关权利人所有。</p>
+
+            <h3>5.2 用户内容</h3>
+            <p>您在平台上发布的内容，您保留所有权，但授予平台非独占、可转授权的使用权，用于提供服务。</p>
+
+            <h2>六、免责声明</h2>
+            <p>在法律法规允许的最大范围内，AI 租易用不对以下情况承担责任：</p>
+            <ul>
+                <li>因不可抗力导致的服务中断</li>
+                <li>用户自身操作失误导致的损失</li>
+                <li>第三方服务（如支付、物流）导致的问题</li>
+                <li>用户发布的内容引发的纠纷</li>
+                <li>因网络攻击、系统故障等导致的数据丢失</li>
+            </ul>
+
+            <h2>七、条款变更</h2>
+            <p>我们保留随时修改本条款的权利。修改后的条款将在平台上公布，自公布之日起生效。如您继续使用服务，视为接受修改后的条款。</p>
+
+            <h2>八、法律适用与争议解决</h2>
+            <p>本条款适用中华人民共和国法律。因本条款引起的任何争议，双方应友好协商解决；协商不成的，任何一方均可向 AI 租易用所在地人民法院提起诉讼。</p>
+
+            <h2>九、联系我们</h2>
+            <p>如对本条款有任何疑问，请通过以下方式联系我们：</p>
+            <ul>
+                <li>客服邮箱：legal@ai-zuyiyong.com</li>
+                <li>客服电话：400-XXX-XXXX</li>
+                <li>工作时间：周一至周五 9:00-18:00</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
+            <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
+                <div class="footer-section">
+                    <div class="footer-section-title">产品服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="rental.html">设备租赁</a></li>
+                        <li><a href="token.html">Token 工厂</a></li>
+                        <li><a href="services.html">AI 技术服务</a></li>
+                        <li><a href="community.html">OPC 社区</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">用户服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="user.html">用户中心</a></li>
+                        <li><a href="enterprise.html">企业后台</a></li>
+                        <li><a href="affiliate.html">分销合作</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">支持</div>
+                    <ul class="footer-section-links">
+                        <li><a href="help.html">产品文档</a></li>
+                        <li><a href="terms.html">服务条款</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-copy">© 2024 AI 租易用。All rights reserved.</div>
+        </div>
+    </footer>
+</body>
+</html>

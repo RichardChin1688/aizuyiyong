@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>优惠券中心 - AI 租易用 | 领取和管理优惠券</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #0EA5E9;
+      --primary-dark: #0C4A6E;
+      --accent: #F59E0B;
+      --bg-dark: #0B1120;
+      --bg-card: #1E293B;
+      --text-light: #F1F5F9;
+      --text-muted: #94A3B8;
+      --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+    }
+    
+    body {
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.7;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 5%;
+      background: rgba(11, 17, 32, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .nav-logo-wrapper { position: absolute; left: 5%; }
+    .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+    .nav-right-wrapper { position: absolute; right: 5%; }
+    
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+    
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text-light);
+      background: rgba(14, 165, 233, 0.12);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+    }
+    
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Page Hero */
+    .page-hero {
+      padding: 10rem 5% 2rem;
+      text-align: center;
+    }
+    
+    .page-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    
+    .breadcrumb {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    
+    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--primary); }
+    
+    /* Main Container */
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 5%;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 1rem;
+    }
+    
+    .tab {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 1rem;
+    }
+    
+    .tab:hover {
+      color: var(--text-light);
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .tab.active {
+      background: var(--gradient);
+      color: white;
+    }
+    
+    /* Coupon Grid */
+    .coupon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    /* Coupon Card */
+    .coupon-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .coupon-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient);
+    }
+    
+    .coupon-card.used::before {
+      background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+    }
+    
+    .coupon-card.expired::before {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+    }
+    
+    .coupon-body {
+      padding: 1.5rem;
+    }
+    
+    .coupon-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .coupon-amount {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .coupon-card.used .coupon-amount,
+    .coupon-card.expired .coupon-amount {
+      background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .coupon-type {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    
+    .coupon-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .coupon-status.available {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10B981;
+    }
+    
+    .coupon-status.used {
+      background: rgba(107, 114, 128, 0.15);
+      color: #6B7280;
+    }
+    
+    .coupon-status.expired {
+      background: rgba(239, 68, 68, 0.15);
+      color: #EF4444;
+    }
+    
+    .coupon-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .coupon-conditions {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+    
+    .coupon-validity {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    
+    .coupon-validity::before {
+      content: '📅';
+    }
+    
+    .coupon-action {
+      padding: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    
+    .btn-coupon {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 10px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-claim {
+      background: var(--gradient);
+      color: white;
+    }
+    
+    .btn-claim:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+    }
+    
+    .btn-claimed {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10B981;
+      cursor: default;
+    }
+    
+    .btn-used {
+      background: rgba(107, 114, 128, 0.15);
+      color: #6B7280;
+      cursor: default;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+    
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    .empty-state-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+    }
+    
+    /* Footer */
+    .footer {
+      padding: 4rem 5% 3rem;
+      background: #0B1120;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+      width: 100%;
+      margin-top: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .coupon-grid { grid-template-columns: 1fr; }
+      .page-hero h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-logo-wrapper">
+      <a href="index.html" class="logo">AI 租易用</a>
+    </div>
+    <div class="nav-container">
+      <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="services.html">服务</a></li>
+        <li><a href="rental.html">租赁</a></li>
+        <li><a href="about.html">关于我们</a></li>
+        <li><a href="help.html">帮助中心</a></li>
+      </ul>
+    </div>
+    <div class="nav-right-wrapper">
+      <a href="user.html" class="btn btn-primary">用户中心</a>
+    </div>
+  </nav>
+
+  <!-- Page Hero -->
+  <section class="page-hero">
+    
+    <h1>🎫 优惠券中心</h1>
+    <p>领取专属优惠，节省更多费用</p>
+  </section>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('available')">可领取</button>
+      <button class="tab" onclick="switchTab('claimed')">已领取</button>
+      <button class="tab" onclick="switchTab('used')">已使用</button>
+    </div>
+
+    <!-- Available Coupons -->
+    <div id="available-tab" class="coupon-grid">
+      <div class="coupon-card">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">¥50</div>
+              <div class="coupon-type">满减券</div>
+            </div>
+            <span class="coupon-status available">可领取</span>
+          </div>
+          <h3 class="coupon-title">新用户专享券</h3>
+          <p class="coupon-conditions">满 299 元可用 | 仅限首单使用</p>
+          <div class="coupon-validity">有效期至 2026-05-10</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-claim" onclick="claimCoupon(this)">立即领取</button>
+        </div>
+      </div>
+
+      <div class="coupon-card">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">¥100</div>
+              <div class="coupon-type">满减券</div>
+            </div>
+            <span class="coupon-status available">可领取</span>
+          </div>
+          <h3 class="coupon-title">设备租赁优惠券</h3>
+          <p class="coupon-conditions">满 599 元可用 | 限租赁服务使用</p>
+          <div class="coupon-validity">有效期至 2026-04-30</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-claim" onclick="claimCoupon(this)">立即领取</button>
+        </div>
+      </div>
+
+      <div class="coupon-card">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">8.5 折</div>
+              <div class="coupon-type">折扣券</div>
+            </div>
+            <span class="coupon-status available">可领取</span>
+          </div>
+          <h3 class="coupon-title">算力充值折扣</h3>
+          <p class="coupon-conditions">无门槛 | 限算力充值使用</p>
+          <div class="coupon-validity">有效期至 2026-04-25</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-claim" onclick="claimCoupon(this)">立即领取</button>
+        </div>
+      </div>
+
+      <div class="coupon-card">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">¥200</div>
+              <div class="coupon-type">满减券</div>
+            </div>
+            <span class="coupon-status available">可领取</span>
+          </div>
+          <h3 class="coupon-title">VIP 会员专享</h3>
+          <p class="coupon-conditions">满 999 元可用 | VIP 会员专属</p>
+          <div class="coupon-validity">有效期至 2026-06-01</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-claim" onclick="claimCoupon(this)">立即领取</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Claimed Coupons -->
+    <div id="claimed-tab" class="coupon-grid" style="display: none;">
+      <div class="coupon-card">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">¥30</div>
+              <div class="coupon-type">满减券</div>
+            </div>
+            <span class="coupon-status available">可使用</span>
+          </div>
+          <h3 class="coupon-title">春日特惠券</h3>
+          <p class="coupon-conditions">满 199 元可用 | 全平台通用</p>
+          <div class="coupon-validity">有效期至 2026-04-20</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-claimed">已领取</button>
+        </div>
+      </div>
+
+      <div class="coupon-card">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">9 折</div>
+              <div class="coupon-type">折扣券</div>
+            </div>
+            <span class="coupon-status available">可使用</span>
+          </div>
+          <h3 class="coupon-title">续费优惠券</h3>
+          <p class="coupon-conditions">无门槛 | 限续费订单使用</p>
+          <div class="coupon-validity">有效期至 2026-04-18</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-claimed">已领取</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Used Coupons -->
+    <div id="used-tab" class="coupon-grid" style="display: none;">
+      <div class="coupon-card used">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">¥50</div>
+              <div class="coupon-type">满减券</div>
+            </div>
+            <span class="coupon-status used">已使用</span>
+          </div>
+          <h3 class="coupon-title">首单立减券</h3>
+          <p class="coupon-conditions">满 299 元可用 | 订单号：ORD-2026040101</p>
+          <div class="coupon-validity">使用于 2026-04-01</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-used">已使用</button>
+        </div>
+      </div>
+
+      <div class="coupon-card used">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">¥100</div>
+              <div class="coupon-type">满减券</div>
+            </div>
+            <span class="coupon-status used">已使用</span>
+          </div>
+          <h3 class="coupon-title">新年优惠券</h3>
+          <p class="coupon-conditions">满 599 元可用 | 订单号：ORD-2026031502</p>
+          <div class="coupon-validity">使用于 2026-03-15</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-used">已使用</button>
+        </div>
+      </div>
+
+      <div class="coupon-card expired">
+        <div class="coupon-body">
+          <div class="coupon-header">
+            <div>
+              <div class="coupon-amount">¥80</div>
+              <div class="coupon-type">满减券</div>
+            </div>
+            <span class="coupon-status expired">已过期</span>
+          </div>
+          <h3 class="coupon-title">限时特惠券</h3>
+          <p class="coupon-conditions">满 399 元可用</p>
+          <div class="coupon-validity">过期于 2026-03-31</div>
+        </div>
+        <div class="coupon-action">
+          <button class="btn-coupon btn-used">已过期</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <a href="index.html" class="footer-logo">AI 租易用</a>
+      <div class="footer-copy">
+        © 2026 AI 租易用。All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.getElementById('available-tab').style.display = 'none';
+      document.getElementById('claimed-tab').style.display = 'none';
+      document.getElementById('used-tab').style.display = 'none';
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      
+      // Show selected tab
+      document.getElementById(tabName + '-tab').style.display = 'grid';
+      
+      // Add active class to clicked tab
+      event.target.classList.add('active');
+    }
+
+    function claimCoupon(btn) {
+      btn.textContent = '已领取';
+      btn.classList.remove('btn-claim');
+      btn.classList.add('btn-claimed');
+      btn.disabled = true;
+      
+      // Show success message
+      alert('🎉 优惠券领取成功！请在"已领取"标签页查看。');
+    }
+  </script>
+</body>
+</html>

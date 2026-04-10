@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单详情 - AI 租易用</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+            --success: #10B981;
+            --warning: #F59E0B;
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        .page-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 8rem 5% 4rem;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .order-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 20px;
+            color: var(--success);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .content-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .info-value {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .order-items {
+            margin-bottom: 1.5rem;
+        }
+        
+        .order-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .item-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .item-price {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            color: var(--text-muted);
+        }
+        
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5rem 0;
+            margin-top: 1rem;
+            border-top: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .summary-total-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .summary-total-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -2rem;
+            top: 0;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--bg-card);
+        }
+        
+        .timeline-item.completed .timeline-dot {
+            background: var(--success);
+        }
+        
+        .timeline-time {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        
+        .timeline-content {
+            font-size: 0.95rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .footer {
+            padding: 4rem 5% 3rem;
+            background: #0B1120;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .footer-section { margin-bottom: 1.5rem; }
+        
+        .footer-section-title {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .footer-section-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        
+        .footer-section-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-section-links a:hover { color: var(--primary); }
+        
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: center;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid { grid-template-columns: 1fr; }
+            .nav-container { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo-wrapper">
+            <a href="index.html" class="logo">🚀 AI 租易用</a>
+        </div>
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="rental.html">设备租赁</a></li>
+                <li><a href="token.html">Token 工厂</a></li>
+                <li><a href="services.html">AI 技术服务</a></li>
+                <li><a href="community.html">OPC 社区</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <a href="user.html" class="btn btn-primary">用户中心</a>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">订单详情</h1>
+            <div class="order-status">✅ 已完成</div>
+        </div>
+
+        <div class="content-card">
+            <h2 class="card-title">📦 订单信息</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">订单编号</span>
+                    <span class="info-value">ORD20260410001234</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">下单时间</span>
+                    <span class="info-value">2026-04-10 13:05:28</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">支付方式</span>
+                    <span class="info-value">微信支付</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">支付时间</span>
+                    <span class="info-value">2026-04-10 13:06:15</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2 class="card-title">🛍️ 商品清单</h2>
+            <div class="order-items">
+                <div class="order-item">
+                    <div class="item-image">💻</div>
+                    <div class="item-details">
+                        <div class="item-name">MacBook Pro 16" M3 Max</div>
+                        <div class="item-meta">租期：月租 | 数量：×1</div>
+                    </div>
+                    <div class="item-price">¥19,999</div>
+                </div>
+                <div class="order-item">
+                    <div class="item-image">🎫</div>
+                    <div class="item-details">
+                        <div class="item-name">Token 套餐 - 专业版</div>
+                        <div class="item-meta">2,000,000 Token | 数量：×1</div>
+                    </div>
+                    <div class="item-price">¥299</div>
+                </div>
+            </div>
+            <div class="summary-row">
+                <span>商品小计</span>
+                <span>¥20,298</span>
+            </div>
+            <div class="summary-row">
+                <span>押金</span>
+                <span>¥15,000</span>
+            </div>
+            <div class="summary-row">
+                <span>运费</span>
+                <span>¥0</span>
+            </div>
+            <div class="summary-total">
+                <span class="summary-total-label">实付金额</span>
+                <span class="summary-total-value">¥35,298</span>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2 class="card-title">📍 收货地址</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">收货人</span>
+                    <span class="info-value">张三</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">手机号</span>
+                    <span class="info-value">138****1234</span>
+                </div>
+                <div class="info-item" style="grid-column: 1 / -1;">
+                    <span class="info-label">详细地址</span>
+                    <span class="info-value">北京市朝阳区 XX 路 XX 号 XX 大厦</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h2 class="card-title">📋 订单进度</h2>
+            <div class="timeline">
+                <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">2026-04-10 13:05</div>
+                    <div class="timeline-content">订单提交成功</div>
+                </div>
+                <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">2026-04-10 13:06</div>
+                    <div class="timeline-content">支付成功</div>
+                </div>
+                <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">2026-04-10 14:30</div>
+                    <div class="timeline-content">商家已发货</div>
+                </div>
+                <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">2026-04-11 10:20</div>
+                    <div class="timeline-content">已签收，开始租期</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">预计 2026-05-11</div>
+                    <div class="timeline-content">租期结束，归还设备</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="user.html" class="btn btn-primary" style="flex: 1; justify-content: center;">返回用户中心</a>
+            <a href="help.html" class="btn" style="background: var(--bg-card); border: 2px solid var(--primary); flex: 1; justify-content: center;">需要帮助？</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
+            <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
+                <div class="footer-section">
+                    <div class="footer-section-title">产品服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="rental.html">设备租赁</a></li>
+                        <li><a href="token.html">Token 工厂</a></li>
+                        <li><a href="services.html">AI 技术服务</a></li>
+                        <li><a href="community.html">OPC 社区</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">用户服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="user.html">用户中心</a></li>
+                        <li><a href="affiliate.html">分销合作</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">支持</div>
+                    <ul class="footer-section-links">
+                        <li><a href="help.html">帮助中心</a></li>
+                        <li><a href="terms.html">服务条款</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-copy">© 2024 AI 租易用。All rights reserved.</div>
+        </div>
+    </footer>
+</body>
+</html>

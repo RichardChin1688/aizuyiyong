@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户中心 - AI 租易用 | 管理您的账户和服务</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #0EA5E9;
+      --primary-dark: #0C4A6E;
+      --accent: #F59E0B;
+      --bg-dark: #0B1120;
+      --bg-card: #1E293B;
+      --text-light: #F1F5F9;
+      --text-muted: #94A3B8;
+      --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+    }
+    
+    body {
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.7;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 5%;
+      background: rgba(11, 17, 32, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .nav-logo-wrapper { position: absolute; left: 5%; }
+    .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+    .nav-right-wrapper { position: absolute; right: 5%; }
+    
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+    
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text-light);
+      background: rgba(14, 165, 233, 0.12);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+    }
+    
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+    
+    /* Page Hero */
+    .page-hero {
+      padding: 10rem 5% 2rem;
+      text-align: center;
+    }
+    
+    .page-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    
+    /* Main Container */
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 5%;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 1.5rem;
+      height: fit-content;
+    }
+    
+    .user-profile {
+      text-align: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 1.5rem;
+    }
+    
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 auto 1rem;
+    }
+    
+    .user-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .user-level {
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .sidebar-nav {
+      list-style: none;
+    }
+    
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      padding: 0.875rem 1rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: all 0.3s;
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: rgba(14, 165, 233, 0.12);
+      color: var(--text-light);
+    }
+    
+    .sidebar-nav .icon {
+      margin-right: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    /* Main Content */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    /* Profile Section */
+    .profile-section {
+      display: none;
+    }
+    
+    /* Content Card */
+    .content-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    
+    /* Profile Info Grid */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+    
+    .profile-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .profile-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    
+    .profile-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .profile-avatar-large {
+      width: 120px;
+      height: 120px;
+      background: var(--gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0 auto 1.5rem;
+    }
+    
+    .profile-header {
+      text-align: center;
+      padding: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table th, .data-table td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    
+    .data-table th {
+      background: rgba(255,255,255,0.02);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    
+    .data-table td {
+      border-top: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9rem;
+    }
+    
+    .data-table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .status-badge.yellow { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+    .status-badge.green { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+    .status-badge.blue { background: rgba(14, 165, 233, 0.15); color: #0EA5E9; }
+    .status-badge.purple { background: rgba(124, 58, 237, 0.15); color: #8B5CF6; }
+    .status-badge.red { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+    
+    /* Form Styles */
+    .form-section {
+      padding: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1.125rem;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: var(--bg-dark);
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .form-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .btn-save {
+      padding: 0.875rem 2rem;
+      background: var(--gradient);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+    }
+    
+    /* Token Balance Card */
+    .balance-card {
+      background: var(--gradient);
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .balance-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+    
+    .balance-value {
+      font-size: 3rem;
+      font-weight: 800;
+    }
+    
+    /* Footer */
+    .footer {
+      padding: 4rem 5% 3rem;
+      background: #0B1120;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .footer-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-section-title {
+      color: var(--text-light);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+    
+    .footer-section-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    
+    .footer-section-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.3s;
+    }
+    
+    .footer-section-links a:hover { color: var(--primary); }
+    
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+      width: 100%;
+      margin-top: 2rem;
+    }
+    
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .main-container { grid-template-columns: 1fr; }
+      .sidebar { order: -1; }
+      .page-hero h1 { font-size: 2rem; }
+      .profile-grid { grid-template-columns: 1fr; }
+      .tab-nav { flex-wrap: wrap; }
+      .tab-btn { flex: 0 0 calc(50% - 0.25rem); }
+    }
+    
+    @media (max-width: 480px) {
+      .tab-btn { flex: 0 0 100%; }
+    }
+    
+    /* Login Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .modal-close:hover {
+      color: var(--text-light);
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-subtitle {
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .form-row .form-input {
+      flex: 1;
+    }
+
+    .btn-code {
+      padding: 0.875rem 1.25rem;
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .btn-code:hover {
+      background: rgba(14, 165, 233, 0.1);
+    }
+
+    .btn-code:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--gradient);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-card);
+      color: var(--text-light);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 3000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-color: #10B981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .toast.error {
+      border-color: #EF4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    
+    /* Modal Animation */
+    #editProfileModal.show .modal-content,
+    #orderDetailModal.show > div {
+      transform: scale(1);
+      opacity: 1;
+    }
+    
+    #editProfileModal.show,
+    #orderDetailModal.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-logo-wrapper">
+      <a href="index.html" class="logo">🚀 AI 租易用</a>
+    </div>
+    <div class="nav-container">
+      <ul class="nav-links">
+        <li><a href="rental.html">设备租赁</a></li>
+        <li><a href="token.html">Token 工厂</a></li>
+        <li><a href="services.html">AI 技术服务</a></li>
+        <li><a href="community.html">OPC 社区</a></li>
+      </ul>
+    </div>
+    <div class="nav-right-wrapper">
+      <button class="btn btn-primary" onclick="openLoginModal()">登录 / 注册</button>
+    </div>
+  </nav>
+
+  <!-- Page Hero -->
+  <section class="page-hero">
+    <h1>👤 用户中心</h1>
+    <p>管理您的账户、订单和服务</p>
+  </section>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="user-profile">
+        <div class="user-avatar" id="sidebarAvatar">用</div>
+        <h3 class="user-name" id="sidebarName">用户名</h3>
+        <p class="user-level" id="sidebarLevel">普通会员</p>
+      </div>
+      
+      <nav class="sidebar-nav">
+        
+        <a href="#" onclick="switchTab('profile'); return false;" class="active">
+          <span class="icon">👤</span> 个人中心
+        </a>
+        <a href="#" onclick="switchTab('orders'); return false;">
+          <span class="icon">📦</span> 订单管理
+        </a>
+        <a href="#" onclick="switchTab('rentals'); return false;">
+          <span class="icon">💻</span> 租赁记录
+        </a>
+        <a href="#" onclick="switchTab('tokens'); return false;">
+          <span class="icon">⚡</span> Token 记录
+        </a>
+        <a href="#" onclick="switchTab('coupon'); return false;">
+          <span class="icon">🎫</span> 优惠券
+        </a>
+        <a href="#" onclick="switchTab('settings'); return false;">
+          <span class="icon">⚙️</span> 个人信息编辑
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Profile Section -->
+      
+
+      <!-- Orders Section -->
+      <div id="orders" class="profile-section" style="display: none;">
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">📦 订单管理</h2>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>订单号</th>
+                  <th>类型</th>
+                  <th>商品/服务</th>
+                  <th>金额</th>
+                  <th>状态</th>
+                  <th>日期</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>ORD-2026040801</td>
+                  <td>设备租赁</td>
+                  <td>RTX 4090 显卡 (7 天)</td>
+                  <td>¥897</td>
+                  <td><span class="status-badge yellow">租赁中</span></td>
+                  <td>2026-04-05</td>
+                  <td><a href="#" style="color: var(--primary);" onclick="showOrderDetail('ORD-2026040801'); return false;">查看详情</a></n                </tr>
+                <tr>
+                  <td>ORD-2026040302</td>
+                  <td>算力充值</td>
+                  <td>Token 10000 个</td>
+                  <td>¥299</td>
+                  <td><span class="status-badge green">已完成</span></td>
+                  <td>2026-04-03</td>
+                  <td><a href="#" style="color: var(--primary);">查看详情</a></td>
+                </tr>
+                <tr>
+                  <td>ORD-2026040101</td>
+                  <td>设备租赁</td>
+                  <td>A100 GPU (3 天)</td>
+                  <td>¥599</td>
+                  <td><span class="status-badge green">已完成</span></td>
+                  <td>2026-04-01</td>
+                  <td><a href="#" style="color: var(--primary);">查看详情</a></td>
+                </tr>
+                <tr>
+                  <td>ORD-2026032801</td>
+                  <td>技术服务</td>
+                  <td>模型微调服务</td>
+                  <td>¥2,500</td>
+                  <td><span class="status-badge green">已完成</span></td>
+                  <td>2026-03-28</td>
+                  <td><a href="#" style="color: var(--primary);">查看详情</a></td>
+                </tr>
+                <tr>
+                  <td>ORD-2026032501</td>
+                  <td>设备租赁</td>
+                  <td>RTX 4090 显卡 (5 天)</td>
+                  <td>¥650</td>
+                  <td><span class="status-badge blue">已取消</span></td>
+                  <td>2026-03-25</td>
+                  <td><a href="#" style="color: var(--primary);">查看详情</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rentals Section -->
+      <div id="rentals" class="profile-section" style="display: none;">
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">💻 租赁记录</h2>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>设备名称</th>
+                  <th>租赁时间</th>
+                  <th>到期时间</th>
+                  <th>剩余天数</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <span style="font-size: 1.5rem;">🎮</span>
+                      <div>
+                        <div style="font-weight: 600;">NVIDIA RTX 4090</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">24GB GDDR6X</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>2026-04-05</td>
+                  <td>2026-04-12</td>
+                  <td style="color: var(--accent); font-weight: 600;">2 天</td>
+                  <td><span class="status-badge yellow">租赁中</span></td>
+                  <td>
+                    <a href="#" style="color: var(--primary); margin-right: 0.5rem;">续租</a>
+                    <a href="#" style="color: var(--text-muted);">归还</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <span style="font-size: 1.5rem;">🖥️</span>
+                      <div>
+                        <div style="font-weight: 600;">NVIDIA A100</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">80GB HBM2e</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>2026-04-08</td>
+                  <td>2026-04-15</td>
+                  <td style="color: var(--primary); font-weight: 600;">5 天</td>
+                  <td><span class="status-badge yellow">租赁中</span></td>
+                  <td>
+                    <a href="#" style="color: var(--primary); margin-right: 0.5rem;">续租</a>
+                    <a href="#" style="color: var(--text-muted);">归还</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Token 记录模块 -->
+        <div class="profile-section" id="tokens" style="display: none;">
+          <div class="content-card">
+            <div class="card-header">
+              <h2 class="card-title">⚡ Token 记录</h2>
+            </div>
+            <div class="stats-grid" style="margin-bottom: 2rem;">
+              <div class="stat-card">
+                <div class="stat-card-value">250,000</div>
+                <div class="stat-card-label">Token 余额</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-value">1,000,000</div>
+                <div class="stat-card-label">累计充值</div>
+              </div>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>订单号</th>
+                    <th>套餐</th>
+                    <th>Token 数量</th>
+                    <th>金额</th>
+                    <th>时间</th>
+                    <th>状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>#TKN-20260410-001</td>
+                    <td>专业版</td>
+                    <td>500,000</td>
+                    <td>¥499</td>
+                    <td>2026-04-10</td>
+                    <td><span class="status-badge green">已完成</span></td>
+                  </tr>
+                  <tr>
+                    <td>#TKN-20260405-002</td>
+                    <td>体验版</td>
+                    <td>100,000</td>
+                    <td>¥99</td>
+                    <td>2026-04-05</td>
+                    <td><span class="status-badge green">已完成</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 优惠券模块 -->
+        <div class="profile-section" id="coupon" style="display: none;">
+          <div class="content-card">
+            <div class="card-header">
+              <h2 class="card-title">🎫 优惠券</h2>
+            </div>
+            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+              <p>暂无可领取优惠券</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 个人信息编辑模块 -->
+        <div class="profile-section" id="settings" style="display: none;">
+          <div class="content-card">
+            <div class="card-header">
+              <h2 class="card-title">⚙️ 个人信息编辑</h2>
+            </div>
+            <div style="padding: 2rem;">
+              <div style="display: grid; gap: 1.5rem; max-width: 600px;">
+                <div>
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">昵称</label>
+                  <input type="text" id="editNickname" value="张三" class="form-input" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light);">
+                </div>
+                <div>
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">手机号</label>
+                  <input type="tel" id="editPhone" value="138****1234" class="form-input" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light);">
+                </div>
+                <div>
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">邮箱</label>
+                  <input type="email" id="editEmail" value="zhangsan@example.com" class="form-input" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light);">
+                </div>
+                <div>
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">当前密码</label>
+                  <input type="password" id="editCurrentPwd" placeholder="请输入当前密码" class="form-input" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light);">
+                </div>
+                <div>
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">新密码</label>
+                  <input type="password" id="editNewPwd" placeholder="请输入新密码" class="form-input" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light);">
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                  <button class="btn btn-primary" id="saveSettingsBtn" onclick="saveSettings()">💾 保存修改</button>
+                  <button class="btn" style="background: var(--bg-dark); color: var(--text-muted);" onclick="resetSettings()">❌ 取消</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
+        <div class="footer-copy">© 2024 AI 租易用。All rights reserved.</div>
+      </div>
+    </footer>
+    
+    <script>
+      // 保存原始数据用于取消
+      let originalSettings = {};
+      
+      // Tab 切换函数
+      function switchTab(tabId) {
+        // 隐藏所有 profile-section
+        document.querySelectorAll('.profile-section').forEach(s => s.style.display = 'none');
+        
+        // 移除 sidebar 所有 active 状态
+        document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+        
+        // 显示目标 section
+        const targetSection = document.getElementById(tabId);
+        if (targetSection) {
+          targetSection.style.display = 'block';
+        }
+        
+        // 添加当前 sidebar 链接的 active 状态
+        const sidebarLink = document.querySelector(`.sidebar-nav a[onclick*="${tabId}"]`);
+        if (sidebarLink) {
+          sidebarLink.classList.add('active');
+        }
+      }
+      
+      // 显示/隐藏编辑弹窗
+      function toggleEditModal(show) {
+        const modal = document.getElementById('editProfileModal');
+        if (show) {
+          modal.style.display = 'flex';
+          setTimeout(() => modal.classList.add('show'), 10);
+        } else {
+          modal.classList.remove('show');
+          setTimeout(() => modal.style.display = 'none', 300);
+        }
+      }
+      
+      // 保存个人资料
+      function saveProfile() {
+        const nickname = document.getElementById('modalNickname').value.trim();
+        const phone = document.getElementById('modalPhone').value.trim();
+        const email = document.getElementById('modalEmail').value.trim();
+        
+        if (!nickname || !phone || !email) {
+          alert('请填写完整信息！');
+          return;
+        }
+        
+        // 更新显示
+        document.getElementById('sidebarName').textContent = nickname;
+        document.getElementById('sidebarAvatar').textContent = nickname.charAt(0);
+        document.getElementById('profileName').textContent = nickname;
+        document.getElementById('profilePhone').textContent = phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+        document.getElementById('profileEmail').textContent = email;
+        
+        // 更新编辑页面的值
+        document.getElementById('editNickname').value = nickname;
+        document.getElementById('editPhone').value = phone;
+        document.getElementById('editEmail').value = email;
+        
+        alert('✅ 保存成功！');
+        toggleEditModal(false);
+      }
+      
+      // 保存设置
+      function saveSettings() {
+        const nickname = document.getElementById('editNickname').value.trim();
+        const phone = document.getElementById('editPhone').value.trim();
+        const email = document.getElementById('editEmail').value.trim();
+        const currentPwd = document.getElementById('editCurrentPwd').value;
+        const newPwd = document.getElementById('editNewPwd').value;
+        
+        if (!nickname || !phone || !email) {
+          alert('请填写完整信息！');
+          return;
+        }
+        
+        if (currentPwd || newPwd) {
+          if (!currentPwd || !newPwd) {
+            alert('请填写完整密码信息！');
+            return;
+          }
+          if (newPwd.length < 6) {
+            alert('新密码至少 6 位！');
+            return;
+          }
+        }
+        
+        // 模拟保存
+        alert('✅ 保存成功！\n\n昵称：' + nickname + '\n手机：' + phone + '\n邮箱：' + email);
+        
+        // 清空密码框
+        document.getElementById('editCurrentPwd').value = '';
+        document.getElementById('editNewPwd').value = '';
+        
+        // 更新个人信息页面的显示
+        document.getElementById('sidebarName').textContent = nickname;
+        document.getElementById('profileName').textContent = nickname;
+        document.getElementById('profilePhone').textContent = phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+        document.getElementById('profileEmail').textContent = email;
+      }
+      
+      // 取消编辑
+      function resetSettings() {
+        document.getElementById('editNickname').value = originalSettings.nickname || '张三';
+        document.getElementById('editPhone').value = originalSettings.phone || '138****1234';
+        document.getElementById('editEmail').value = originalSettings.email || 'zhangsan@example.com';
+        document.getElementById('editCurrentPwd').value = '';
+        document.getElementById('editNewPwd').value = '';
+      }
+      
+      // 初始化：保存原始数据
+      originalSettings = {
+        nickname: document.getElementById('editNickname').value,
+        phone: document.getElementById('editPhone').value,
+        email: document.getElementById('editEmail').value
+      };
+      
+      // 初始化显示
+      switchTab('profile');
+      
+      // 显示订单详情
+      function showOrderDetail(orderId) {
+        const modal = document.getElementById('orderDetailModal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+        
+        // 填充订单数据（示例）
+        document.getElementById('detailOrderId').textContent = orderId;
+      }
+      
+      // 关闭订单详情
+      function closeOrderDetail() {
+        const modal = document.getElementById('orderDetailModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+      }
+    </script>
+    
+    <!-- 编辑资料弹窗 -->
+    <div id="editProfileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;">
+      <div style="background: var(--bg-card); border-radius: 20px; padding: 2.5rem; max-width: 500px; width: 90%; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: transform 0.3s;" class="modal-content">
+        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; text-align: center;">✏️ 编辑个人资料</h2>
+        <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem;">修改您的个人信息</p>
+        
+        <div style="display: grid; gap: 1.25rem;">
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem;">昵称</label>
+            <input type="text" id="modalNickname" value="张三" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light); font-size: 1rem;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem;">手机号</label>
+            <input type="tel" id="modalPhone" value="13812340000" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light); font-size: 1rem;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem;">邮箱</label>
+            <input type="email" id="modalEmail" value="zhangsan@example.com" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light); font-size: 1rem;">
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+          <button class="btn btn-primary" style="flex: 1;" onclick="saveProfile()">💾 保存</button>
+          <button class="btn" style="flex: 1; background: var(--bg-dark); color: var(--text-muted);" onclick="toggleEditModal(false)">❌ 取消</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 订单详情弹窗 -->
+    <div id="orderDetailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;">
+      <div style="background: var(--bg-card); border-radius: 20px; padding: 2.5rem; max-width: 700px; width: 90%; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.9); transition: transform 0.3s; max-height: 80vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem;">📦 订单详情</h2>
+          <button onclick="closeOrderDetail()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">✕</button>
+        </div>
+        
+        <div style="padding: 1rem; background: var(--bg-dark); border-radius: 12px; margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+            <span style="color: var(--text-muted);">订单号</span>
+            <span id="detailOrderId" style="font-weight: 600;">ORD-2026040801</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+            <span style="color: var(--text-muted);">下单时间</span>
+            <span>2026-04-05 14:30</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+            <span style="color: var(--text-muted);">订单状态</span>
+            <span class="status-badge yellow">租赁中</span>
+          </div>
+        </div>
+        
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">📦 商品信息</h3>
+        <div style="padding: 1rem; background: var(--bg-dark); border-radius: 12px; margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <div style="font-size: 2.5rem;">🎮</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 600; margin-bottom: 0.25rem;">NVIDIA RTX 4090 显卡</div>
+              <div style="color: var(--text-muted); font-size: 0.9rem;">24GB GDDR6X × 1</div>
+            </div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">¥897</div>
+          </div>
+        </div>
+        
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">📄 发票信息</h3>
+        <div style="padding: 1rem; background: var(--bg-dark); border-radius: 12px; margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <div>
+              <div style="font-weight: 600;">发票号码：#INV-20260410-001</div>
+              <div style="color: var(--text-muted); font-size: 0.9rem;">电子普通发票</div>
+            </div>
+            <span class="status-badge green">已开具</span>
+          </div>
+          <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+            <button class="btn btn-primary" style="flex: 1; padding: 0.6rem;">📥 下载发票</button>
+            <button class="btn" style="flex: 1; padding: 0.6rem; background: var(--bg-dark); color: var(--text-muted);">📧 发送邮箱</button>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+          <button class="btn" style="flex: 1; background: var(--bg-dark); color: var(--text-muted);" onclick="closeOrderDetail()">关闭</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

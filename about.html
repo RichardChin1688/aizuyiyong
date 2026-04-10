@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我们 - AI 租易用</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        .hero {
+            padding: 12rem 5% 4rem;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .content-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+        
+        .section-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 3rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section-card h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-card p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+        
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .value-card {
+            background: var(--bg-dark);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .value-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .value-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .value-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            padding: 4rem 5% 3rem;
+            background: #0B1120;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .footer-section { margin-bottom: 1.5rem; }
+        
+        .footer-section-title {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .footer-section-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        
+        .footer-section-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-section-links a:hover { color: var(--primary); }
+        
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: center;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 900px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .values-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container { display: none; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo-wrapper">
+            <a href="index.html" class="logo">🚀 AI 租易用</a>
+        </div>
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="rental.html">设备租赁</a></li>
+                <li><a href="token.html">Token 工厂</a></li>
+                <li><a href="services.html">AI 技术服务</a></li>
+                <li><a href="community.html">OPC 社区</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <a href="user.html" class="btn btn-primary">用户中心</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>关于 AI 租易用</h1>
+        <p>让每一家企业都能轻松拥有顶尖 AI 能力</p>
+    </section>
+
+    <div class="content-section">
+        <div class="section-card">
+            <h2>🚀 我们的使命</h2>
+            <p>AI 租易用成立于 2018 年，致力于降低企业和开发者使用 AI 技术的门槛。我们相信，顶尖的 AI 能力不应该只属于少数大公司，每一个创新者都应该能够轻松获取和使用。</p>
+            <p>通过设备租赁、Token 算力分发、AI 定制开发等多元化服务，我们为用户提供一站式 AI 能力解决方案，让创新不再受限于硬件投入和技术门槛。</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">5000+</div>
+                <div class="stat-label">企业客户</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">10 亿+</div>
+                <div class="stat-label">API 调用</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">服务可用性</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">技术支持</div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h2>💡 核心价值观</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🎯</div>
+                    <div class="value-title">客户至上</div>
+                    <div class="value-desc">始终以客户需求为中心，提供贴心、专业的服务体验</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🔒</div>
+                    <div class="value-title">安全可靠</div>
+                    <div class="value-desc">严格的数据安全措施，保障用户隐私和资产安全</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🚀</div>
+                    <div class="value-title">持续创新</div>
+                    <div class="value-desc">紧跟 AI 技术前沿，不断优化产品和服务</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <div class="value-title">诚信透明</div>
+                    <div class="value-desc">价格透明，服务透明，建立长期信任关系</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">⚡</div>
+                    <div class="value-title">高效便捷</div>
+                    <div class="value-desc">简化流程，快速响应，让用户专注核心业务</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🌟</div>
+                    <div class="value-title">追求卓越</div>
+                    <div class="value-desc">不断超越自我，提供行业领先的服务品质</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h2>📍 联系我们</h2>
+            <p>如有任何问题或合作意向，欢迎随时联系我们：</p>
+            <div style="margin-top: 1.5rem; display: grid; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.5rem;">📧</span>
+                    <span>邮箱：1144672288@qq.com</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.5rem;">📞</span>
+                    <span>电话：199 3534 5655（同微信）</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.5rem;">🏢</span>
+                    <span>地址：广东省深圳市坂田街广汇商业大厦5层</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
+            <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
+                <div class="footer-section">
+                    <div class="footer-section-title">产品服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="rental.html">设备租赁</a></li>
+                        <li><a href="token.html">Token 工厂</a></li>
+                        <li><a href="services.html">AI 技术服务</a></li>
+                        <li><a href="community.html">OPC 社区</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">用户服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="user.html">用户中心</a></li>
+                        <li><a href="affiliate.html">分销合作</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">支持</div>
+                    <ul class="footer-section-links">
+                        <li><a href="help.html">帮助中心</a></li>
+                        <li><a href="terms.html">服务条款</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                        <li><a href="contact.html">联系我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-copy">© 2024 AI 租易用。All rights reserved.</div>
+        </div>
+    </footer>
+</body>
+</html>

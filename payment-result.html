@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付结果 - AI 租易用</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+            --success: #10B981;
+            --error: #EF4444;
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .result-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 5% 4rem;
+        }
+        
+        .result-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 4rem 3rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .result-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            margin: 0 auto 2rem;
+        }
+        
+        .result-icon.success {
+            background: rgba(16, 185, 129, 0.15);
+        }
+        
+        .result-icon.error {
+            background: rgba(239, 68, 68, 0.15);
+        }
+        
+        .result-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .result-title.success {
+            color: var(--success);
+        }
+        
+        .result-title.error {
+            color: var(--error);
+        }
+        
+        .result-message {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+        
+        .order-info {
+            background: var(--bg-dark);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .order-row:last-child {
+            border-bottom: none;
+        }
+        
+        .order-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .order-value {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.2);
+            color: var(--text-light);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: rgba(14, 165, 233, 0.1);
+        }
+        
+        .footer {
+            padding: 4rem 5% 3rem;
+            background: #0B1120;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .footer-section { margin-bottom: 1.5rem; }
+        
+        .footer-section-title {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .footer-section-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        
+        .footer-section-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-section-links a:hover { color: var(--primary); }
+        
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: center;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container { display: none; }
+            .result-card { padding: 3rem 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo-wrapper">
+            <a href="index.html" class="logo">🚀 AI 租易用</a>
+        </div>
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="rental.html">设备租赁</a></li>
+                <li><a href="token.html">Token 工厂</a></li>
+                <li><a href="services.html">AI 技术服务</a></li>
+                <li><a href="community.html">OPC 社区</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <a href="user.html" class="btn btn-primary">用户中心</a>
+        </div>
+    </nav>
+
+    <!-- 支付成功示例 -->
+    <div class="result-container">
+        <div class="result-card">
+            <div class="result-icon success">✅</div>
+            <h1 class="result-title success">支付成功！</h1>
+            <p class="result-message">感谢您的支付，订单已确认。我们将尽快为您处理。</p>
+            
+            <div class="order-info">
+                <div class="order-row">
+                    <span class="order-label">订单编号</span>
+                    <span class="order-value">ORD20260410001234</span>
+                </div>
+                <div class="order-row">
+                    <span class="order-label">订单类型</span>
+                    <span class="order-value">Token 套餐充值</span>
+                </div>
+                <div class="order-row">
+                    <span class="order-label">套餐名称</span>
+                    <span class="order-value">专业版月付</span>
+                </div>
+                <div class="order-row">
+                    <span class="order-label">Token 数量</span>
+                    <span class="order-value">2,000,000</span>
+                </div>
+                <div class="order-row">
+                    <span class="order-label">支付金额</span>
+                    <span class="order-value" style="color: var(--success);">¥299.00</span>
+                </div>
+                <div class="order-row">
+                    <span class="order-label">支付时间</span>
+                    <span class="order-value">2026-04-10 13:05:28</span>
+                </div>
+            </div>
+            
+            <div class="result-actions">
+                <a href="user.html" class="btn btn-primary">查看订单</a>
+                <a href="index.html" class="btn btn-outline">返回首页</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
+            <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
+                <div class="footer-section">
+                    <div class="footer-section-title">产品服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="rental.html">设备租赁</a></li>
+                        <li><a href="token.html">Token 工厂</a></li>
+                        <li><a href="services.html">AI 技术服务</a></li>
+                        <li><a href="community.html">OPC 社区</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">用户服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="user.html">用户中心</a></li>
+                        <li><a href="enterprise.html">企业后台</a></li>
+                        <li><a href="affiliate.html">分销合作</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">支持</div>
+                    <ul class="footer-section-links">
+                        <li><a href="help.html">产品文档</a></li>
+                        <li><a href="#">价格方案</a></li>
+                        <li><a href="#">关于我们</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-copy">© 2024 AI 租易用。All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        // 从 URL 参数获取支付结果
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        const orderNo = urlParams.get('orderNo');
+        
+        if (status === 'failed') {
+            document.querySelector('.result-icon').className = 'result-icon error';
+            document.querySelector('.result-icon').textContent = '❌';
+            document.querySelector('.result-title').className = 'result-title error';
+            document.querySelector('.result-title').textContent = '支付失败';
+            document.querySelector('.result-message').textContent = '支付未能完成，请检查账户余额或稍后重试。如有问题请联系客服。';
+            
+            const actionBtn = document.querySelector('.btn-primary');
+            if (actionBtn) {
+                actionBtn.textContent = '重新支付';
+                actionBtn.href = '#';
+                actionBtn.onclick = function() {
+                    // 重新支付逻辑
+                    alert('即将跳转到重新支付页面...');
+                };
+            }
+        }
+        
+        // 实际应用中，这里应该从后端获取订单详情
+        // 以下为示例数据，实际使用时需要替换为真实数据
+        if (orderNo) {
+            document.querySelector('.order-row:nth-child(1) .order-value').textContent = orderNo;
+        }
+    </script>
+</body>
+</html>

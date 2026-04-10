@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 租易用 - 企业级 AI 能力租赁平台</title>
+    <title>AI 租易用 - 企业级 AI 能力opc社区平台</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -62,7 +62,9 @@
             text-decoration: none;
         }
         
-        .nav-container { display: flex; align-items: center; gap: 2.5rem; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
         
         .nav-links { display: flex; gap: 0.5rem; list-style: none; }
         
@@ -299,6 +301,8 @@
             background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
         }
         
         .footer-links { display: flex; gap: 2rem; list-style: none; flex-wrap: wrap; }
@@ -334,7 +338,7 @@
         
         .footer-links a:hover { color: var(--text-light); }
         
-        .footer-copy { color: var(--text-muted); font-size: 0.875rem; }
+        .footer-copy { color: var(--text-muted); font-size: 0.875rem; text-align: center; width: 100%; margin-top: 2rem; }
         
         .mobile-toggle { display: none; flex-direction: column; gap: 6px; cursor: pointer; }
         
@@ -364,6 +368,48 @@
             text-decoration: none;
             padding: 0.875rem 1rem;
             border-radius: 10px;
+        }
+        
+        /* Notification Icon */
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .notification-icon:hover {
+            background: rgba(14, 165, 233, 0.1);
+        }
+        
+        .notification-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: var(--text-light);
+            stroke-width: 2;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+        
+        .notification-badge.hidden {
+            display: none;
         }
         
         @media (max-width: 768px) {
@@ -736,18 +782,30 @@
 </head>
 <body>
     <nav class="navbar">
-        <a href="#" class="logo">🚀 AI 租易用</a>
+        <div class="nav-logo-wrapper">
+            <a href="index.html" class="logo">🚀 AI 租易用</a>
+        </div>
         <div class="nav-container">
             <ul class="nav-links">
-                <li><a href="pages/rental/index.html">设备租赁</a></li>
-                <li><a href="pages/compute/index.html">算力套餐</a></li>
-                <li><a href="pages/ai-custom.html">AI 定制开发</a></li>
-                <li><a href="pages/forum.html">学习论坛</a></li>
+                <li><a href="rental.html">设备租赁</a></li>
+                <li><a href="token.html">Token 工厂</a></li>
+                <li><a href="services.html">AI 技术服务</a></li>
+                <li><a href="community.html">OPC 社区</a></li>
             </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <!-- Notification Icon -->
+            <div class="notification-icon" onclick="location.href='notification.html'" title="消息通知" style="position:relative;cursor:pointer;padding:0.5rem;border-radius:8px;transition:background 0.3s;margin-right:0.75rem;display:inline-flex;vertical-align:middle;">
+                <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--text-light);stroke-width:2;">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span class="notification-badge" id="navbarUnreadBadge" style="position:absolute;top:2px;right:2px;background:var(--danger);color:white;font-size:0.7rem;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;">0</span>
+            </div>
             <!-- Login button (shown when not logged in) -->
-            <button class="btn btn-primary" id="loginBtn" onclick="openLoginModal()">登录/注册</button>
+            <button class="btn btn-primary" id="loginBtn" onclick="openLoginModal()">登录 / 注册</button>
             <!-- User menu (shown when logged in) -->
-            <div class="user-menu" id="userMenu">
+            <div class="user-menu" id="userMenu" style="display: none;">
                 <div class="user-btn" onclick="toggleUserDropdown()">
                     <div class="user-avatar" id="userAvatar">U</div>
                     <span id="userName">用户</span>
@@ -756,6 +814,9 @@
                 <div class="user-dropdown" id="userDropdown">
                     <a href="#" class="dropdown-item" onclick="openUserCenter()">
                         <span>👤</span> 用户中心
+                    </a>
+                    <a href="notification.html" class="dropdown-item">
+                        <span>🔔</span> 消息通知
                     </a>
                     <div class="dropdown-divider"></div>
                     <a href="#" class="dropdown-item" onclick="logout()">
@@ -770,11 +831,12 @@
     </nav>
     
     <div class="mobile-menu" id="mobileMenu">
-        <a href="pages/rental/index.html">设备租赁</a>
-        <a href="pages/compute/index.html">算力套餐</a>
-        <a href="pages/ai-custom.html">AI 定制开发</a>
-        <a href="pages/forum.html">学习论坛</a>
-        <button class="btn btn-primary" id="mobileLoginBtn" onclick="openLoginModal()" style="margin-top:0.75rem;">登录/注册</button>
+        <a href="rental.html">设备租赁</a>
+        <a href="token.html">Token 工厂</a>
+        <a href="services.html">AI 技术服务</a>
+        <a href="community.html">OPC 社区</a>
+        <a href="notification.html" style="color: var(--primary);">🔔 消息通知</a>
+        <button class="btn btn-primary" id="mobileLoginBtn" onclick="openLoginModal()" style="margin-top:0.75rem;">登录 / 注册</button>
         <div class="user-menu" id="mobileUserMenu" style="display: none; margin-top: 0.75rem;">
             <div class="user-btn" onclick="toggleMobileUserDropdown()" style="width: 100%; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -889,7 +951,23 @@
                 currentUser = JSON.parse(savedUser);
                 updateUIForLoggedInUser();
             }
+            updateUnreadBadge();
         });
+
+        // Update unread notification badge
+        function updateUnreadBadge() {
+            const notifications = JSON.parse(localStorage.getItem('aiZuyiyongNotifications') || '[]');
+            const unreadCount = notifications.filter(n => !n.read).length;
+            const badge = document.getElementById('navbarUnreadBadge');
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
 
         // Login Modal functions
         function openLoginModal() {
@@ -1009,8 +1087,13 @@
             if (!currentUser) return;
 
             // Desktop nav
-            document.getElementById('loginBtn').style.display = 'none';
-            document.getElementById('userMenu').classList.add('active');
+            const loginBtn = document.getElementById('loginBtn');
+            const userMenu = document.getElementById('userMenu');
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (userMenu) {
+                userMenu.style.display = 'block';
+                userMenu.classList.add('active');
+            }
             document.getElementById('userAvatar').textContent = currentUser.avatar || 'U';
             document.getElementById('userName').textContent = currentUser.name;
 
@@ -1063,8 +1146,13 @@
             localStorage.removeItem('aiZuyiyongUser');
             
             // Desktop nav
-            document.getElementById('loginBtn').style.display = 'inline-flex';
-            document.getElementById('userMenu').classList.remove('active');
+            const loginBtn = document.getElementById('loginBtn');
+            const userMenu = document.getElementById('userMenu');
+            if (loginBtn) loginBtn.style.display = 'inline-flex';
+            if (userMenu) {
+                userMenu.style.display = 'none';
+                userMenu.classList.remove('active');
+            }
             
             // Mobile nav
             document.getElementById('mobileLoginBtn').style.display = 'block';
@@ -1090,12 +1178,12 @@
 
     <section class="hero">
         <div class="hero-content">
-            <span class="hero-badge">🎉 新用户专享 · 首月 5 折优惠</span>
-            <h1>让 AI 能力<span class="highlight">像水电一样即开即用</span></h1>
+            <span class="hero-badge">🎉 新用户专享 · 7天免费试用</span>
+            <h1>让 AI 智能员工<span class="highlight">帮企业降本增效</span></h1>
             <p>无需高昂硬件投入，无需专业技术团队。AI 租易用提供企业级 AI 能力租赁服务，按需付费、弹性伸缩，让企业和个人开发者轻松拥有顶尖 AI 能力。</p>
             <div class="hero-cta">
-                <a href="#contact" class="btn btn-primary">立即免费试用 →</a>
-                <a href="#services" class="btn btn-outline">了解产品服务</a>
+                <a href="#contact" class="btn btn-primary">咨询专业客服 →</a>
+                <a href="#services" class="btn btn-outline">立即选购机型</a>
             </div>
             <div class="hero-stats">
                 <div class="stat-item"><div class="stat-number">5000+</div><div class="stat-label">企业客户</div></div>
@@ -1109,7 +1197,7 @@
     <section class="services" id="services">
         <div class="section-header">
             <span class="section-tag">PRODUCTS & SERVICES</span>
-            <h2 class="section-title">全方位 AI 能力租赁</h2>
+            <h2 class="section-title">全方位 AI 能力享用</h2>
             <p class="section-desc">按需选择，灵活配置，只为真正需要的能力付费</p>
         </div>
         <div class="services-grid">
@@ -1150,28 +1238,23 @@
         <div class="section-header">
             <span class="section-tag">WHY CHOOSE US</span>
             <h2 class="section-title">为什么选择 AI 租易用</h2>
-            <p class="section-desc">我们让 AI 变得简单、可靠、触手可及</p>
+            <p class="section-desc">让 AI 变得简单、可靠、触手可及</p>
         </div>
         <div class="advantages-grid">
             <div class="advantage-item">
                 <div class="advantage-icon">💰</div>
                 <h3>成本降低 90%</h3>
-                <p>无需购买昂贵硬件，无需组建技术团队，按需付费</p>
+                <p>无需购买昂贵硬件，无需组建技术团队</p>
             </div>
             <div class="advantage-item">
                 <div class="advantage-icon">⚡</div>
                 <h3>5 分钟快速接入</h3>
-                <p>简洁 API 设计，完善文档支持，当天上线</p>
+                <p>简洁设计，预装Openclaw，上手即用</p>
             </div>
             <div class="advantage-item">
                 <div class="advantage-icon">🔒</div>
                 <h3>企业级安全</h3>
-                <p>数据加密传输，隐私合规认证，安全无忧</p>
-            </div>
-            <div class="advantage-item">
-                <div class="advantage-icon">📈</div>
-                <h3>弹性伸缩</h3>
-                <p>业务高峰自动扩容，按实际使用量计费</p>
+                <p>本地部署，数据隔离加密，安全无忧</p>
             </div>
         </div>
     </section>
@@ -1179,33 +1262,42 @@
     <section class="cta" id="contact">
         <div class="cta-box">
             <h2>准备好开启 AI 之旅了吗？</h2>
-            <p>立即注册，享受首月 5 折优惠，专业技术团队全程支持</p>
+            <p>立即注册，享受7天免费试用，专业技术团队全程支持</p>
             <form class="cta-form">
                 <input type="email" class="cta-input" placeholder="输入您的邮箱地址" required>
-                <button type="submit" class="btn btn-primary">免费试用</button>
+                <button type="submit" class="btn btn-primary">即刻预约</button>
             </form>
         </div>
     </section>
 
     <footer class="footer">
         <div class="footer-content">
-            <div class="footer-logo">🚀 AI 租易用</div>
+            <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
             <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
                 <div class="footer-section">
-                    <div class="footer-section-title">快速链接</div>
+                    <div class="footer-section-title">产品服务</div>
                     <ul class="footer-section-links">
-                        <li><a href="#">产品文档</a></li>
-                        <li><a href="#">价格方案</a></li>
-                        <li><a href="#">关于我们</a></li>
-                        <li><a href="#">联系我们</a></li>
+                        <li><a href="rental.html">设备租赁</a></li>
+                <li><a href="token.html">Token 工厂</a></li>
+                        <li><a href="services.html">AI 技术服务</a></li>
+                        <li><a href="community.html">OPC 社区</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <div class="footer-section-title">用户服务</div>
                     <ul class="footer-section-links">
-                        <li><a href="#">用户中心</a></li>
-                        <li><a href="#">分销合作</a></li>
-                        <li><a href="#">分销后台</a></li>
+                        <li><a href="user.html">用户中心</a></li>
+                        
+                        <li><a href="affiliate.html">分销合作</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">支持</div>
+                    <ul class="footer-section-links">
+                        <li><a href="#">产品文档</a></li>
+                        <li><a href="#">价格方案</a></li>
+                        <li><a href="#">关于我们</a></li>
+                        <li><a href="#">联系我们</a></li>
                     </ul>
                 </div>
             </div>

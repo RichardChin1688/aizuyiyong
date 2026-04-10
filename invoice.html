@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发票管理 - AI 租易用 | 申请和管理电子发票</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #0EA5E9;
+      --primary-dark: #0C4A6E;
+      --accent: #F59E0B;
+      --bg-dark: #0B1120;
+      --bg-card: #1E293B;
+      --text-light: #F1F5F9;
+      --text-muted: #94A3B8;
+      --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+    
+    body {
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.7;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 5%;
+      background: rgba(11, 17, 32, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .nav-logo-wrapper { position: absolute; left: 5%; }
+    .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+    .nav-right-wrapper { position: absolute; right: 5%; }
+    
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+    
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text-light);
+      background: rgba(14, 165, 233, 0.12);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+    }
+    
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+    
+    /* Page Hero */
+    .page-hero {
+      padding: 10rem 5% 2rem;
+      text-align: center;
+    }
+    
+    .page-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    
+    .breadcrumb {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    
+    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--primary); }
+    
+    /* Main Container */
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 5%;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+    }
+    
+    /* Content Card */
+    .content-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    .form-label .required {
+      color: var(--danger);
+      margin-left: 0.25rem;
+    }
+    
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 0.875rem 1.125rem;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.03);
+      color: var(--text-light);
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .form-select {
+      cursor: pointer;
+    }
+    
+    .form-select option {
+      background: var(--bg-card);
+      color: var(--text-light);
+    }
+    
+    .form-hint {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    
+    /* Order Selection */
+    .order-select-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .order-select-item:hover {
+      border-color: var(--primary);
+      background: rgba(14, 165, 233, 0.05);
+    }
+    
+    .order-select-item.selected {
+      border-color: var(--primary);
+      background: rgba(14, 165, 233, 0.1);
+    }
+    
+    .order-select-item input[type="radio"] {
+      margin-right: 1rem;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+    
+    .order-info {
+      flex: 1;
+    }
+    
+    .order-number {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .order-detail {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    .order-amount {
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    /* Invoice Type Tabs */
+    .invoice-type-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .type-tab {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    
+    .type-tab:hover {
+      border-color: var(--primary);
+      color: var(--text-light);
+    }
+    
+    .type-tab.active {
+      border-color: var(--primary);
+      background: rgba(14, 165, 233, 0.1);
+      color: var(--primary);
+    }
+    
+    /* Status Badge */
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .status-badge.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    
+    .status-badge.issued {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .status-badge.mailed {
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--primary);
+    }
+    
+    /* Invoice Table */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table th,
+    .data-table td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+    }
+    
+    .data-table th {
+      background: rgba(255,255,255,0.02);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    
+    .data-table td {
+      border-top: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9rem;
+    }
+    
+    .data-table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+    
+    /* Action Buttons */
+    .action-btns {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .btn-download {
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .btn-download:hover {
+      background: rgba(16, 185, 129, 0.25);
+    }
+    
+    .btn-view {
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--primary);
+      border: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .btn-view:hover {
+      background: rgba(14, 165, 233, 0.25);
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    /* Info Box */
+    .info-box {
+      background: rgba(14, 165, 233, 0.08);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    
+    .info-box-title {
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .info-box-content {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    
+    .info-box ul {
+      margin-top: 0.75rem;
+      padding-left: 1.25rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      line-height: 1.8;
+    }
+    
+    /* Stats */
+    .invoice-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    
+    .stat-item {
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 1.25rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-value.pending { color: var(--warning); }
+    .stat-value.issued { color: var(--success); }
+    .stat-value.mailed { color: var(--primary); }
+    
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    
+    /* Footer */
+    .footer {
+      padding: 4rem 5% 3rem;
+      background: #0B1120;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+      width: 100%;
+      margin-top: 2rem;
+    }
+    
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .main-container { grid-template-columns: 1fr; }
+      .sidebar { order: -1; }
+    }
+    
+    @media (max-width: 480px) {
+      .invoice-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-logo-wrapper">
+      <a href="index.html" class="logo">AI 租易用</a>
+    </div>
+    <div class="nav-container">
+      <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="services.html">服务</a></li>
+        <li><a href="rental.html">租赁</a></li>
+        <li><a href="about.html">关于我们</a></li>
+        <li><a href="help.html">帮助中心</a></li>
+      </ul>
+    </div>
+    <div class="nav-right-wrapper">
+      <a href="user.html" class="btn btn-primary">用户中心</a>
+    </div>
+  </nav>
+
+  <!-- Page Hero -->
+  <section class="page-hero">
+    <div class="breadcrumb">
+      <a href="index.html">首页</a>
+      <span>/</span>
+      <a href="user.html">用户中心</a>
+      <span>/</span>
+      <span>发票管理</span>
+    </div>
+    <h1>📄 发票管理</h1>
+    <p>申请电子发票，查看开票记录</p>
+  </section>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Invoice Application Form -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">📝 发票申请</h2>
+        </div>
+        <div class="card-body">
+          <!-- Invoice Type Selection -->
+          <div class="invoice-type-tabs">
+            <button class="type-tab active" onclick="selectInvoiceType('electronic')">
+              📧 电子发票
+            </button>
+            <button class="type-tab" onclick="selectInvoiceType('paper')">
+              📮 纸质发票
+            </button>
+          </div>
+
+          <form id="invoiceForm">
+            <!-- Order Selection -->
+            <div class="form-group">
+              <label class="form-label">选择订单 <span class="required">*</span></label>
+              <div class="order-select-list">
+                <label class="order-select-item">
+                  <input type="radio" name="orderId" value="ORD-2026040801">
+                  <div class="order-info">
+                    <div class="order-number">ORD-2026040801</div>
+                    <div class="order-detail">设备租赁服务 | 2026-04-05</div>
+                  </div>
+                  <div class="order-amount">¥897.00</div>
+                </label>
+                <label class="order-select-item">
+                  <input type="radio" name="orderId" value="ORD-2026040302">
+                  <div class="order-info">
+                    <div class="order-number">ORD-2026040302</div>
+                    <div class="order-detail">算力充值服务 | 2026-04-03</div>
+                  </div>
+                  <div class="order-amount">¥299.00</div>
+                </label>
+                <label class="order-select-item">
+                  <input type="radio" name="orderId" value="ORD-2026040101">
+                  <div class="order-info">
+                    <div class="order-number">ORD-2026040101</div>
+                    <div class="order-detail">设备租赁服务 | 2026-04-01</div>
+                  </div>
+                  <div class="order-amount">¥599.00</div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Invoice Title Type -->
+            <div class="form-group">
+              <label class="form-label">发票类型 <span class="required">*</span></label>
+              <select class="form-select" id="invoiceType" required>
+                <option value="">请选择发票类型</option>
+                <option value="personal">个人发票</option>
+                <option value="company">企业发票</option>
+              </select>
+            </div>
+
+            <!-- Invoice Title -->
+            <div class="form-group">
+              <label class="form-label">发票抬头 <span class="required">*</span></label>
+              <input type="text" class="form-input" id="invoiceTitle" placeholder="请输入发票抬头" required>
+              <div class="form-hint">个人发票填写姓名，企业发票填写公司全称</div>
+            </div>
+
+            <!-- Tax ID (for company) -->
+            <div class="form-group" id="taxIdGroup" style="display: none;">
+              <label class="form-label">纳税人识别号 <span class="required">*</span></label>
+              <input type="text" class="form-input" id="taxId" placeholder="请输入纳税人识别号（统一社会信用代码）">
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label class="form-label">接收邮箱 <span class="required">*</span></label>
+              <input type="email" class="form-input" id="email" placeholder="请输入接收发票的邮箱" required>
+              <div class="form-hint">电子发票将发送至此邮箱</div>
+            </div>
+
+            <!-- Phone -->
+            <div class="form-group">
+              <label class="form-label">手机号码 <span class="required">*</span></label>
+              <input type="tel" class="form-input" id="phone" placeholder="请输入手机号码" required>
+            </div>
+
+            <!-- Address (for paper invoice) -->
+            <div class="form-group" id="addressGroup" style="display: none;">
+              <label class="form-label">邮寄地址 <span class="required">*</span></label>
+              <input type="text" class="form-input" id="address" placeholder="请输入详细邮寄地址">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              提交发票申请
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Invoice History -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">📋 发票历史记录</h2>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>发票号码</th>
+                <th>订单号</th>
+                <th>金额</th>
+                <th>类型</th>
+                <th>状态</th>
+                <th>申请日期</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>INV-2026040501</td>
+                <td>ORD-2026040101</td>
+                <td>¥599.00</td>
+                <td>电子发票</td>
+                <td><span class="status-badge mailed">已邮寄</span></td>
+                <td>2026-04-02</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-download">⬇️ 下载</button>
+                    <button class="btn-view">查看</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>INV-2026032801</td>
+                <td>ORD-2026031502</td>
+                <td>¥1,299.00</td>
+                <td>电子发票</td>
+                <td><span class="status-badge issued">已开具</span></td>
+                <td>2026-03-28</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-download">⬇️ 下载</button>
+                    <button class="btn-view">查看</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>INV-2026032001</td>
+                <td>ORD-2026031801</td>
+                <td>¥450.00</td>
+                <td>电子发票</td>
+                <td><span class="status-badge pending">待开具</span></td>
+                <td>2026-03-20</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-view">查看</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Invoice Stats -->
+      <div class="invoice-stats">
+        <div class="stat-item">
+          <div class="stat-value pending">2</div>
+          <div class="stat-label">待开具</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value issued">5</div>
+          <div class="stat-label">已开具</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value mailed">8</div>
+          <div class="stat-label">已邮寄</div>
+        </div>
+      </div>
+
+      <!-- Info Box -->
+      <div class="info-box">
+        <div class="info-box-title">
+          💡 发票须知
+        </div>
+        <div class="info-box-content">
+          <p>电子发票将在 1-3 个工作日内开具并发送至您的邮箱。</p>
+          <ul>
+            <li>电子发票与纸质发票具有同等法律效力</li>
+            <li>发票一经开具，不支持修改或重开</li>
+            <li>请确保填写的抬头和税号准确无误</li>
+            <li>纸质发票将在 5-7 个工作日内寄出</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="info-box">
+        <div class="info-box-title">
+          📞 需要帮助？
+        </div>
+        <div class="info-box-content">
+          <p>如有发票相关问题，请联系客服：</p>
+          <ul>
+            <li>在线客服：帮助中心</li>
+            <li>邮箱：invoice@aizuyiyong.com</li>
+            <li>电话：400-123-4567</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <a href="index.html" class="footer-logo">AI 租易用</a>
+      <div class="footer-copy">
+        © 2026 AI 租易用。All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Invoice type selection
+    function selectInvoiceType(type) {
+      document.querySelectorAll('.type-tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      const addressGroup = document.getElementById('addressGroup');
+      if (type === 'paper') {
+        addressGroup.style.display = 'block';
+      } else {
+        addressGroup.style.display = 'none';
+      }
+    }
+
+    // Invoice type change (personal/company)
+    document.getElementById('invoiceType').addEventListener('change', function() {
+      const taxIdGroup = document.getElementById('taxIdGroup');
+      const taxIdInput = document.getElementById('taxId');
+      
+      if (this.value === 'company') {
+        taxIdGroup.style.display = 'block';
+        taxIdInput.required = true;
+      } else {
+        taxIdGroup.style.display = 'none';
+        taxIdInput.required = false;
+      }
+    });
+
+    // Order selection
+    document.querySelectorAll('.order-select-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.order-select-item').forEach(i => i.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+
+    // Form submission
+    document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Validate order selection
+      const selectedOrder = document.querySelector('input[name="orderId"]:checked');
+      if (!selectedOrder) {
+        alert('请选择要开具发票的订单');
+        return;
+      }
+      
+      // Validate form
+      const invoiceType = document.getElementById('invoiceType').value;
+      if (!invoiceType) {
+        alert('请选择发票类型');
+        return;
+      }
+      
+      const invoiceTitle = document.getElementById('invoiceTitle').value;
+      if (!invoiceTitle) {
+        alert('请填写发票抬头');
+        return;
+      }
+      
+      if (invoiceType === 'company') {
+        const taxId = document.getElementById('taxId').value;
+        if (!taxId) {
+          alert('请填写纳税人识别号');
+          return;
+        }
+      }
+      
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      
+      if (!email || !phone) {
+        alert('请填写邮箱和手机号码');
+        return;
+      }
+      
+      // Success
+      alert('✅ 发票申请提交成功！\n\n我们将在 1-3 个工作日内处理您的申请，电子发票将发送至：' + email);
+      this.reset();
+      document.querySelectorAll('.order-select-item').forEach(i => i.classList.remove('selected'));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员后台 - AI 租易用</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        .admin-layout {
+            min-height: 100vh;
+            padding-top: 72px;
+        }
+        
+        .admin-sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            padding: 2rem 1.5rem;
+            position: fixed;
+            top: 72px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 72px);
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .admin-menu {
+            list-style: none;
+        }
+        
+        .admin-menu-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .admin-menu-link:hover, .admin-menu-link.active {
+            background: rgba(14, 165, 233, 0.12);
+            color: var(--text-light);
+        }
+        
+        .admin-menu-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .admin-content {
+            margin-left: 260px;
+            padding: 2rem 5%;
+            max-width: calc(100% - 260px);
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 1.5rem;
+        }
+        
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-card-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .stat-card-trend {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .stat-card-trend.up { color: var(--success); }
+        .stat-card-trend.down { color: var(--danger); }
+        
+        .content-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .data-table tr:hover {
+            background: rgba(14, 165, 233, 0.05);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .status-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .status-muted { background: rgba(100, 116, 139, 0.15); color: #64748B; }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .action-btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .action-btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+        
+        .action-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+        
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-layout { grid-template-columns: 1fr; }
+            .admin-sidebar { display: none; }
+            .admin-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .nav-container { display: none; }
+        }
+        
+        /* 单页切换样式 */
+        .admin-section {
+            display: none;
+        }
+        
+        .admin-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo-wrapper">
+            <a href="index.html" class="logo">🚀 AI 租易用</a>
+        </div>
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="rental.html">设备租赁</a></li>
+                <li><a href="token.html">Token 工厂</a></li>
+                <li><a href="services.html">AI 技术服务</a></li>
+                <li><a href="community.html">OPC 社区</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <a href="user.html" class="btn btn-primary">用户中心</a>
+        </div>
+    </nav>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <ul class="admin-menu">
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link active" data-section="dashboard">
+                        <span class="admin-menu-icon">📊</span>
+                        <span>数据概览</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link" data-section="users">
+                        <span class="admin-menu-icon">👥</span>
+                        <span>用户管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link" data-section="devices">
+                        <span class="admin-menu-icon">💻</span>
+                        <span>设备管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link" data-section="orders">
+                        <span class="admin-menu-icon">📦</span>
+                        <span>订单管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link" data-section="token">
+                        <span class="admin-menu-icon">🎫</span>
+                        <span>Token 管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link" data-section="finance">
+                        <span class="admin-menu-icon">💰</span>
+                        <span>财务管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link" data-section="content">
+                        <span class="admin-menu-icon">📝</span>
+                        <span>内容审核</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link" data-section="settings">
+                        <span class="admin-menu-icon">⚙️</span>
+                        <span>系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="admin-content">
+            <!-- 数据概览 -->
+            <div class="admin-section active" data-section="dashboard">
+                <div class="page-header">
+                    <h1 class="page-title">📊 数据概览</h1>
+                    <p class="page-subtitle">欢迎回来，管理员！以下是平台今日数据。</p>
+                </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">12,846</div>
+                            <div class="stat-card-label">总用户数</div>
+                        </div>
+                        <div class="stat-card-icon">👥</div>
+                    </div>
+                    <div class="stat-card-trend up">↑ 12.5% 较上月</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">¥284,520</div>
+                            <div class="stat-card-label">本月收入</div>
+                        </div>
+                        <div class="stat-card-icon">💰</div>
+                    </div>
+                    <div class="stat-card-trend up">↑ 8.3% 较上月</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">1,247</div>
+                            <div class="stat-card-label">在租设备</div>
+                        </div>
+                        <div class="stat-card-icon">💻</div>
+                    </div>
+                    <div class="stat-card-trend up">↑ 5.2% 较上月</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">85.3M</div>
+                            <div class="stat-card-label">Token 销量</div>
+                        </div>
+                        <div class="stat-card-icon">🎫</div>
+                    </div>
+                    <div class="stat-card-trend down">↓ 2.1% 较上月</div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">📦 最近订单</h2>
+                    <a href="#" class="action-btn action-btn-primary">查看全部</a>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>订单号</th>
+                            <th>用户</th>
+                            <th>类型</th>
+                            <th>金额</th>
+                            <th>状态</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ORD20260410001</td>
+                            <td>张**</td>
+                            <td>设备租赁</td>
+                            <td>¥1,299</td>
+                            <td><span class="status-badge status-success">已完成</span></td>
+                            <td>2026-04-10 13:28</td>
+                            <td><a href="#" class="action-btn action-btn-primary">详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>ORD20260410002</td>
+                            <td>李**</td>
+                            <td>Token 充值</td>
+                            <td>¥299</td>
+                            <td><span class="status-badge status-warning">待审核</span></td>
+                            <td>2026-04-10 13:15</td>
+                            <td><a href="#" class="action-btn action-btn-primary">审核</a></td>
+                        </tr>
+                        <tr>
+                            <td>ORD20260410003</td>
+                            <td>王**</td>
+                            <td>设备租赁</td>
+                            <td>¥2,580</td>
+                            <td><span class="status-badge status-success">已完成</span></td>
+                            <td>2026-04-10 12:45</td>
+                            <td><a href="#" class="action-btn action-btn-primary">详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>ORD20260410004</td>
+                            <td>赵**</td>
+                            <td>Token 充值</td>
+                            <td>¥999</td>
+                            <td><span class="status-badge status-muted">待支付</span></td>
+                            <td>2026-04-10 11:30</td>
+                            <td><a href="#" class="action-btn action-btn-primary">详情</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">👥 待审核认证</h2>
+                    <a href="#" class="action-btn action-btn-primary">全部审核</a>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>用户</th>
+                            <th>类型</th>
+                            <th>提交时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>138****1234</td>
+                            <td>个人认证</td>
+                            <td>2026-04-10 10:23</td>
+                            <td><span class="status-badge status-warning">待审核</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">通过</a>
+                                <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;">拒绝</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>深圳 XX 科技有限公司</td>
+                            <td>企业认证</td>
+                            <td>2026-04-10 09:15</td>
+                            <td><span class="status-badge status-warning">待审核</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">通过</a>
+                                <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;">拒绝</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">📝 待审核内容</h2>
+                    <a href="#" class="action-btn action-btn-primary">全部审核</a>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>标题</th>
+                            <th>用户</th>
+                            <th>提交时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>论坛帖子</td>
+                            <td>OpenClaw 部署教程分享</td>
+                            <td>用户 12345</td>
+                            <td>2026-04-10 11:45</td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">通过</a>
+                                <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;">删除</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>论坛帖子</td>
+                            <td>AI 设备租赁体验报告</td>
+                            <td>用户 67890</td>
+                            <td>2026-04-10 10:20</td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">通过</a>
+                                <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <!-- 用户管理 -->
+        <main class="admin-content admin-section" data-section="users">
+            <div class="page-header">
+                <h1 class="page-title">👥 用户管理</h1>
+                <p class="page-subtitle">管理所有注册用户，审核认证信息</p>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">用户列表</h2>
+                    <input type="text" placeholder="搜索用户..." style="padding: 0.6rem 1rem; border-radius: 8px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light);">
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户</th>
+                            <th>类型</th>
+                            <th>注册时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1001</td>
+                            <td>张三</td>
+                            <td>个人用户</td>
+                            <td>2026-04-08</td>
+                            <td><span class="status-badge status-success">正常</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">查看</a>
+                                <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;">禁用</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1002</td>
+                            <td>深圳 XX 科技有限公司</td>
+                            <td>企业用户</td>
+                            <td>2026-04-05</td>
+                            <td><span class="status-badge status-success">正常</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">查看</a>
+                                <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;">禁用</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <!-- 设备管理 -->
+        <main class="admin-content admin-section" data-section="devices">
+            <div class="page-header">
+                <h1 class="page-title">💻 设备管理</h1>
+                <p class="page-subtitle">管理所有可租赁设备</p>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">设备列表</h2>
+                    <button class="btn btn-primary" id="addDeviceBtn">+ 添加设备</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>设备</th>
+                            <th>型号</th>
+                            <th>库存</th>
+                            <th>日租金</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="devicesTableBody">
+                        <tr>
+                            <td>NVIDIA H100</td>
+                            <td>80GB PCIe</td>
+                            <td>50</td>
+                            <td>¥800/天</td>
+                            <td><span class="status-badge status-success">充足</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary edit-device-btn">编辑</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <!-- 订单管理 -->
+        <main class="admin-content admin-section" data-section="orders">
+            <div class="page-header">
+                <h1 class="page-title">📦 订单管理</h1>
+                <p class="page-subtitle">查看所有订单，处理售后</p>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">订单列表</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>订单号</th>
+                            <th>用户</th>
+                            <th>商品</th>
+                            <th>金额</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#ORD-20260410-001</td>
+                            <td>张三</td>
+                            <td>NVIDIA H100 × 2</td>
+                            <td>¥4,800</td>
+                            <td><span class="status-badge status-success">进行中</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">详情</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <!-- Token 管理 -->
+        <main class="admin-content admin-section" data-section="token">
+            <div class="page-header">
+                <h1 class="page-title">🎫 Token 管理</h1>
+                <p class="page-subtitle">管理 Token 套餐和价格</p>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Token 套餐</h2>
+                    <button class="btn btn-primary" id="addTokenBtn">+ 添加套餐</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>套餐名称</th>
+                            <th>Token 数量</th>
+                            <th>价格</th>
+                            <th>销量</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tokenTableBody">
+                        <tr>
+                            <td>体验版</td>
+                            <td>10 万</td>
+                            <td>¥99</td>
+                            <td>1,234</td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary edit-token-btn">编辑</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <!-- 财务管理 -->
+        <main class="admin-content admin-section" data-section="finance">
+            <div class="page-header">
+                <h1 class="page-title">💰 财务管理</h1>
+                <p class="page-subtitle">查看收入、支出和提现记录</p>
+            </div>
+            
+            <div class="content-section">
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-card-value">¥284,520</div>
+                        <div class="stat-card-label">本月收入</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value">¥45,230</div>
+                        <div class="stat-card-label">本月支出</div>
+                    </div>
+                </div>
+                <div class="section-header">
+                    <h2 class="section-title">收支明细</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>金额</th>
+                            <th>时间</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>收入 - 设备租赁</td>
+                            <td style="color: var(--success);">+¥4,800</td>
+                            <td>2026-04-10 14:00</td>
+                            <td>订单 #ORD-20260410-001</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <!-- 内容审核 -->
+        <main class="admin-content admin-section" data-section="content">
+            <div class="page-header">
+                <h1 class="page-title">📝 内容审核</h1>
+                <p class="page-subtitle">审核社区内容和评论</p>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">待审核内容</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>内容</th>
+                            <th>用户</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>社区帖子</td>
+                            <td>如何使用 H100 进行大模型训练...</td>
+                            <td>李四</td>
+                            <td>2026-04-10 13:00</td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">通过</a>
+                                <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;">拒绝</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <!-- 系统设置 -->
+        <main class="admin-content admin-section" data-section="settings">
+            <div class="page-header">
+                <h1 class="page-title">⚙️ 系统设置</h1>
+                <p class="page-subtitle">配置平台参数和权限</p>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">基本设置</h2>
+                </div>
+                <div style="display: grid; gap: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">网站名称</label>
+                        <input type="text" value="AI 租易用" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light);">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">客服邮箱</label>
+                        <input type="email" value="contact@ai-zuyiyong.com" style="width: 100%; padding: 0.875rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: var(--bg-dark); color: var(--text-light);">
+                    </div>
+                    <button class="btn btn-primary" style="width: fit-content;">保存设置</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 单页切换逻辑
+        document.querySelectorAll('.admin-menu-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 移除所有菜单的 active 状态
+                document.querySelectorAll('.admin-menu-link').forEach(l => l.classList.remove('active'));
+                
+                // 添加当前菜单的 active 状态
+                this.classList.add('active');
+                
+                // 获取目标 section
+                const targetSection = this.getAttribute('data-section');
+                
+                // 隐藏所有 section
+                document.querySelectorAll('.admin-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // 显示目标 section
+                const targetElement = document.querySelector(`.admin-section[data-section="${targetSection}"]`);
+                if (targetElement) {
+                    targetElement.classList.add('active');
+                }
+            });
+        });
+        
+        // ========== 设备管理功能 ==========
+        const addDeviceBtn = document.getElementById('addDeviceBtn');
+        const devicesTableBody = document.getElementById('devicesTableBody');
+        
+        if (addDeviceBtn && devicesTableBody) {
+            addDeviceBtn.addEventListener('click', function() {
+                const newRow = document.createElement('tr');
+                newRow.className = 'editing-row';
+                newRow.innerHTML = `
+                    <td><input type="text" class="edit-input" placeholder="设备名称" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="text" class="edit-input" placeholder="型号" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="number" class="edit-input" placeholder="库存" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="text" class="edit-input" placeholder="日租金" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><span class="status-badge status-success">充足</span></td>
+                    <td>
+                        <a href="#" class="action-btn action-btn-primary save-device-btn">保存</a>
+                        <a href="#" class="action-btn action-btn-danger delete-device-btn" style="margin-left:0.5rem;">删除</a>
+                    </td>
+                `;
+                devicesTableBody.appendChild(newRow);
+                
+                // 聚焦到第一个输入框
+                newRow.querySelector('.edit-input').focus();
+            });
+            
+            // 保存设备
+            devicesTableBody.addEventListener('click', function(e) {
+                if (e.target.classList.contains('save-device-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    const inputs = row.querySelectorAll('.edit-input');
+                    const deviceName = inputs[0].value.trim();
+                    const model = inputs[1].value.trim();
+                    const stock = inputs[2].value.trim();
+                    const price = inputs[3].value.trim();
+                    
+                    if (!deviceName || !model || !stock || !price) {
+                        alert('请填写完整信息！');
+                        return;
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${deviceName}</td>
+                        <td>${model}</td>
+                        <td>${stock}</td>
+                        <td>${price}</td>
+                        <td><span class="status-badge status-success">充足</span></td>
+                        <td>
+                            <a href="#" class="action-btn action-btn-primary edit-device-btn">编辑</a>
+                        </td>
+                    `;
+                }
+                
+                // 删除设备
+                if (e.target.classList.contains('delete-device-btn')) {
+                    e.preventDefault();
+                    if (confirm('确定删除此行吗？')) {
+                        const row = e.target.closest('tr');
+                        row.remove();
+                    }
+                }
+                
+                // 编辑设备
+                if (e.target.classList.contains('edit-device-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    const deviceName = cells[0].textContent;
+                    const model = cells[1].textContent;
+                    const stock = cells[2].textContent;
+                    const price = cells[3].textContent;
+                    
+                    row.innerHTML = `
+                        <td><input type="text" class="edit-input" value="${deviceName}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="text" class="edit-input" value="${model}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="number" class="edit-input" value="${stock}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="text" class="edit-input" value="${price}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><span class="status-badge status-success">充足</span></td>
+                        <td>
+                            <a href="#" class="action-btn action-btn-primary save-device-btn">保存</a>
+                            <a href="#" class="action-btn action-btn-danger cancel-device-btn" style="margin-left:0.5rem;">取消</a>
+                        </td>
+                    `;
+                }
+                
+                // 取消编辑
+                if (e.target.classList.contains('cancel-device-btn')) {
+                    e.preventDefault();
+                    // 重新加载页面恢复原始数据（简化处理）
+                    location.reload();
+                }
+            });
+        }
+        
+        // ========== Token 管理功能 ==========
+        const addTokenBtn = document.getElementById('addTokenBtn');
+        const tokenTableBody = document.getElementById('tokenTableBody');
+        
+        if (addTokenBtn && tokenTableBody) {
+            addTokenBtn.addEventListener('click', function() {
+                const newRow = document.createElement('tr');
+                newRow.className = 'editing-row';
+                newRow.innerHTML = `
+                    <td><input type="text" class="edit-input" placeholder="套餐名称" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="text" class="edit-input" placeholder="Token 数量" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="text" class="edit-input" placeholder="价格" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td>0</td>
+                    <td>
+                        <a href="#" class="action-btn action-btn-primary save-token-btn">保存</a>
+                        <a href="#" class="action-btn action-btn-danger delete-token-btn" style="margin-left:0.5rem;">删除</a>
+                    </td>
+                `;
+                tokenTableBody.appendChild(newRow);
+                
+                // 聚焦到第一个输入框
+                newRow.querySelector('.edit-input').focus();
+            });
+            
+            // 保存/删除 Token 套餐
+            tokenTableBody.addEventListener('click', function(e) {
+                if (e.target.classList.contains('save-token-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    const inputs = row.querySelectorAll('.edit-input');
+                    const name = inputs[0].value.trim();
+                    const tokens = inputs[1].value.trim();
+                    const price = inputs[2].value.trim();
+                    
+                    if (!name || !tokens || !price) {
+                        alert('请填写完整信息！');
+                        return;
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${name}</td>
+                        <td>${tokens}</td>
+                        <td>${price}</td>
+                        <td>0</td>
+                        <td>
+                            <a href="#" class="action-btn action-btn-primary edit-token-btn">编辑</a>
+                        </td>
+                    `;
+                }
+                
+                // 删除 Token 套餐
+                if (e.target.classList.contains('delete-token-btn')) {
+                    e.preventDefault();
+                    if (confirm('确定删除此行吗？')) {
+                        const row = e.target.closest('tr');
+                        row.remove();
+                    }
+                }
+                
+                // 编辑 Token 套餐
+                if (e.target.classList.contains('edit-token-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    const name = cells[0].textContent;
+                    const tokens = cells[1].textContent;
+                    const price = cells[2].textContent;
+                    
+                    row.innerHTML = `
+                        <td><input type="text" class="edit-input" value="${name}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="text" class="edit-input" value="${tokens}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="text" class="edit-input" value="${price}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td>0</td>
+                        <td>
+                            <a href="#" class="action-btn action-btn-primary save-token-btn">保存</a>
+                            <a href="#" class="action-btn action-btn-danger cancel-token-btn" style="margin-left:0.5rem;">取消</a>
+                        </td>
+                    `;
+                }
+                
+                // 取消编辑
+                if (e.target.classList.contains('cancel-token-btn')) {
+                    e.preventDefault();
+                    location.reload();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

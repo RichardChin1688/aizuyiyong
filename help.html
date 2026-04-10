@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帮助中心 - AI 租易用</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        .page-hero {
+            padding: 10rem 5% 3rem;
+            text-align: center;
+        }
+        
+        .page-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .page-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-box {
+            max-width: 600px;
+            margin: 2rem auto 0;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 1.25rem 1.5rem 1.25rem 3.5rem;
+            border-radius: 16px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: var(--bg-card);
+            color: var(--text-light);
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.25rem;
+            color: var(--text-muted);
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5% 4rem;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+        
+        .category-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 2rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .category-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+        
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .category-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .faq-section {
+            margin-bottom: 3rem;
+        }
+        
+        .faq-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .faq-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .faq-question h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .faq-toggle {
+            font-size: 1.5rem;
+            color: var(--primary);
+            transition: transform 0.3s;
+        }
+        
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .contact-section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .contact-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-section p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        
+        .contact-methods {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .contact-method:hover {
+            border-color: var(--primary);
+        }
+        
+        .contact-method-icon {
+            font-size: 1.5rem;
+        }
+        
+        .footer {
+            padding: 4rem 5% 3rem;
+            background: #0B1120;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .footer-section { margin-bottom: 1.5rem; }
+        
+        .footer-section-title {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .footer-section-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        
+        .footer-section-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-section-links a:hover { color: var(--primary); }
+        
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: center;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container { display: none; }
+            .category-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo-wrapper">
+            <a href="index.html" class="logo">🚀 AI 租易用</a>
+        </div>
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="rental.html">设备租赁</a></li>
+                <li><a href="token.html">Token 工厂</a></li>
+                <li><a href="services.html">AI 技术服务</a></li>
+                <li><a href="community.html">OPC 社区</a></li>
+                <li><a href="help.html" class="active">帮助中心</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <a href="user.html" class="btn btn-primary">用户中心</a>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <h1>💬 帮助中心</h1>
+        <p>常见问题解答、使用指南，帮您快速解决问题</p>
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="搜索问题，如：如何充值 Token？">
+        </div>
+    </section>
+
+    <div class="main-container">
+        <div class="category-grid">
+            <div class="category-card">
+                <div class="category-icon">💻</div>
+                <h3 class="category-title">设备租赁</h3>
+                <p class="category-desc">租赁流程、设备选择、归还流程、损坏赔偿等问题</p>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">🎫</div>
+                <h3 class="category-title">Token 服务</h3>
+                <p class="category-desc">Token 充值、使用、计费、API 接入等问题</p>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">💳</div>
+                <h3 class="category-title">支付与发票</h3>
+                <p class="category-desc">支付方式、退款政策、发票申请等问题</p>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">🔐</div>
+                <h3 class="category-title">账户与安全</h3>
+                <p class="category-desc">账户管理、实名认证、密码找回等问题</p>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">🛠️</div>
+                <h3 class="category-title">技术服务</h3>
+                <p class="category-desc">API 文档、SDK 使用、技术问题解答</p>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">📋</div>
+                <h3 class="category-title">规则与政策</h3>
+                <p class="category-desc">服务条款、隐私政策、使用规范</p>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2 class="faq-title">❓ 常见问题</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>如何开始设备租赁？</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>1. 浏览设备租赁页面，选择您需要的设备</p>
+                        <p>2. 选择租期（日租/周租/月租/年租）</p>
+                        <p>3. 完成实名认证和信用评估</p>
+                        <p>4. 支付租金和押金（信用良好可免押）</p>
+                        <p>5. 签署电子合同，等待发货</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>Token 套餐有哪些？价格如何？</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>我们提供多种 Token 套餐：</p>
+                        <p>• 体验包：10,000 Token - ¥15（7 天有效）</p>
+                        <p>• 灵活包：100,000 Token - ¥120（30 天有效）</p>
+                        <p>• 标准包：1,000,000 Token - ¥1000（90 天有效）</p>
+                        <p>• 企业包：10,000,000 Token - ¥8000（180 天有效）</p>
+                        <p>还有月付订阅套餐，详情请查看 Token 工厂页面。</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>如何申请发票？</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>1. 登录用户中心</p>
+                        <p>2. 进入"订单管理"</p>
+                        <p>3. 找到需要开票的订单</p>
+                        <p>4. 点击"申请发票"</p>
+                        <p>5. 填写发票抬头和税号</p>
+                        <p>6. 选择电子发票或纸质发票</p>
+                        <p>电子发票将在 1-3 个工作日内发送到您的邮箱。</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>设备损坏了怎么办？</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>1. 立即联系客服报备情况</p>
+                        <p>2. 不要自行维修设备</p>
+                        <p>3. 我们将安排专业检测</p>
+                        <p>4. 根据检测结果确定赔偿金额</p>
+                        <p>5. 从押金中扣除，不足部分需补足</p>
+                        <p>正常磨损无需赔偿，人为损坏按维修费用或折旧价赔偿。</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>如何调用 Token API？</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>1. 在用户中心创建 API Key</p>
+                        <p>2. 参考 API 文档集成到您的应用</p>
+                        <p>3. 使用 OpenAI 兼容接口格式</p>
+                        <p>4. 在请求头中携带 API Key</p>
+                        <p>示例代码：</p>
+                        <pre style="background: var(--bg-dark); padding: 1rem; border-radius: 8px; margin-top: 0.5rem; overflow-x: auto;"><code>curl https://api.ai-zuyiyong.com/v1/chat/completions \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'</code></pre>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <h3>支持哪些支付方式？</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>我们支持以下支付方式：</p>
+                        <p>• 支付宝（个人/企业）</p>
+                        <p>• 微信支付</p>
+                        <p>• 企业对公转账</p>
+                        <p>• 信用卡/储蓄卡</p>
+                        <p>大额订单（超过 10000 元）支持分期付款，详情请联系客服。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <h2>还没找到答案？</h2>
+            <p>我们的客服团队随时为您服务</p>
+            <div class="contact-methods">
+                <a href="mailto:support@ai-zuyiyong.com" class="contact-method">
+                    <span class="contact-method-icon">📧</span>
+                    <span>support@ai-zuyiyong.com</span>
+                </a>
+                <a href="tel:400-123-4567" class="contact-method">
+                    <span class="contact-method-icon">📞</span>
+                    <span>400-123-4567</span>
+                </a>
+                <div class="contact-method">
+                    <span class="contact-method-icon">💬</span>
+                    <span>在线客服（9:00-18:00）</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
+            <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
+                <div class="footer-section">
+                    <div class="footer-section-title">产品服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="rental.html">设备租赁</a></li>
+                        <li><a href="token.html">Token 工厂</a></li>
+                        <li><a href="services.html">AI 技术服务</a></li>
+                        <li><a href="community.html">OPC 社区</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">用户服务</div>
+                    <ul class="footer-section-links">
+                        <li><a href="user.html">用户中心</a></li>
+                        <li><a href="enterprise.html">企业后台</a></li>
+                        <li><a href="affiliate.html">分销合作</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <div class="footer-section-title">支持</div>
+                    <ul class="footer-section-links">
+                        <li><a href="help.html">帮助中心</a></li>
+                        <li><a href="terms.html">服务条款</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-copy">© 2024 AI 租易用。All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFaq(element) {
+            const item = element.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            // 关闭所有 FAQ
+            document.querySelectorAll('.faq-item').forEach(faq => {
+                faq.classList.remove('active');
+            });
+            
+            // 如果之前不是激活状态，则打开当前
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
