@@ -1,0 +1,68 @@
+# Supabase 项目配置文件
+# AI 租易用后端 - Supabase + PostgreSQL 方案
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://localhost"
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://localhost:5173", "http://localhost:3000"]
+jwt_expiry = 3600
+enable_signup = true
+enable_anonymous_sign_ins = false
+enable_confirmations = false
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[auth.sms]
+enable_signup = true
+twilio_enabled = false
+twilio_account_sid = ""
+twilio_auth_token = ""
+twilio_message_service_sid = ""
+
+[auth.external]
+[auth.external.wechat]
+enabled = false
+client_id = ""
+secret = ""
+redirect_uri = ""
+
+[auth.external.alipay]
+enabled = false
+client_id = ""
+secret = ""
+redirect_uri = ""
+
+[storage]
+enabled = true
+file_size_limit = 52428800
+
+[storage.image_transformation]
+enabled = true
+
+[inbucket]
+enabled = true
+smtp_port = 54325
+pop3_port = 54326
+
+[analytics]
+enabled = false

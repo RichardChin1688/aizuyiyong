@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设备续租 - AI 租易用</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #0EA5E9;
+      --bg-dark: #0B1120;
+      --bg-card: #1E293B;
+      --text-light: #F1F5F9;
+      --text-muted: #94A3B8;
+      --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+      --success: #10B981;
+      --warning: #F59E0B;
+    }
+    body {
+      font-family: 'Inter', 'PingFang SC', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 5%;
+      background: rgba(11, 17, 32, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    .nav-links a:hover { color: var(--text-light); background: rgba(14, 165, 233, 0.12); }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-light);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .page-hero {
+      padding: 8rem 5% 2rem;
+      text-align: center;
+    }
+    .page-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .page-hero p { color: var(--text-muted); }
+    .main-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 5%;
+    }
+    .content-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .card-title { font-size: 1.1rem; font-weight: 700; }
+    .form-section { padding: 2rem; }
+    
+    /* Device Info Box */
+    .device-info {
+      background: rgba(14, 165, 233, 0.08);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .device-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+    .device-details h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+    .device-details p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .device-status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      margin-top: 0.5rem;
+    }
+    
+    /* Form Grid */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-light); }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 0.875rem 1.125rem;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: var(--bg-dark);
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .form-select { cursor: pointer; }
+    .form-select option { background: var(--bg-dark); color: var(--text-light); }
+    
+    /* Rental Period Options */
+    .period-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .period-option {
+      position: relative;
+    }
+    .period-option input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .period-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.25rem;
+      background: rgba(255,255,255,0.02);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    .period-card:hover {
+      background: rgba(14, 165, 233, 0.08);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+    .period-option input:checked + .period-card {
+      background: rgba(14, 165, 233, 0.12);
+      border-color: var(--primary);
+    }
+    .period-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .period-label { font-weight: 600; margin-bottom: 0.25rem; }
+    .period-price { color: var(--primary); font-weight: 700; font-size: 1.1rem; }
+    .period-discount {
+      color: var(--success);
+      font-size: 0.75rem;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 0.15rem 0.5rem;
+      border-radius: 50px;
+      margin-top: 0.25rem;
+    }
+    
+    /* Payment Method */
+    .payment-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .payment-option {
+      position: relative;
+    }
+    .payment-option input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .payment-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: rgba(255,255,255,0.02);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .payment-card:hover {
+      background: rgba(14, 165, 233, 0.08);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+    .payment-option input:checked + .payment-card {
+      background: rgba(14, 165, 233, 0.12);
+      border-color: var(--primary);
+    }
+    .payment-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .payment-icon.alipay { background: rgba(0, 168, 135, 0.15); }
+    .payment-icon.wechat { background: rgba(10, 185, 60, 0.15); }
+    .payment-details h4 { font-weight: 600; margin-bottom: 0.25rem; }
+    .payment-details p { color: var(--text-muted); font-size: 0.85rem; }
+    
+    /* Price Summary */
+    .price-summary {
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .price-row:last-child {
+      border-bottom: none;
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+    }
+    .price-label { color: var(--text-muted); }
+    .price-value { font-weight: 600; }
+    .price-total {
+      font-size: 1.5rem;
+      color: var(--primary);
+      font-weight: 800;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .btn-submit {
+      flex: 1;
+      padding: 1rem;
+      background: var(--gradient);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+    }
+    
+    .footer {
+      padding: 4rem 5% 3rem;
+      background: #0B1120;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 4rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .device-info { flex-direction: column; text-align: center; }
+      .period-options { grid-template-columns: 1fr 1fr; }
+      .payment-options { grid-template-columns: 1fr; }
+      .form-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo">🚀 AI 租易用</a>
+    <ul class="nav-links">
+      <li><a href="rental.html">设备租赁</a></li>
+      <li><a href="token.html">Token 工厂</a></li>
+      <li><a href="services.html">AI 技术服务</a></li>
+      <li><a href="community.html">OPC 社区</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <a href="user.html" class="btn btn-secondary">返回用户中心</a>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <h1>📦 设备续租</h1>
+    <p>选择续租方案，继续您的设备使用</p>
+  </section>
+
+  <div class="main-container">
+    <div class="content-card">
+      <div class="card-header">
+        <h2 class="card-title">续租设备信息</h2>
+      </div>
+      <div class="form-section">
+        <!-- Device Info -->
+        <div class="device-info">
+          <div class="device-icon">💻</div>
+          <div class="device-details">
+            <h3 id="deviceName">高性能 AI 工作站</h3>
+            <p>设备编号：<span id="deviceId">DEV-2026-001</span></p>
+            <p>当前租期：<span id="currentPeriod">2026-04-01 至 2026-04-30</span></p>
+            <span class="device-status">租赁中 · 剩余 17 天</span>
+          </div>
+        </div>
+
+        <form id="renewalForm">
+          <!-- Rental Period -->
+          <div class="form-group">
+            <label class="form-label">选择续租时长</label>
+            <div class="period-options">
+              <div class="period-option">
+                <input type="radio" name="rentalPeriod" value="month" id="period-month" checked onchange="updatePrice()">
+                <label class="period-card" for="period-month">
+                  <span class="period-icon">📅</span>
+                  <span class="period-label">1 个月</span>
+                  <span class="period-price">¥299</span>
+                </label>
+              </div>
+              <div class="period-option">
+                <input type="radio" name="rentalPeriod" value="quarter" id="period-quarter" onchange="updatePrice()">
+                <label class="period-card" for="period-quarter">
+                  <span class="period-icon">📆</span>
+                  <span class="period-label">3 个月</span>
+                  <span class="period-price">¥799</span>
+                  <span class="period-discount">省¥98</span>
+                </label>
+              </div>
+              <div class="period-option">
+                <input type="radio" name="rentalPeriod" value="halfyear" id="period-halfyear" onchange="updatePrice()">
+                <label class="period-card" for="period-halfyear">
+                  <span class="period-icon">🗓️</span>
+                  <span class="period-label">6 个月</span>
+                  <span class="period-price">¥1499</span>
+                  <span class="period-discount">省¥295</span>
+                </label>
+              </div>
+              <div class="period-option">
+                <input type="radio" name="rentalPeriod" value="year" id="period-year" onchange="updatePrice()">
+                <label class="period-card" for="period-year">
+                  <span class="period-icon">🎉</span>
+                  <span class="period-label">12 个月</span>
+                  <span class="period-price">¥2699</span>
+                  <span class="period-discount">省¥889</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="form-group">
+            <label class="form-label">选择付款方式</label>
+            <div class="payment-options">
+              <div class="payment-option">
+                <input type="radio" name="paymentMethod" value="alipay" id="pay-alipay" checked>
+                <label class="payment-card" for="pay-alipay">
+                  <div class="payment-icon alipay">💳</div>
+                  <div class="payment-details">
+                    <h4>支付宝</h4>
+                    <p>推荐使用</p>
+                  </div>
+                </label>
+              </div>
+              <div class="payment-option">
+                <input type="radio" name="paymentMethod" value="wechat" id="pay-wechat">
+                <label class="payment-card" for="pay-wechat">
+                  <div class="payment-icon wechat">💚</div>
+                  <div class="payment-details">
+                    <h4>微信支付</h4>
+                    <p>便捷支付</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Summary -->
+          <div class="price-summary">
+            <div class="price-row">
+              <span class="price-label">续租时长</span>
+              <span class="price-value" id="summaryPeriod">1 个月</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">设备租金</span>
+              <span class="price-value" id="summaryRent">¥299</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">优惠折扣</span>
+              <span class="price-value" style="color: var(--success);" id="summaryDiscount">-¥0</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">总计</span>
+              <span class="price-value price-total" id="summaryTotal">¥299</span>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.history.back()" style="flex:0 0 auto;">返回</button>
+            <button type="submit" class="btn-submit">✅ 确认续租</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2026 AI 租易用。All rights reserved.</p>
+  </footer>
+
+  <script>
+    // 价格配置
+    const priceConfig = {
+      month: { price: 299, label: '1 个月', discount: 0 },
+      quarter: { price: 799, label: '3 个月', discount: 98 },
+      halfyear: { price: 1499, label: '6 个月', discount: 295 },
+      year: { price: 2699, label: '12 个月', discount: 889 }
+    };
+
+    // 更新价格显示
+    function updatePrice() {
+      const selectedPeriod = document.querySelector('input[name="rentalPeriod"]:checked').value;
+      const config = priceConfig[selectedPeriod];
+      
+      document.getElementById('summaryPeriod').textContent = config.label;
+      document.getElementById('summaryRent').textContent = '¥' + config.price;
+      document.getElementById('summaryDiscount').textContent = '-¥' + config.discount;
+      document.getElementById('summaryTotal').textContent = '¥' + config.price;
+    }
+
+    // 从 URL 获取设备信息
+    function loadDeviceFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const deviceId = params.get('deviceId');
+      const deviceName = params.get('deviceName');
+      
+      if (deviceId) {
+        document.getElementById('deviceId').textContent = deviceId;
+      }
+      if (deviceName) {
+        document.getElementById('deviceName').textContent = deviceName;
+      }
+    }
+
+    // 提交续租
+    document.getElementById('renewalForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const period = document.querySelector('input[name="rentalPeriod"]:checked').value;
+      const payment = document.querySelector('input[name="paymentMethod"]:checked').value;
+      const deviceId = document.getElementById('deviceId').textContent;
+      const deviceName = document.getElementById('deviceName').textContent;
+      const price = priceConfig[period].price;
+      
+      const renewalData = {
+        deviceId: deviceId,
+        deviceName: deviceName,
+        period: period,
+        periodLabel: priceConfig[period].label,
+        payment: payment,
+        price: price,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('续租信息:', renewalData);
+      
+      // 显示成功提示
+      const paymentText = payment === 'alipay' ? '支付宝' : '微信';
+      alert(`✅ 续租申请已提交！\n\n设备：${deviceName}\n时长：${priceConfig[period].label}\n金额：¥${price}\n付款方式：${paymentText}\n\n即将跳转至支付页面...`);
+      
+      // 模拟跳转支付
+      setTimeout(() => {
+        window.location.href = 'user.html';
+      }, 1500);
+    });
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDeviceFromURL();
+      updatePrice();
+    });
+  </script>
+</body>
+</html>

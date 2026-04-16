@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活动管理 - AI 租易用管理后台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+            padding-top: 72px;
+        }
+        
+        .admin-sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            padding: 2rem 1.5rem;
+            position: fixed;
+            top: 72px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 72px);
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .admin-menu {
+            list-style: none;
+        }
+        
+        .admin-menu-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .admin-menu-link:hover, .admin-menu-link.active {
+            background: rgba(14, 165, 233, 0.12);
+            color: var(--text-light);
+        }
+        
+        .admin-menu-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .admin-content {
+            margin-left: 260px;
+            padding: 2rem 5%;
+            max-width: calc(100% - 260px);
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .form-label .hint {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(11, 17, 32, 0.6);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+        
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .form-select {
+            cursor: pointer;
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .data-table tr:hover {
+            background: rgba(14, 165, 233, 0.05);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .status-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .status-muted { background: rgba(100, 116, 139, 0.15); color: #64748B; }
+        .status-primary { background: rgba(14, 165, 233, 0.15); color: var(--primary); }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .action-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .action-btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .action-btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+        
+        .action-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+        
+        .action-btn-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+        
+        .action-btn-warning:hover {
+            background: rgba(245, 158, 11, 0.25);
+        }
+        
+        .action-btn-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        
+        .action-btn-success:hover {
+            background: rgba(16, 185, 129, 0.25);
+        }
+        
+        .btn-publish {
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        
+        .tab:hover {
+            color: var(--text-light);
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .stat-card {
+            background: rgba(11, 17, 32, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 1.5rem;
+        }
+        
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-card-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .stat-card-trend {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+        
+        .stat-card-trend.up { color: var(--success); }
+        .stat-card-trend.down { color: var(--danger); }
+        
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast-success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-light);
+        }
+        
+        @media (max-width: 1200px) {
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-layout { grid-template-columns: 1fr; }
+            .admin-sidebar { display: none; }
+            .admin-content { margin-left: 0; }
+            .nav-container { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo-wrapper">
+            <a href="../index.html" class="logo">🚀 AI 租易用</a>
+        </div>
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">首页</a></li>
+                <li><a href="../rental.html">设备租赁</a></li>
+                <li><a href="../token.html">Token 工厂</a></li>
+                <li><a href="../services.html">AI 技术服务</a></li>
+                <li><a href="../community.html">OPC 社区</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <a href="../user.html" class="btn btn-primary">用户中心</a>
+        </div>
+    </nav>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <ul class="admin-menu">
+                <li class="admin-menu-item">
+                    <a href="../admin.html" class="admin-menu-link">
+                        <span class="admin-menu-icon">📊</span>
+                        <span>数据概览</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">👥</span>
+                        <span>用户管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">💻</span>
+                        <span>设备管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">📦</span>
+                        <span>订单管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">🎫</span>
+                        <span>Token 管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">💰</span>
+                        <span>财务管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="affiliate-settings.html" class="admin-menu-link">
+                        <span class="admin-menu-icon">🤝</span>
+                        <span>分销管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link active">
+                        <span class="admin-menu-icon">🎁</span>
+                        <span>活动管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">⚙️</span>
+                        <span>系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="admin-content">
+            <div class="page-header">
+                <h1 class="page-title">🎁 活动管理</h1>
+                <p class="page-subtitle">发布和管理平台营销活动，追踪活动效果</p>
+            </div>
+
+            <!-- 发布新活动 -->
+            <div class="content-section">
+                <h2 class="section-title">📢 发布新活动</h2>
+                <form id="activity-form">
+                    <div class="form-group">
+                        <label class="form-label">活动标题</label>
+                        <input type="text" class="form-input" id="activity-title" placeholder="例如：五一狂欢节 - 租赁设备享 8 折优惠" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">活动规则说明</label>
+                        <textarea class="form-textarea" id="activity-rules" placeholder="详细描述活动规则、参与条件、注意事项等..." required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">奖励类型</label>
+                            <select class="form-select" id="reward-type" required>
+                                <option value="">请选择奖励类型</option>
+                                <option value="coupon">🎫 优惠券</option>
+                                <option value="token">💎 Token</option>
+                                <option value="cash">💰 现金返利</option>
+                                <option value="discount">🏷️ 折扣券</option>
+                                <option value="free">🆓 免费体验</option>
+                                <option value="points">⭐ 积分</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">奖励数量/面值</label>
+                            <input type="text" class="form-input" id="reward-amount" placeholder="例如：100 元 / 1000 Token / 8 折" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">活动开始时间</label>
+                            <input type="datetime-local" class="form-input" id="start-time" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">活动结束时间</label>
+                            <input type="datetime-local" class="form-input" id="end-time" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">参与人数上限</label>
+                            <input type="number" class="form-input" id="max-participants" placeholder="不限制填 0" value="0">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-publish">🚀 发布活动</button>
+                </form>
+            </div>
+
+            <!-- 活动列表与统计 -->
+            <div class="content-section">
+                <div class="tabs">
+                    <button class="tab active" data-tab="ongoing">🔥 进行中</button>
+                    <button class="tab" data-tab="upcoming">📅 未开始</button>
+                    <button class="tab" data-tab="ended">✅ 已结束</button>
+                    <button class="tab" data-tab="records">📊 奖励发放记录</button>
+                </div>
+                
+                <!-- 进行中活动 -->
+                <div class="tab-content active" data-content="ongoing">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>活动名称</th>
+                                <th>奖励类型</th>
+                                <th>参与人数</th>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🎉 新春特惠活动</td>
+                                <td><span class="status-badge status-primary">🎫 优惠券</span></td>
+                                <td>2,847 / 5,000</td>
+                                <td>2026-04-01 00:00</td>
+                                <td>2026-04-30 23:59</td>
+                                <td><span class="status-badge status-success">进行中</span></td>
+                                <td>
+                                    <a href="#" class="action-btn action-btn-primary" onclick="editActivity(1)">编辑</a>
+                                    <a href="#" class="action-btn action-btn-success" style="margin-left: 0.5rem;" onclick="viewStats(1)">数据</a>
+                                    <a href="#" class="action-btn action-btn-warning" style="margin-left: 0.5rem;" onclick="endActivity(1)">下架</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>💎 Token 充值返利</td>
+                                <td><span class="status-badge status-primary">💎 Token</span></td>
+                                <td>1,523 / 3,000</td>
+                                <td>2026-04-05 00:00</td>
+                                <td>2026-04-20 23:59</td>
+                                <td><span class="status-badge status-success">进行中</span></td>
+                                <td>
+                                    <a href="#" class="action-btn action-btn-primary" onclick="editActivity(2)">编辑</a>
+                                    <a href="#" class="action-btn action-btn-success" style="margin-left: 0.5rem;" onclick="viewStats(2)">数据</a>
+                                    <a href="#" class="action-btn action-btn-warning" style="margin-left: 0.5rem;" onclick="endActivity(2)">下架</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>🎁 邀请好友赢大奖</td>
+                                <td><span class="status-badge status-primary">💰 现金返利</span></td>
+                                <td>892 / 1,000</td>
+                                <td>2026-04-08 00:00</td>
+                                <td>2026-04-25 23:59</td>
+                                <td><span class="status-badge status-warning">即将结束</span></td>
+                                <td>
+                                    <a href="#" class="action-btn action-btn-primary" onclick="editActivity(3)">编辑</a>
+                                    <a href="#" class="action-btn action-btn-success" style="margin-left: 0.5rem;" onclick="viewStats(3)">数据</a>
+                                    <a href="#" class="action-btn action-btn-warning" style="margin-left: 0.5rem;" onclick="endActivity(3)">下架</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 未开始活动 -->
+                <div class="tab-content" data-content="upcoming">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>活动名称</th>
+                                <th>奖励类型</th>
+                                <th>参与人数上限</th>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🌟 五一狂欢节</td>
+                                <td><span class="status-badge status-primary">🏷️ 折扣券</span></td>
+                                <td>10,000</td>
+                                <td>2026-05-01 00:00</td>
+                                <td>2026-05-07 23:59</td>
+                                <td><span class="status-badge status-muted">未开始</span></td>
+                                <td>
+                                    <a href="#" class="action-btn action-btn-primary" onclick="editActivity(4)">编辑</a>
+                                    <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;" onclick="deleteActivity(4)">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>🎓 毕业季特惠</td>
+                                <td><span class="status-badge status-primary">🆓 免费体验</span></td>
+                                <td>5,000</td>
+                                <td>2026-06-01 00:00</td>
+                                <td>2026-06-30 23:59</td>
+                                <td><span class="status-badge status-muted">未开始</span></td>
+                                <td>
+                                    <a href="#" class="action-btn action-btn-primary" onclick="editActivity(5)">编辑</a>
+                                    <a href="#" class="action-btn action-btn-danger" style="margin-left: 0.5rem;" onclick="deleteActivity(5)">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 已结束活动 -->
+                <div class="tab-content" data-content="ended">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>活动名称</th>
+                                <th>奖励类型</th>
+                                <th>参与人数</th>
+                                <th>活动时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🎄 圣诞特别活动</td>
+                                <td><span class="status-badge status-primary">🎫 优惠券</span></td>
+                                <td>4,521</td>
+                                <td>2025-12-20 ~ 2025-12-31</td>
+                                <td><span class="status-badge status-muted">已结束</span></td>
+                                <td>
+                                    <a href="#" class="action-btn action-btn-success" onclick="viewStats(100)">查看数据</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>🧧 新年开门红</td>
+                                <td><span class="status-badge status-primary">💎 Token</span></td>
+                                <td>6,832</td>
+                                <td>2026-01-01 ~ 2026-01-15</td>
+                                <td><span class="status-badge status-muted">已结束</span></td>
+                                <td>
+                                    <a href="#" class="action-btn action-btn-success" onclick="viewStats(101)">查看数据</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>💝 情人节限定</td>
+                                <td><span class="status-badge status-primary">⭐ 积分</span></td>
+                                <td>2,145</td>
+                                <td>2026-02-10 ~ 2026-02-20</td>
+                                <td><span class="status-badge status-muted">已结束</span></td>
+                                <td>
+                                    <a href="#" class="action-btn action-btn-success" onclick="viewStats(102)">查看数据</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 奖励发放记录 -->
+                <div class="tab-content" data-content="records">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="stat-card">
+                            <div class="stat-card-value">15,847</div>
+                            <div class="stat-card-label">累计发放奖励</div>
+                            <div class="stat-card-trend up">↑ 本月 3,245</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-value">¥128,520</div>
+                            <div class="stat-card-label">奖励总价值</div>
+                            <div class="stat-card-trend up">↑ 本月 ¥32,450</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-value">8,923</div>
+                            <div class="stat-card-label">已核销奖励</div>
+                            <div class="stat-card-trend up">↑ 核销率 56.3%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-value">6,924</div>
+                            <div class="stat-card-label">待核销奖励</div>
+                            <div class="stat-card-trend">待处理</div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>发放时间</th>
+                                <th>活动名称</th>
+                                <th>用户</th>
+                                <th>奖励类型</th>
+                                <th>奖励内容</th>
+                                <th>状态</th>
+                                <th>核销时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-04-10 14:32</td>
+                                <td>🎉 新春特惠活动</td>
+                                <td>张**</td>
+                                <td>🎫 优惠券</td>
+                                <td>满 500 减 100</td>
+                                <td><span class="status-badge status-success">已核销</span></td>
+                                <td>2026-04-10 15:20</td>
+                            </tr>
+                            <tr>
+                                <td>2026-04-10 13:15</td>
+                                <td>💎 Token 充值返利</td>
+                                <td>李**</td>
+                                <td>💎 Token</td>
+                                <td>500 Token</td>
+                                <td><span class="status-badge status-warning">待核销</span></td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>2026-04-10 12:48</td>
+                                <td>🎁 邀请好友赢大奖</td>
+                                <td>王**</td>
+                                <td>💰 现金返利</td>
+                                <td>¥50</td>
+                                <td><span class="status-badge status-success">已核销</span></td>
+                                <td>2026-04-10 13:00</td>
+                            </tr>
+                            <tr>
+                                <td>2026-04-10 11:22</td>
+                                <td>🎉 新春特惠活动</td>
+                                <td>赵**</td>
+                                <td>🎫 优惠券</td>
+                                <td>满 300 减 50</td>
+                                <td><span class="status-badge status-warning">待核销</span></td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>2026-04-10 10:05</td>
+                                <td>💎 Token 充值返利</td>
+                                <td>刘**</td>
+                                <td>💎 Token</td>
+                                <td>1000 Token</td>
+                                <td><span class="status-badge status-success">已核销</span></td>
+                                <td>2026-04-10 10:30</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 编辑活动弹窗 -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">✏️ 编辑活动</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="edit-form">
+                <div class="form-group">
+                    <label class="form-label">活动标题</label>
+                    <input type="text" class="form-input" id="edit-title" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">活动规则说明</label>
+                    <textarea class="form-textarea" id="edit-rules" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">奖励类型</label>
+                        <select class="form-select" id="edit-reward-type" required>
+                            <option value="coupon">🎫 优惠券</option>
+                            <option value="token">💎 Token</option>
+                            <option value="cash">💰 现金返利</option>
+                            <option value="discount">🏷️ 折扣券</option>
+                            <option value="free">🆓 免费体验</option>
+                            <option value="points">⭐ 积分</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">奖励数量/面值</label>
+                        <input type="text" class="form-input" id="edit-reward-amount" required>
+                    </div>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label class="form-label">活动开始时间</label>
+                        <input type="datetime-local" class="form-input" id="edit-start-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">活动结束时间</label>
+                        <input type="datetime-local" class="form-input" id="edit-end-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">参与人数上限</label>
+                        <input type="number" class="form-input" id="edit-max-participants" value="0">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">💾 保存修改</button>
+                    <button type="button" class="btn" style="background: rgba(255,255,255,0.1); color: var(--text-light);" onclick="closeModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 数据统计弹窗 -->
+    <div class="modal-overlay" id="stats-modal">
+        <div class="modal" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">📊 活动数据统计</h2>
+                <button class="modal-close" onclick="closeStatsModal()">&times;</button>
+            </div>
+            <div id="stats-content">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="stat-participants">2,847</div>
+                        <div class="stat-card-label">参与人数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="stat-conversion">23.5%</div>
+                        <div class="stat-card-label">转化率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="stat-revenue">¥128,520</div>
+                        <div class="stat-card-label">带动收入</div>
+                    </div>
+                </div>
+                <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">📈 每日参与趋势</h3>
+                <div style="background: rgba(11, 17, 32, 0.6); border-radius: 12px; padding: 2rem; text-align: center; color: var(--text-muted);">
+                    图表区域 - 可集成 Chart.js 或 ECharts
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast toast-success" id="toast">
+        <span style="font-size: 1.25rem;">✅</span>
+        <span id="toast-message">操作成功</span>
+    </div>
+
+    <script>
+        // Tab 切换
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // 切换 tab 样式
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 切换内容
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelector(`[data-content="${tabName}"]`).classList.add('active');
+            });
+        });
+        
+        // 表单提交 - 发布活动
+        document.getElementById('activity-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const activity = {
+                title: document.getElementById('activity-title').value,
+                rules: document.getElementById('activity-rules').value,
+                rewardType: document.getElementById('reward-type').value,
+                rewardAmount: document.getElementById('reward-amount').value,
+                startTime: document.getElementById('start-time').value,
+                endTime: document.getElementById('end-time').value,
+                maxParticipants: document.getElementById('max-participants').value
+            };
+            
+            // 验证时间
+            if (new Date(activity.startTime) >= new Date(activity.endTime)) {
+                alert('结束时间必须晚于开始时间！');
+                return;
+            }
+            
+            console.log('发布新活动:', activity);
+            showToast('🚀 活动发布成功！');
+            this.reset();
+        });
+        
+        // 编辑活动
+        function editActivity(id) {
+            document.getElementById('edit-modal').classList.add('show');
+            // 模拟加载活动数据
+            document.getElementById('edit-title').value = '示例活动 #' + id;
+            document.getElementById('edit-rules').value = '这是活动规则说明...';
+            document.getElementById('edit-reward-type').value = 'coupon';
+            document.getElementById('edit-reward-amount').value = '100 元';
+        }
+        
+        // 关闭编辑弹窗
+        function closeModal() {
+            document.getElementById('edit-modal').classList.remove('show');
+        }
+        
+        // 查看数据
+        function viewStats(id) {
+            document.getElementById('stats-modal').classList.add('show');
+            // 模拟加载数据
+            document.getElementById('stat-participants').textContent = (Math.random() * 5000).toFixed(0);
+            document.getElementById('stat-conversion').textContent = (Math.random() * 30 + 10).toFixed(1) + '%';
+            document.getElementById('stat-revenue').textContent = '¥' + (Math.random() * 200000).toFixed(0);
+        }
+        
+        // 关闭统计弹窗
+        function closeStatsModal() {
+            document.getElementById('stats-modal').classList.remove('show');
+        }
+        
+        // 下架活动
+        function endActivity(id) {
+            if (confirm('确定要下架这个活动吗？下架后将无法恢复！')) {
+                console.log('下架活动:', id);
+                showToast('✅ 活动已下架');
+            }
+        }
+        
+        // 删除活动
+        function deleteActivity(id) {
+            if (confirm('确定要删除这个活动吗？此操作不可恢复！')) {
+                console.log('删除活动:', id);
+                showToast('✅ 活动已删除');
+            }
+        }
+        
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                }
+            });
+        });
+        
+        // 设置默认时间
+        window.addEventListener('load', function() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            // 格式化为 datetime-local 需要的格式
+            const formatDateTime = (date) => {
+                return date.toISOString().slice(0, 16);
+            };
+            
+            document.getElementById('start-time').value = formatDateTime(tomorrow);
+            
+            const nextWeek = new Date(tomorrow);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            document.getElementById('end-time').value = formatDateTime(nextWeek);
+        });
+    </script>
+</body>
+</html>

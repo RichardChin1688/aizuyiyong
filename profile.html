@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人资料 - AI 租易用 | 编辑您的个人信息</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #0EA5E9;
+      --primary-dark: #0C4A6E;
+      --accent: #F59E0B;
+      --bg-dark: #0B1120;
+      --bg-card: #1E293B;
+      --bg-card-hover: #243244;
+      --text-light: #F1F5F9;
+      --text-muted: #94A3B8;
+      --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+      --gradient-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-medium: rgba(255,255,255,0.1);
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.25);
+      --shadow-glow: 0 0 40px rgba(14, 165, 233, 0.15);
+    }
+    
+    body {
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.7;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: 
+        radial-gradient(ellipse at 20% 10%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(124, 58, 237, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(245, 158, 11, 0.04) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 5%;
+      background: rgba(11, 17, 32, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .nav-logo-wrapper { position: absolute; left: 5%; }
+    .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+    .nav-right-wrapper { position: absolute; right: 5%; }
+    
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+    
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text-light);
+      background: rgba(14, 165, 233, 0.12);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+    }
+    
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+    
+    /* Page Hero */
+    .page-hero {
+      padding: 8rem 5% 3rem;
+      text-align: center;
+    }
+    
+    .page-hero h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.025em;
+    }
+    
+    .page-hero p {
+      color: var(--text-muted);
+      font-size: 1.125rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    
+    /* Main Container */
+    .main-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 5%;
+    }
+    
+    /* Content Card */
+    .content-card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      margin-bottom: 2rem;
+      padding: 2.5rem;
+      box-shadow: var(--shadow-card);
+      transition: all 0.3s ease;
+    }
+    
+    .content-card:hover {
+      border-color: var(--border-medium);
+      box-shadow: var(--shadow-card), var(--shadow-glow);
+    }
+    
+    .card-header {
+      padding: 0 0 1.5rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 2rem;
+    }
+    
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    /* Form Section */
+    .form-section {
+      padding: 0;
+    }
+    
+    .form-group {
+      margin-bottom: 1.75rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.625rem;
+      color: var(--text-light);
+      font-weight: 600;
+      font-size: 0.925rem;
+      letter-spacing: 0.025em;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border-radius: 14px;
+      border: 2px solid var(--border-subtle);
+      background: rgba(11, 17, 32, 0.8);
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .form-input:hover {
+      border-color: var(--border-medium);
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(11, 17, 32, 0.95);
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12), 0 8px 24px rgba(14, 165, 233, 0.15);
+      transform: translateY(-1px);
+    }
+    
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .form-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    /* Radio Group */
+    .radio-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+    
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 2px solid var(--border-subtle);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .radio-option:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: var(--border-medium);
+      transform: translateX(4px);
+    }
+    
+    .radio-option:has(input:checked) {
+      background: rgba(14, 165, 233, 0.1);
+      border-color: var(--primary);
+    }
+    
+    .radio-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    
+    .radio-option span {
+      font-size: 1rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    
+    /* File Upload */
+    .file-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      background: var(--gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: 700;
+      color: white;
+      overflow: hidden;
+      border: 4px solid rgba(255,255,255,0.15);
+      box-shadow: 0 8px 32px rgba(14, 165, 233, 0.3), 0 0 0 4px rgba(14, 165, 233, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .avatar-preview:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 40px rgba(14, 165, 233, 0.4), 0 0 0 6px rgba(14, 165, 233, 0.15);
+    }
+    
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .file-upload-btn {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(124, 58, 237, 0.1) 100%);
+      color: var(--primary);
+      border: 2px dashed var(--primary);
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 0.9rem;
+    }
+    
+    .file-upload-btn:hover {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(124, 58, 237, 0.15) 100%);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.2);
+    }
+    
+    .file-upload-input {
+      display: none;
+    }
+    
+    .upload-hint {
+      color: var(--text-muted);
+      font-size: 0.825rem;
+      text-align: center;
+      margin-top: 0.5rem;
+      font-weight: 400;
+    }
+    
+    /* Business License Upload */
+    .license-upload {
+      background: linear-gradient(135deg, rgba(11, 17, 32, 0.8) 0%, rgba(11, 17, 32, 0.6) 100%);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      border: 2px dashed var(--border-medium);
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    
+    .license-upload:hover {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, rgba(11, 17, 32, 0.95) 0%, rgba(14, 165, 233, 0.05) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(14, 165, 233, 0.1);
+    }
+    
+    .license-upload.has-file {
+      border-style: solid;
+      border-color: rgba(16, 185, 129, 0.5);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+    }
+    
+    .license-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .license-text {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .license-filename {
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    /* Alert Box */
+    .alert-box {
+      padding: 1.25rem 1.5rem;
+      border-radius: 14px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .alert-warning {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.08) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #F59E0B;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.1);
+    }
+    
+    .alert-info {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(14, 165, 233, 0.08) 100%);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      color: #0EA5E9;
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.1);
+    }
+    
+    .alert-success {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10B981;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
+    }
+    
+    .alert-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    
+    .alert-content {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    /* Save Button */
+    .form-actions {
+      padding: 2rem 0 0.5rem 0;
+      margin-top: 1rem;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    
+    .btn-save {
+      padding: 1rem 2.5rem;
+      background: var(--gradient);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 1rem;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3), 0 0 0 2px rgba(14, 165, 233, 0.1);
+    }
+    
+    .btn-save:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(14, 165, 233, 0.5), 0 0 0 4px rgba(14, 165, 233, 0.15);
+      filter: brightness(1.1);
+    }
+    
+    .btn-cancel {
+      padding: 1rem 2.5rem;
+      background: rgba(255,255,255,0.03);
+      color: var(--text-muted);
+      border: 2px solid var(--border-medium);
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 1rem;
+    }
+    
+    .btn-cancel:hover {
+      border-color: var(--text-light);
+      color: var(--text-light);
+      background: rgba(255,255,255,0.06);
+      transform: translateY(-2px);
+    }
+    
+    /* Hidden Section */
+    .hidden {
+      display: none;
+    }
+    
+    /* Section Title */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-light);
+      margin: 2.5rem 0 1.5rem;
+      padding-bottom: 0.875rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    /* Image Preview Container */
+    .image-preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+    
+    .image-preview-container img {
+      max-width: 100%;
+      border-radius: 12px;
+      border: 2px solid var(--border-medium);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    
+    .image-preview-container button {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
+      align-self: flex-start;
+    }
+    
+    /* Verification Status Badge */
+    .verification-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .verification-status.verified {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10B981;
+    }
+    .verification-status.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #F59E0B;
+    }
+    .verification-status.unverified {
+      background: rgba(148, 163, 184, 0.15);
+      color: #94A3B8;
+    }
+    
+    /* Footer */
+    .footer {
+      padding: 4rem 5% 3rem;
+      background: #0B1120;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .footer-logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .footer-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-section-title {
+      color: var(--text-light);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+    
+    .footer-section-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    
+    .footer-section-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.3s;
+    }
+    
+    .footer-section-links a:hover {
+      color: var(--text-light);
+    }
+    
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 2rem auto 0;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .page-hero h1 {
+        font-size: 2rem;
+      }
+      
+      .form-section {
+        padding: 1.5rem;
+      }
+      
+      .radio-group {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn-save, .btn-cancel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-logo-wrapper">
+      <a href="index.html" class="logo">AI 租易用</a>
+    </div>
+    <div class="nav-container">
+      <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="services.html">产品服务</a></li>
+        <li><a href="rental.html">租赁服务</a></li>
+        <li><a href="community.html">社区</a></li>
+        <li><a href="help.html">帮助中心</a></li>
+      </ul>
+    </div>
+    <div class="nav-right-wrapper">
+      <a href="user.html" class="btn btn-primary">用户中心</a>
+    </div>
+  </nav>
+
+  <!-- Page Hero -->
+  <section class="page-hero">
+    <h1>个人资料</h1>
+    <p>管理您的账户信息和认证状态</p>
+  </section>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Basic Info Section -->
+    <div class="content-card">
+      <div class="card-header">
+        <h2 class="card-title">👤 基础信息</h2>
+      </div>
+      <div class="form-section">
+        <!-- Avatar Upload -->
+        <div class="form-group">
+          <label class="form-label">头像</label>
+          <div class="file-upload">
+            <div class="avatar-preview" id="avatarPreview">
+              <span id="avatarInitials">王</span>
+              <img id="avatarImage" src="" alt="头像" style="display: none;">
+            </div>
+            <label class="file-upload-btn">
+              📷 更换头像
+              <input type="file" class="file-upload-input" accept="image/*" onchange="handleAvatarUpload(event)">
+            </label>
+            <div class="upload-hint">支持 JPG、PNG 格式，建议尺寸 200x200px</div>
+          </div>
+        </div>
+
+        <!-- Nickname -->
+        <div class="form-group">
+          <label class="form-label" for="nickname">昵称</label>
+          <input type="text" id="nickname" class="form-input" placeholder="请输入您的昵称" value="王德发">
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+          <label class="form-label" for="phone">手机号</label>
+          <input type="tel" id="phone" class="form-input" placeholder="请输入手机号码" value="138****8888">
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">邮箱</label>
+          <input type="email" id="email" class="form-input" placeholder="请输入邮箱地址" value="wangdefa@example.com">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Verification Status Banner -->
+    <div class="verification-banner" style="background:linear-gradient(135deg, rgba(14,165,233,0.12) 0%, rgba(124,58,237,0.1) 100%); border:1px solid rgba(14,165,233,0.3); border-radius:16px; padding:1.5rem 1.75rem; margin-bottom:2.5rem; display:flex; align-items:center; gap:1rem; box-shadow:0 4px 20px rgba(14,165,233,0.1);">
+      <div class="verification-status unverified" id="verificationStatusBadge" style="margin:0;">
+        <span id="verificationStatusIcon">⏳</span>
+        <span id="verificationStatusText">未认证</span>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.925rem; margin:0; flex:1; line-height:1.6;">
+          完成身份认证后，您将享受更多服务和功能
+      </p>
+    </div>
+    
+    <!-- User Type Card -->
+    <div class="content-card">
+      <div class="card-header">
+        <h2 class="card-title">📋 用户类型</h2>
+      </div>
+      <div class="form-section">
+        <div class="alert-box alert-warning" style="margin-bottom:1.5rem;">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-content">
+            <strong>注意：</strong>用户类型一旦选择并认证成功后，不可随意切换。如需变更，请提交审核申请。
+          </div>
+        </div>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="userType" value="personal" checked onchange="toggleUserType('personal')">
+            <span>👤 个人用户</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="userType" value="enterprise" onchange="toggleUserType('enterprise')">
+            <span>🏢 企业用户</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal Verification Card -->
+    <div id="personalVerificationCard" class="content-card">
+      <div class="card-header">
+        <h2 class="card-title">👤 个人认证</h2>
+      </div>
+      <div class="form-section">
+        <div class="alert-box alert-info">
+          <span class="alert-icon">ℹ️</span>
+          <div class="alert-content">
+            <strong>个人认证：</strong>请上传您的身份证正反面照片，并填写相关信息。信息将用于实名认证，我们会严格保护您的隐私。
+          </div>
+        </div>
+        
+        <!-- ID Card Front -->
+        <div class="form-group">
+          <label class="form-label">身份证正面上传</label>
+          <div class="license-upload" id="idCardFrontUpload" onclick="document.getElementById('idCardFrontInput').click()">
+            <div class="license-icon">🆔</div>
+            <div class="license-text" id="idCardFrontText">点击或拖拽上传身份证正面<br><small>支持 JPG、PNG 格式，最大 5MB（上传后自动识别姓名、身份证号）</small></div>
+            <div class="license-filename" id="idCardFrontFilename"></div>
+            <input type="file" id="idCardFrontInput" class="file-upload-input" accept="image/*" onchange="handleIdCardFrontUpload(event)">
+          </div>
+          <div id="idCardFrontPreview" class="image-preview-container" style="display:none; margin-top:1rem;">
+            <img id="idCardFrontPreviewImg" src="" alt="身份证正面" style="max-width:400px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+            <button type="button" class="btn btn-primary" onclick="ocrIdCardFront()" style="margin-top:0.5rem; font-size:0.875rem;">🔍 重新 OCR 识别</button>
+          </div>
+        </div>
+        
+        <!-- ID Card Back -->
+        <div class="form-group">
+          <label class="form-label">身份证反面上传</label>
+          <div class="license-upload" id="idCardBackUpload" onclick="document.getElementById('idCardBackInput').click()">
+            <div class="license-icon">🆔</div>
+            <div class="license-text" id="idCardBackText">点击或拖拽上传身份证反面<br><small>支持 JPG、PNG 格式，最大 5MB（上传后自动识别有效期）</small></div>
+            <div class="license-filename" id="idCardBackFilename"></div>
+            <input type="file" id="idCardBackInput" class="file-upload-input" accept="image/*" onchange="handleIdCardBackUpload(event)">
+          </div>
+          <div id="idCardBackPreview" class="image-preview-container" style="display:none; margin-top:1rem;">
+            <img id="idCardBackPreviewImg" src="" alt="身份证反面" style="max-width:400px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+            <button type="button" class="btn btn-primary" onclick="ocrIdCardBack()" style="margin-top:0.5rem; font-size:0.875rem;">🔍 重新 OCR 识别</button>
+          </div>
+        </div>
+        
+        <!-- OCR Status Alert -->
+        <div id="ocrStatusAlert" class="alert-box alert-info" style="display:none;">
+          <span class="alert-icon">⏳</span>
+          <div class="alert-content">
+            <strong>OCR 识别中...</strong> 正在读取身份证信息，请稍候
+          </div>
+        </div>
+        
+        <!-- Name -->
+        <div class="form-group">
+          <label class="form-label" for="realName">姓名 <span style="color: var(--accent);">*</span></label>
+          <input type="text" id="realName" class="form-input" placeholder="请输入您的真实姓名">
+        </div>
+        
+        <!-- ID Number -->
+        <div class="form-group">
+          <label class="form-label" for="idNumber">身份证号 <span style="color: var(--accent);">*</span></label>
+          <input type="text" id="idNumber" class="form-input" placeholder="请输入 18 位身份证号码" maxlength="18">
+        </div>
+        
+        <!-- Validity Period -->
+        <div class="form-group">
+          <label class="form-label" for="idValidity">身份证有效期 <span style="color: var(--accent);">*</span></label>
+          <div style="display: flex; gap: 1rem;">
+            <input type="date" id="idValidityStart" class="form-input" placeholder="开始日期" style="flex: 1;">
+            <span style="display: flex; align-items: center; color: var(--text-muted);">至</span>
+            <input type="date" id="idValidityEnd" class="form-input" placeholder="结束日期" style="flex: 1;">
+          </div>
+          <label class="radio-option" style="margin-top: 0.5rem;">
+            <input type="checkbox" id="idValidityLong" onchange="toggleLongTermValidity()">
+            <span>长期有效</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enterprise Verification Card -->
+    <div id="enterpriseVerificationCard" class="content-card hidden">
+      <div class="card-header">
+        <h2 class="card-title">🏢 企业认证</h2>
+      </div>
+      <div class="form-section">
+        <div class="alert-box alert-info">
+          <span class="alert-icon">ℹ️</span>
+          <div class="alert-content">
+            <strong>企业认证：</strong>请上传您的营业执照或组织机构代码证，并填写相关企业信息。审核通过后，您将享受企业专属服务。
+          </div>
+        </div>
+        
+        <!-- Business License -->
+        <div class="form-group">
+          <label class="form-label">营业执照/组织机构代码证上传</label>
+          <div class="license-upload" id="licenseUpload" onclick="document.getElementById('licenseInput').click()">
+            <div class="license-icon">📄</div>
+            <div class="license-text" id="licenseText">点击或拖拽上传营业执照<br><small>支持 JPG、PNG 格式，最大 5MB</small></div>
+            <div class="license-filename" id="licenseFilename"></div>
+            <input type="file" id="licenseInput" class="file-upload-input" accept="image/*" onchange="handleLicenseUpload(event)">
+          </div>
+        </div>
+        
+        <!-- Company Name -->
+        <div class="form-group">
+          <label class="form-label" for="companyName">企业名称 <span style="color: var(--accent);">*</span></label>
+          <input type="text" id="companyName" class="form-input" placeholder="请输入企业全称">
+        </div>
+        
+        <!-- Unified Social Credit Code -->
+        <div class="form-group">
+          <label class="form-label" for="creditCode">统一社会识别号 <span style="color: var(--accent);">*</span></label>
+          <input type="text" id="creditCode" class="form-input" placeholder="请输入 18 位统一社会识别号" maxlength="18">
+        </div>
+        
+        <!-- License Validity -->
+        <div class="form-group">
+          <label class="form-label" for="licenseValidity">营业执照有效期 <span style="color: var(--accent);">*</span></label>
+          <div style="display: flex; gap: 1rem;">
+            <input type="date" id="licenseValidityStart" class="form-input" placeholder="开始日期" style="flex: 1;">
+            <span style="display: flex; align-items: center; color: var(--text-muted);">至</span>
+            <input type="date" id="licenseValidityEnd" class="form-input" placeholder="结束日期" style="flex: 1;">
+          </div>
+          <label class="radio-option" style="margin-top: 0.5rem;">
+            <input type="checkbox" id="licenseValidityLong" onchange="toggleLongTermLicenseValidity()">
+            <span>长期有效</span>
+          </label>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" onclick="window.history.back()">取消</button>
+      <button type="button" class="btn-save" onclick="saveProfile()">💾 保存修改</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <a href="index.html" class="footer-logo">AI 租易用</a>
+      <div class="footer-section">
+        <h4 class="footer-section-title">快速链接</h4>
+        <ul class="footer-section-links">
+          <li><a href="about.html">关于我们</a></li>
+          <li><a href="services.html">产品服务</a></li>
+          <li><a href="community.html">社区</a></li>
+          <li><a href="help.html">帮助中心</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4 class="footer-section-title">法律条款</h4>
+        <ul class="footer-section-links">
+          <li><a href="terms.html">服务条款</a></li>
+          <li><a href="privacy.html">隐私政策</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 AI 租易用。All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    let currentFileType = 'personal';
+    let uploadedLicense = null;
+    let uploadedAvatar = null;
+    let uploadedIdCardFront = null;
+    let uploadedIdCardBack = null;
+
+    // Toggle user type section
+    function toggleUserType(type) {
+      currentFileType = type;
+      const personalCard = document.getElementById('personalVerificationCard');
+      const enterpriseCard = document.getElementById('enterpriseVerificationCard');
+      
+      if (type === 'enterprise') {
+        personalCard.classList.add('hidden');
+        enterpriseCard.classList.remove('hidden');
+      } else {
+        personalCard.classList.remove('hidden');
+        enterpriseCard.classList.add('hidden');
+      }
+    }
+
+    // Toggle long-term validity for personal ID
+    function toggleLongTermValidity() {
+      const isLongTerm = document.getElementById('idValidityLong').checked;
+      const endDate = document.getElementById('idValidityEnd');
+      
+      if (isLongTerm) {
+        endDate.value = '2099-12-31';
+        endDate.disabled = true;
+      } else {
+        endDate.value = '';
+        endDate.disabled = false;
+      }
+    }
+
+    // Toggle long-term validity for enterprise license
+    function toggleLongTermLicenseValidity() {
+      const isLongTerm = document.getElementById('licenseValidityLong').checked;
+      const endDate = document.getElementById('licenseValidityEnd');
+      
+      if (isLongTerm) {
+        endDate.value = '2099-12-31';
+        endDate.disabled = true;
+      } else {
+        endDate.value = '';
+        endDate.disabled = false;
+      }
+    }
+
+    // Handle ID card front upload
+    function handleIdCardFrontUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Validate file
+      if (file.size > 5 * 1024 * 1024) {
+        alert('文件大小超过 5MB 限制');
+        return;
+      }
+      
+      uploadedIdCardFront = file;
+      const upload = document.getElementById('idCardFrontUpload');
+      const text = document.getElementById('idCardFrontText');
+      const filename = document.getElementById('idCardFrontFilename');
+      const preview = document.getElementById('idCardFrontPreview');
+      const previewImg = document.getElementById('idCardFrontPreviewImg');
+      
+      upload.style.display = 'none';
+      preview.style.display = 'block';
+      previewImg.src = URL.createObjectURL(file);
+      filename.textContent = file.name;
+      
+      // Auto OCR recognition
+      ocrIdCardFront();
+    }
+    
+    // OCR recognition for ID card front
+    function ocrIdCardFront() {
+      if (!uploadedIdCardFront) return;
+      
+      const alertBox = document.getElementById('ocrStatusAlert');
+      alertBox.style.display = 'flex';
+      alertBox.querySelector('.alert-icon').textContent = '⏳';
+      alertBox.querySelector('strong').textContent = 'OCR 识别中...';
+      alertBox.querySelector('.alert-content').innerHTML = '正在读取身份证正面信息，请稍候...';
+      
+      // Simulate OCR recognition (in production, call backend API)
+      setTimeout(() => {
+        // Mock OCR result - in production, replace with actual API call
+        const mockOCRResult = {
+          name: '王德发',
+          idNumber: '110101199001011234',
+          address: '北京市朝阳区某某街道'
+        };
+        
+        // Fill form fields
+        document.getElementById('realName').value = mockOCRResult.name;
+        document.getElementById('idNumber').value = mockOCRResult.idNumber;
+        
+        alertBox.querySelector('.alert-icon').textContent = '✅';
+        alertBox.querySelector('strong').textContent = '识别成功';
+        alertBox.querySelector('.alert-content').innerHTML = '已自动填写姓名和身份证号，请核对信息是否正确。';
+        alertBox.className = 'alert-box alert-success';
+        
+        setTimeout(() => {
+          alertBox.style.display = 'none';
+        }, 3000);
+      }, 1500);
+    }
+
+    // Handle ID card back upload
+    function handleIdCardBackUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Validate file
+      if (file.size > 5 * 1024 * 1024) {
+        alert('文件大小超过 5MB 限制');
+        return;
+      }
+      
+      uploadedIdCardBack = file;
+      const upload = document.getElementById('idCardBackUpload');
+      const text = document.getElementById('idCardBackText');
+      const filename = document.getElementById('idCardBackFilename');
+      const preview = document.getElementById('idCardBackPreview');
+      const previewImg = document.getElementById('idCardBackPreviewImg');
+      
+      upload.style.display = 'none';
+      preview.style.display = 'block';
+      previewImg.src = URL.createObjectURL(file);
+      filename.textContent = file.name;
+      
+      // Auto OCR recognition
+      ocrIdCardBack();
+    }
+    
+    // OCR recognition for ID card back
+    function ocrIdCardBack() {
+      if (!uploadedIdCardBack) return;
+      
+      const alertBox = document.getElementById('ocrStatusAlert');
+      alertBox.style.display = 'flex';
+      alertBox.querySelector('.alert-icon').textContent = '⏳';
+      alertBox.querySelector('strong').textContent = 'OCR 识别中...';
+      alertBox.querySelector('.alert-content').innerHTML = '正在读取身份证反面信息，请稍候...';
+      
+      // Simulate OCR recognition (in production, call backend API)
+      setTimeout(() => {
+        // Mock OCR result for validity period
+        const mockOCRResult = {
+          validityStart: '2020-01-01',
+          validityEnd: '2040-01-01',
+          issuingAuthority: '北京市公安局朝阳分局'
+        };
+        
+        // Fill form fields
+        document.getElementById('idValidityStart').value = mockOCRResult.validityStart;
+        document.getElementById('idValidityEnd').value = mockOCRResult.validityEnd;
+        document.getElementById('idValidityLong').checked = false;
+        document.getElementById('idValidityEnd').disabled = false;
+        
+        alertBox.querySelector('.alert-icon').textContent = '✅';
+        alertBox.querySelector('strong').textContent = '识别成功';
+        alertBox.querySelector('.alert-content').innerHTML = '已自动填写有效期，请核对信息是否正确。';
+        alertBox.className = 'alert-box alert-success';
+        
+        setTimeout(() => {
+          alertBox.style.display = 'none';
+        }, 3000);
+      }, 1500);
+    }
+
+    // Handle license upload
+    function handleLicenseUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Validate file
+      if (file.size > 5 * 1024 * 1024) {
+        alert('文件大小超过 5MB 限制');
+        return;
+      }
+      
+      uploadedLicense = file;
+      const licenseUpload = document.getElementById('licenseUpload');
+      const licenseText = document.getElementById('licenseText');
+      const licenseFilename = document.getElementById('licenseFilename');
+      
+      licenseUpload.classList.add('has-file');
+      licenseText.innerHTML = '✅ 文件已上传';
+      licenseFilename.textContent = file.name;
+    }
+
+    // Handle avatar upload
+    function handleAvatarUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Validate file
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!validTypes.includes(file.type)) {
+        alert('请上传 JPG 或 PNG 格式的图片');
+        return;
+      }
+      
+      uploadedAvatar = file;
+      
+      // Preview avatar
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const avatarImage = document.getElementById('avatarImage');
+        const avatarInitials = document.getElementById('avatarInitials');
+        
+        avatarImage.src = e.target.result;
+        avatarImage.style.display = 'block';
+        avatarInitials.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Update verification status display
+    function updateVerificationStatus(status) {
+      const badge = document.getElementById('verificationStatusBadge');
+      const icon = document.getElementById('verificationStatusIcon');
+      const text = document.getElementById('verificationStatusText');
+      
+      if (!badge) return;
+      
+      badge.classList.remove('verified', 'pending', 'unverified');
+      
+      if (status === 'verified') {
+        badge.classList.add('verified');
+        icon.textContent = '✅';
+        text.textContent = '已认证';
+      } else if (status === 'pending') {
+        badge.classList.add('pending');
+        icon.textContent = '⏳';
+        text.textContent = '审核中';
+      } else {
+        badge.classList.add('unverified');
+        icon.textContent = '⏳';
+        text.textContent = '未认证';
+      }
+    }
+    
+    // Validate ID number (China)
+    function validateIdNumber(idNumber) {
+      const regex = /^[1-9]\d{5}(18|19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$/;
+      return regex.test(idNumber);
+    }
+
+    // Validate Unified Social Credit Code
+    function validateCreditCode(code) {
+      const regex = /^[1-9]\d{5}(18|19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$/;
+      return regex.test(code);
+    }
+
+    // Save profile
+    function saveProfile() {
+      const nickname = document.getElementById('nickname').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      
+      // Basic info validation
+      if (!nickname) {
+        alert('请输入昵称');
+        document.getElementById('nickname').focus();
+        return;
+      }
+      
+      if (!phone) {
+        alert('请输入手机号');
+        document.getElementById('phone').focus();
+        return;
+      }
+      
+      // Phone validation (simple)
+      const phoneRegex = /^1[3-9]\d{9}$/;
+      if (!phoneRegex.test(phone.replace(/\*/g, ''))) {
+        alert('请输入有效的手机号码');
+        document.getElementById('phone').focus();
+        return;
+      }
+      
+      if (!email) {
+        alert('请输入邮箱');
+        document.getElementById('email').focus();
+        return;
+      }
+      
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('请输入有效的邮箱地址');
+        document.getElementById('email').focus();
+        return;
+      }
+      
+      // Verification data
+      let verificationData = {};
+      
+      if (currentFileType === 'personal') {
+        // Personal verification validation
+        const realName = document.getElementById('realName').value.trim();
+        const idNumber = document.getElementById('idNumber').value.trim();
+        const validityStart = document.getElementById('idValidityStart').value;
+        const validityEnd = document.getElementById('idValidityEnd').value;
+        
+        if (!realName) {
+          alert('请输入姓名');
+          document.getElementById('realName').focus();
+          return;
+        }
+        
+        if (!idNumber) {
+          alert('请输入身份证号');
+          document.getElementById('idNumber').focus();
+          return;
+        }
+        
+        if (!validateIdNumber(idNumber)) {
+          alert('请输入有效的 18 位身份证号码');
+          document.getElementById('idNumber').focus();
+          return;
+        }
+        
+        if (!validityStart) {
+          alert('请选择身份证有效期开始日期');
+          document.getElementById('idValidityStart').focus();
+          return;
+        }
+        
+        if (!validityEnd) {
+          alert('请选择身份证有效期结束日期');
+          document.getElementById('idValidityEnd').focus();
+          return;
+        }
+        
+        if (!uploadedIdCardFront) {
+          alert('请上传身份证正面照片');
+          return;
+        }
+        
+        if (!uploadedIdCardBack) {
+          alert('请上传身份证反面照片');
+          return;
+        }
+        
+        verificationData = {
+          type: 'personal',
+          realName: realName,
+          idNumber: idNumber,
+          validityStart: validityStart,
+          validityEnd: validityEnd,
+          idCardFront: uploadedIdCardFront.name,
+          idCardBack: uploadedIdCardBack.name
+        };
+        
+      } else if (currentFileType === 'enterprise') {
+        // Enterprise verification validation
+        const companyName = document.getElementById('companyName').value.trim();
+        const creditCode = document.getElementById('creditCode').value.trim();
+        const validityStart = document.getElementById('licenseValidityStart').value;
+        const validityEnd = document.getElementById('licenseValidityEnd').value;
+        
+        if (!companyName) {
+          alert('请输入企业名称');
+          document.getElementById('companyName').focus();
+          return;
+        }
+        
+        if (!creditCode) {
+          alert('请输入统一社会识别号');
+          document.getElementById('creditCode').focus();
+          return;
+        }
+        
+        if (!validateCreditCode(creditCode)) {
+          alert('请输入有效的 18 位统一社会识别号');
+          document.getElementById('creditCode').focus();
+          return;
+        }
+        
+        if (!validityStart) {
+          alert('请选择营业执照有效期开始日期');
+          document.getElementById('licenseValidityStart').focus();
+          return;
+        }
+        
+        if (!validityEnd) {
+          alert('请选择营业执照有效期结束日期');
+          document.getElementById('licenseValidityEnd').focus();
+          return;
+        }
+        
+        if (!uploadedLicense) {
+          alert('请上传营业执照照片');
+          return;
+        }
+        
+        verificationData = {
+          type: 'enterprise',
+          companyName: companyName,
+          creditCode: creditCode,
+          validityStart: validityStart,
+          validityEnd: validityEnd,
+          license: uploadedLicense.name
+        };
+      }
+      
+      // Save basic info
+      const saveData = {
+        userType: currentFileType,
+        nickname: nickname,
+        phone: phone,
+        email: email,
+        avatar: uploadedAvatar ? uploadedAvatar.name : null,
+        verification: verificationData
+      };
+      
+      console.log('Saving profile:', saveData);
+      
+      // Simulate verification status update
+      let newStatus = 'unverified';
+      if (currentFileType === 'personal') {
+        // 个人用户自动认证
+        newStatus = 'verified';
+      } else if (currentFileType === 'enterprise') {
+        // 企业用户提交审核
+        newStatus = 'pending';
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('verificationStatus', newStatus);
+      localStorage.setItem('verificationData', JSON.stringify(verificationData));
+      localStorage.setItem('profileData', JSON.stringify(saveData));
+      
+      updateVerificationStatus(newStatus);
+      
+      // Show success message
+      if (newStatus === 'pending') {
+        alert('✅ 资料已提交！\n\n企业认证申请已提交，工作人员将在 1-3 个工作日内完成审核。\n审核结果将通过消息通知您。');
+      } else {
+        alert('✅ 资料保存成功！\n\n认证已完成，您现在可以享受全部服务。');
+      }
+      
+      // In real implementation, send to server
+      // fetch('/api/profile', { method: 'POST', body: JSON.stringify(saveData) });
+    }
+
+    // Load saved verification data
+    function loadSavedVerificationData() {
+      const savedData = localStorage.getItem('profileData');
+      const savedVerification = localStorage.getItem('verificationData');
+      
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        
+        // Set user type
+        if (data.userType === 'enterprise') {
+          document.querySelector('input[name="userType"][value="enterprise"]').checked = true;
+          toggleUserType('enterprise');
+        }
+      }
+      
+      if (savedVerification) {
+        const verification = JSON.parse(savedVerification);
+        
+        if (verification.type === 'personal') {
+          document.getElementById('realName').value = verification.realName || '';
+          document.getElementById('idNumber').value = verification.idNumber || '';
+          document.getElementById('idValidityStart').value = verification.validityStart || '';
+          document.getElementById('idValidityEnd').value = verification.validityEnd || '';
+          
+          if (verification.validityEnd === '2099-12-31') {
+            document.getElementById('idValidityLong').checked = true;
+            document.getElementById('idValidityEnd').disabled = true;
+          }
+          
+          if (verification.idCardFront) {
+            const upload = document.getElementById('idCardFrontUpload');
+            const text = document.getElementById('idCardFrontText');
+            const filename = document.getElementById('idCardFrontFilename');
+            upload.classList.add('has-file');
+            text.innerHTML = '✅ 身份证正面已上传';
+            filename.textContent = verification.idCardFront;
+          }
+          
+          if (verification.idCardBack) {
+            const upload = document.getElementById('idCardBackUpload');
+            const text = document.getElementById('idCardBackText');
+            const filename = document.getElementById('idCardBackFilename');
+            upload.classList.add('has-file');
+            text.innerHTML = '✅ 身份证反面已上传';
+            filename.textContent = verification.idCardBack;
+          }
+          
+        } else if (verification.type === 'enterprise') {
+          document.getElementById('companyName').value = verification.companyName || '';
+          document.getElementById('creditCode').value = verification.creditCode || '';
+          document.getElementById('licenseValidityStart').value = verification.validityStart || '';
+          document.getElementById('licenseValidityEnd').value = verification.validityEnd || '';
+          
+          if (verification.validityEnd === '2099-12-31') {
+            document.getElementById('licenseValidityLong').checked = true;
+            document.getElementById('licenseValidityEnd').disabled = true;
+          }
+          
+          if (verification.license) {
+            const upload = document.getElementById('licenseUpload');
+            const text = document.getElementById('licenseText');
+            const filename = document.getElementById('licenseFilename');
+            upload.classList.add('has-file');
+            text.innerHTML = '✅ 文件已上传';
+            filename.textContent = verification.license;
+          }
+        }
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial avatar initials from nickname
+      const nickname = document.getElementById('nickname').value;
+      if (nickname) {
+        document.getElementById('avatarInitials').textContent = nickname.charAt(0);
+      }
+      
+      // Load verification status from localStorage
+      const savedStatus = localStorage.getItem('verificationStatus');
+      if (savedStatus) {
+        updateVerificationStatus(savedStatus);
+      } else {
+        updateVerificationStatus('unverified');
+      }
+      
+      // Load saved verification data
+      loadSavedVerificationData();
+    });
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>分销合作 - AI 租易用 | 三级分销 共享红利</title>
+  <title>成为分享家 - AI 租易用 | 我的推广中心</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -17,6 +17,7 @@
       --text-muted: #94A3B8;
       --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
       --gradient-orange: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+      --success: #10B981;
     }
     
     body {
@@ -80,8 +81,6 @@
       background: rgba(14, 165, 233, 0.12);
     }
     
-
-    
     .btn {
       padding: 0.75rem 1.5rem;
       border-radius: 10px;
@@ -108,359 +107,439 @@
     
     .btn-orange:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4); }
     
-    .btn-outline {
-      background: transparent;
-      border: 2px solid white;
-      color: white;
-    }
-    
-    .btn-outline:hover {
-      background: white;
-      color: var(--bg-dark);
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
     }
     
     /* Page Hero */
     .page-hero {
-      padding: 10rem 5% 2rem;
+      padding: 8rem 5% 2rem;
       text-align: center;
     }
     
     .page-hero h1 {
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: 800;
       margin-bottom: 0.5rem;
     }
     
     .page-hero p {
       color: var(--text-muted);
-      font-size: 1.2rem;
-    }
-    
-    .breadcrumb {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-      font-size: 0.9rem;
-    }
-    
-    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
-    .breadcrumb a:hover { color: var(--primary); }
-    
-    /* Hero Banner */
-    .hero-banner {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 5%;
-    }
-    
-    .hero-card {
-      background: var(--gradient-orange);
-      padding: 3rem;
-      border-radius: 20px;
-      box-shadow: 0 25px 80px rgba(245, 158, 11, 0.3);
-    }
-    
-    .hero-card h2 {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
-    
-    .hero-card p {
-      color: rgba(255,255,255,0.9);
       font-size: 1.1rem;
-      margin-bottom: 2rem;
-      max-width: 600px;
     }
     
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .hero-card .btn-outline {
-      border-color: rgba(255,255,255,0.5);
-      color: white;
-    }
-    
-    /* Section Title */
-    .section-title {
-      font-size: 2rem;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    
-    /* Pricing Tiers */
-    .tiers-section {
-      padding: 4rem 5%;
+    /* Main Container */
+    .main-container {
       max-width: 1200px;
       margin: 0 auto;
-    }
-    
-    .tiers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      padding: 2rem 5%;
+      display: flex;
+      flex-direction: column;
       gap: 2rem;
     }
     
-    .tier-card {
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .stat-card {
       background: var(--bg-card);
-      border-radius: 20px;
-      border: 2px solid rgba(255,255,255,0.08);
-      padding: 2.5rem;
-      text-align: center;
-      transition: all 0.3s;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 2rem;
       position: relative;
+      overflow: hidden;
     }
     
-    .tier-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 25px 80px rgba(0,0,0,0.4);
-    }
-    
-    .tier-card.featured {
-      border-color: var(--accent);
-      box-shadow: 0 0 40px rgba(245, 158, 11, 0.2);
-    }
-    
-    .tier-badge {
+    .stat-card::before {
+      content: '';
       position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--gradient-orange);
-      color: white;
-      padding: 0.4rem 1.5rem;
-      border-radius: 50px;
-      font-size: 0.8rem;
-      font-weight: 700;
+      top: 0; left: 0;
+      width: 100%; height: 4px;
     }
     
-    .tier-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
+    .stat-card.blue::before { background: var(--gradient); }
+    .stat-card.green::before { background: var(--success); }
+    .stat-card.orange::before { background: var(--gradient-orange); }
+    .stat-card.purple::before { background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); }
     
-    .tier-name {
-      font-size: 1.5rem;
-      font-weight: 800;
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
       margin-bottom: 0.5rem;
     }
     
-    .tier-requirement {
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-card.blue .stat-value { color: var(--primary); }
+    .stat-card.green .stat-value { color: var(--success); }
+    .stat-card.orange .stat-value { color: var(--accent); }
+    .stat-card.purple .stat-value { color: #8B5CF6; }
+    
+    .stat-trend {
+      font-size: 0.85rem;
       color: var(--text-muted);
-      font-size: 0.9rem;
+    }
+    
+    .stat-trend.up { color: var(--success); }
+    
+    /* Section Card */
+    .section-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 2rem;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 1.5rem;
     }
     
-    .tier-commission {
-      font-size: 3rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-    
-    .tier-commission-label {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 2rem;
-    }
-    
-    .tier-features {
-      list-style: none;
-      text-align: left;
-      margin-bottom: 2rem;
-    }
-    
-    .tier-features li {
-      padding: 0.6rem 0;
-      color: var(--text-muted);
-      font-size: 0.95rem;
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     
-    .tier-features li:last-child { border-bottom: none; }
-    
-    .tier-features li::before {
-      content: '✓';
-      color: var(--primary);
-      font-weight: 700;
-    }
-    
-    .tier-features li.unavailable {
-      opacity: 0.5;
-    }
-    
-    .tier-features li.unavailable::before {
-      content: '✗';
-      color: var(--text-muted);
-    }
-    
-    .tier-btn {
-      width: 100%;
-    }
-    
-    .tier-btn.bronze { background: rgba(148, 163, 184, 0.2); color: var(--text-light); }
-    .tier-btn.bronze:hover { background: rgba(148, 163, 184, 0.3); }
-    
-    .tier-btn.silver { background: var(--accent); color: white; }
-    .tier-btn.silver:hover { background: #D97706; }
-    
-    .tier-btn.gold { background: var(--gradient-orange); color: white; }
-    .tier-btn.gold:hover { opacity: 0.9; }
-    
-    /* Rules Section */
-    .rules-section {
-      padding: 4rem 5%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    .rules-card {
-      background: var(--bg-card);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 2.5rem;
-    }
-    
-    .rules-steps {
+    /* Commission Info Card */
+    .commission-info {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
       margin-bottom: 2rem;
     }
     
-    .rule-step {
-      text-align: center;
+    .commission-item {
+      background: rgba(14, 165, 233, 0.08);
+      border-radius: 12px;
+      border: 1px solid rgba(14, 165, 233, 0.15);
       padding: 1.5rem;
     }
     
-    .rule-number {
-      width: 50px;
-      height: 50px;
+    .commission-item.orange {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.15);
+    }
+    
+    .commission-item.purple {
+      background: rgba(139, 92, 246, 0.08);
+      border-color: rgba(139, 92, 246, 0.15);
+    }
+    
+    .commission-level {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    
+    .commission-rate {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+    
+    .commission-item .commission-rate { color: var(--primary); }
+    .commission-item.orange .commission-rate { color: var(--accent); }
+    .commission-item.purple .commission-rate { color: #8B5CF6; }
+    
+    .commission-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    /* Referral Section */
+    .referral-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .referral-section { grid-template-columns: 1fr; }
+    }
+    
+    .referral-box {
+      background: rgba(14, 165, 233, 0.05);
+      border: 2px dashed rgba(14, 165, 233, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    
+    .referral-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    
+    .referral-content {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    
+    .referral-value {
+      flex: 1;
+      background: var(--bg-dark);
+      padding: 0.875rem 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+    
+    .btn-copy {
+      padding: 0.875rem 1.25rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    
+    .btn-copy:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn-copy.copied {
+      background: var(--success);
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid rgba(255,255,255,0.08);
+      padding-bottom: 0;
+    }
+    
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    
+    .tab-btn:hover {
+      color: var(--text-light);
+    }
+    
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    
+    /* Distributor List */
+    .distributor-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .distributor-item {
+      display: grid;
+      grid-template-columns: 60px 1fr 150px 120px;
+      gap: 1rem;
+      align-items: center;
+      background: var(--bg-dark);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s;
+    }
+    
+    .distributor-item:hover {
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+    
+    .distributor-avatar {
+      width: 44px;
+      height: 44px;
       background: var(--gradient);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.25rem;
-      font-weight: 800;
-      margin: 0 auto 1rem;
-      box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
-    }
-    
-    .rule-title {
-      font-size: 1.1rem;
       font-weight: 700;
-      margin-bottom: 0.5rem;
     }
     
-    .rule-desc {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-    
-    /* Example Box */
-    .example-box {
-      background: rgba(14, 165, 233, 0.08);
-      border-radius: 16px;
-      border: 1px solid rgba(14, 165, 233, 0.15);
-      padding: 2rem;
-      margin-top: 2rem;
-    }
-    
-    .example-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
+    .distributor-info {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      flex-direction: column;
+      gap: 0.25rem;
     }
     
-    .example-content {
+    .distributor-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    
+    .distributor-meta {
+      font-size: 0.85rem;
       color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.8;
     }
     
-    .example-content strong {
+    .distributor-contribution {
+      text-align: right;
+    }
+    
+    .contribution-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    .contribution-value {
+      font-weight: 700;
       color: var(--primary);
     }
     
-    /* Stats Section */
-    .stats-section {
-      padding: 4rem 5%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 2rem;
-    }
-    
-    .stat-item {
+    .distributor-level {
+      padding: 0.375rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
       text-align: center;
-      padding: 2rem;
-      background: var(--bg-card);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.06);
     }
     
-    .stat-value {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
+    .level-bronze {
+      background: rgba(148, 163, 184, 0.2);
+      color: #94A3B8;
     }
     
-    .stat-value.blue { color: var(--primary); }
-    .stat-value.green { color: #10B981; }
-    .stat-value.orange { color: #F59E0B; }
-    .stat-value.purple { color: #8B5CF6; }
+    .level-silver {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent);
+    }
     
-    .stat-label {
+    .level-gold {
+      background: rgba(245, 158, 11, 0.3);
+      color: #FCD34D;
+    }
+    
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table th,
+    .data-table td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .data-table th {
+      font-weight: 600;
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     
-    /* FAQ Section */
-    .faq-section {
-      padding: 4rem 5%;
-      max-width: 800px;
-      margin: 0 auto;
+    .data-table tr:hover {
+      background: rgba(255,255,255,0.02);
     }
     
-    .faq-list {
-      list-style: none;
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
     
-    .faq-item {
-      background: var(--bg-card);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 1.5rem 2rem;
+    .status-pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent);
+    }
+    
+    .status-completed {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+    
+    .status-failed {
+      background: rgba(239, 68, 68, 0.2);
+      color: #EF4444;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+    
+    .empty-state-icon {
+      font-size: 3rem;
       margin-bottom: 1rem;
+      opacity: 0.5;
     }
     
-    .faq-question {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      color: var(--text-light);
+    .empty-state-text {
+      font-size: 1rem;
     }
     
-    .faq-answer {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.7;
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Withdraw Button */
+    .withdraw-section {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+    
+    .btn-withdraw {
+      padding: 0.875rem 2rem;
+      background: var(--gradient-orange);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+    }
+    
+    .btn-withdraw:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
     }
     
     /* Footer */
@@ -526,156 +605,196 @@
       margin-top: 2rem;
     }
     
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    .modal-container {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    
+    .modal-close:hover {
+      color: var(--text-light);
+    }
+    
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .modal-subtitle {
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1.125rem;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: var(--bg-dark);
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .form-row .form-input {
+      flex: 1;
+    }
+    
+    .btn-code {
+      padding: 0.875rem 1.25rem;
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    
+    .btn-code:hover {
+      background: rgba(14, 165, 233, 0.1);
+    }
+    
+    .btn-code:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--gradient);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 0.5rem;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-card);
+      color: var(--text-light);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      z-index: 3000;
+      opacity: 0;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    .toast.success {
+      border-color: var(--success);
+      color: var(--success);
+    }
+    
+    .toast.error {
+      border-color: #EF4444;
+      color: #EF4444;
+    }
+    
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .page-hero h1 { font-size: 2rem; }
-      .tiers-grid { grid-template-columns: 1fr; }
-      .rules-steps { grid-template-columns: 1fr; }
-      .hero-actions { flex-direction: column; }
+      .distributor-item {
+        grid-template-columns: 50px 1fr;
+        gap: 0.75rem;
+      }
+      .distributor-contribution,
+      .distributor-level {
+        grid-column: 2;
+      }
+      .distributor-contribution {
+        text-align: left;
+      }
     }
-          /* Login Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-container {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 420px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .modal-close:hover {
-            color: var(--text-light);
-        }
-
-        .modal-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal-subtitle {
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-light);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.875rem 1.125rem;
-            border-radius: 10px;
-            border: 2px solid rgba(255,255,255,0.15);
-            background: var(--bg-dark);
-            color: var(--text-light);
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .form-row .form-input {
-            flex: 1;
-        }
-
-        .btn-code {
-            padding: 0.875rem 1.25rem;
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .btn-code:hover {
-            background: rgba(14, 165, 233, 0.1);
-        }
-
-        .btn-code:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 0.5rem;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
-        }
-
-
-    </style>
+  </style>
 </head>
 <body>
   <!-- Navigation -->
@@ -686,7 +805,7 @@
     <div class="nav-container">
       <ul class="nav-links">
         <li><a href="rental.html">设备租赁</a></li>
-                <li><a href="token.html">Token 工厂</a></li>
+        <li><a href="token.html">Token 工厂</a></li>
         <li><a href="services.html">AI 技术服务</a></li>
         <li><a href="community.html">OPC 社区</a></li>
       </ul>
@@ -698,313 +817,560 @@
 
   <!-- Page Hero -->
   <section class="page-hero">
+    <h1>🎯 成为分享家</h1>
+    <p>推广赚佣金，分享创收益</p>
+  </section>
+
+  <!-- Main Container -->
+  <div class="main-container">
     
-    <h1>💰 分销合作</h1>
-    <p>成为AI分享家，共享时代红利</p>
-  </section>
-
-  <!-- Hero Banner -->
-  <section class="hero-banner">
-    <div class="hero-card">
-      <h2>🚀 成为分销商，赚取丰厚佣金</h2>
-      <p>推荐客户购买我们的产品和服务，即可获得高达 30% 的佣金回报。三级分销体系，让您的收益持续增长！</p>
-      <div class="hero-actions">
-        <a href="../user/register.html" class="btn" style="background: white; color: #EA580C;">立即申请</a>
-        <a href="#how-it-works" class="btn btn-outline">了解规则</a>
+    <!-- Stats Section -->
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-label">累计收益</div>
+        <div class="stat-value">¥12,580.00</div>
+        <div class="stat-trend up">↑ 较上月 +15.3%</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">可提现</div>
+        <div class="stat-value">¥3,280.00</div>
+        <div class="stat-trend">满¥100 即可提现</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">已提现</div>
+        <div class="stat-value">¥9,300.00</div>
+        <div class="stat-trend">共 12 笔提现</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">下级分销商</div>
+        <div class="stat-value">48 人</div>
+        <div class="stat-trend">一级 12 人 · 二级 21 人 · 三级 15 人</div>
       </div>
     </div>
-  </section>
 
-  <!-- Tiers Section -->
-  <section class="tiers-section">
-    <h2 class="section-title">分销等级</h2>
-    <div class="tiers-grid">
-      <!-- Bronze -->
-      <div class="tier-card">
-        <div class="tier-icon">🥉</div>
-        <h3 class="tier-name">青铜分销商</h3>
-        <p class="tier-requirement">免费注册</p>
-        <div class="tier-commission">10%</div>
-        <p class="tier-commission-label">一级佣金比例</p>
-        <ul class="tier-features">
-          <li>一级佣金 10%</li>
-          <li>二级佣金 3%</li>
-          <li>三级佣金 2%</li>
-          <li class="unavailable">专属客服</li>
-        </ul>
-        <a href="../user/register.html" class="btn tier-btn bronze">免费加入</a>
+    <!-- Commission Info -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">📊 三级分销说明</div>
       </div>
-
-      <!-- Silver -->
-      <div class="tier-card featured">
-        <div class="tier-badge">推荐</div>
-        <div class="tier-icon">🥈</div>
-        <h3 class="tier-name">白银分销商</h3>
-        <p class="tier-requirement">累计佣金 ≥ ¥5,000</p>
-        <div class="tier-commission">15%</div>
-        <p class="tier-commission-label">一级佣金比例</p>
-        <ul class="tier-features">
-          <li>一级佣金 15%</li>
-          <li>二级佣金 5%</li>
-          <li>三级佣金 3%</li>
-          <li>专属客服支持</li>
-        </ul>
-        <a href="../user/register.html" class="btn tier-btn silver">免费加入</a>
-      </div>
-
-      <!-- Gold -->
-      <div class="tier-card">
-        <div class="tier-icon">🥇</div>
-        <h3 class="tier-name">黄金分销商</h3>
-        <p class="tier-requirement">累计佣金 ≥ ¥20,000</p>
-        <div class="tier-commission">20%</div>
-        <p class="tier-commission-label">一级佣金比例</p>
-        <ul class="tier-features">
-          <li>一级佣金 20%</li>
-          <li>二级佣金 8%</li>
-          <li>三级佣金 5%</li>
-          <li>专属客户经理</li>
-          <li>优先提现通道</li>
-        </ul>
-        <a href="../user/register.html" class="btn tier-btn gold">免费加入</a>
+      <div class="commission-info">
+        <div class="commission-item">
+          <div class="commission-level">一级分销商（直接推荐）</div>
+          <div class="commission-rate">15%</div>
+          <div class="commission-desc">您直接推荐的用户消费，您获得 15% 佣金</div>
+        </div>
+        <div class="commission-item orange">
+          <div class="commission-level">二级分销商（间接推荐）</div>
+          <div class="commission-rate">8%</div>
+          <div class="commission-desc">您一级分销商推荐的用户消费，您获得 8% 佣金</div>
+        </div>
+        <div class="commission-item purple">
+          <div class="commission-level">三级分销商（间接推荐）</div>
+          <div class="commission-rate">5%</div>
+          <div class="commission-desc">您二级分销商推荐的用户消费，您获得 5% 佣金</div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- Rules Section -->
-  <section class="rules-section" id="how-it-works">
-    <h2 class="section-title">分销规则说明</h2>
-    <div class="rules-card">
-      <div class="rules-steps">
-        <div class="rule-step">
-          <div class="rule-number">1</div>
-          <h3 class="rule-title">生成推广码</h3>
-          <p class="rule-desc">注册后自动生成专属推广码和链接</p>
+    <!-- Referral Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">🔗 我的推广</div>
+      </div>
+      <div class="referral-section">
+        <div class="referral-box">
+          <div class="referral-label">我的推广码</div>
+          <div class="referral-content">
+            <div class="referral-value" id="referralCode">AF2026RICHARD</div>
+            <button class="btn-copy" onclick="copyCode('referralCode', this)">复制</button>
+          </div>
         </div>
-        <div class="rule-step">
-          <div class="rule-number">2</div>
-          <h3 class="rule-title">分享推广</h3>
-          <p class="rule-desc">通过社交媒体、朋友圈等渠道分享</p>
+        <div class="referral-box">
+          <div class="referral-label">我的推广链接</div>
+          <div class="referral-content">
+            <div class="referral-value" id="referralLink">https://ai-zuyiyong.com/?ref=AF2026RICHARD</div>
+            <button class="btn-copy" onclick="copyCode('referralLink', this)">复制</button>
+          </div>
         </div>
-        <div class="rule-step">
-          <div class="rule-number">3</div>
-          <h3 class="rule-title">获得佣金</h3>
-          <p class="rule-desc">客户消费后自动计算并累计佣金</p>
+      </div>
+    </div>
+
+    <!-- Distributor List -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">👥 下级分销商</div>
+      </div>
+      
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('level1')">一级分销商 (12)</button>
+        <button class="tab-btn" onclick="switchTab('level2')">二级分销商 (21)</button>
+        <button class="tab-btn" onclick="switchTab('level3')">三级分销商 (15)</button>
+      </div>
+      
+      <!-- Level 1 -->
+      <div class="tab-content active" id="level1">
+        <div class="distributor-list">
+          <div class="distributor-item">
+            <div class="distributor-avatar">李</div>
+            <div class="distributor-info">
+              <div class="distributor-name">李小明</div>
+              <div class="distributor-meta">加入时间：2026-03-15</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥2,450.00</div>
+            </div>
+            <div class="distributor-level level-silver">白银</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">王</div>
+            <div class="distributor-info">
+              <div class="distributor-name">王芳</div>
+              <div class="distributor-meta">加入时间：2026-03-10</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥1,890.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">张</div>
+            <div class="distributor-info">
+              <div class="distributor-name">张伟</div>
+              <div class="distributor-meta">加入时间：2026-02-28</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥3,120.00</div>
+            </div>
+            <div class="distributor-level level-gold">黄金</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">刘</div>
+            <div class="distributor-info">
+              <div class="distributor-name">刘强</div>
+              <div class="distributor-meta">加入时间：2026-02-20</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥1,560.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">陈</div>
+            <div class="distributor-info">
+              <div class="distributor-name">陈静</div>
+              <div class="distributor-meta">加入时间：2026-02-15</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥2,890.00</div>
+            </div>
+            <div class="distributor-level level-silver">白银</div>
+          </div>
         </div>
       </div>
       
-      <div class="example-box">
-        <div class="example-title">💡 佣金计算示例</div>
-        <div class="example-content">
-          <p>假设您（黄金分销商）推荐了客户 A 购买 ¥1,000 的服务：</p>
-          <ul style="margin: 1rem 0 1rem 1.5rem;">
-            <li>您获得一级佣金：¥1,000 × 20% = <strong>¥200</strong></li>
-            <li>客户 A 推荐客户 B 消费 ¥1,000，您获得二级佣金：¥1,000 × 8% = <strong>¥80</strong></li>
-            <li>客户 B 推荐客户 C 消费 ¥1,000，您获得三级佣金：¥1,000 × 5% = <strong>¥50</strong></li>
-          </ul>
-          <p>总计：¥200 + ¥80 + ¥50 = <strong>¥330</strong></p>
+      <!-- Level 2 -->
+      <div class="tab-content" id="level2">
+        <div class="distributor-list">
+          <div class="distributor-item">
+            <div class="distributor-avatar">赵</div>
+            <div class="distributor-info">
+              <div class="distributor-name">赵敏</div>
+              <div class="distributor-meta">加入时间：2026-03-20</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥1,250.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">孙</div>
+            <div class="distributor-info">
+              <div class="distributor-name">孙涛</div>
+              <div class="distributor-meta">加入时间：2026-03-18</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥980.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">周</div>
+            <div class="distributor-info">
+              <div class="distributor-name">周杰</div>
+              <div class="distributor-meta">加入时间：2026-03-12</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥1,680.00</div>
+            </div>
+            <div class="distributor-level level-silver">白银</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">吴</div>
+            <div class="distributor-info">
+              <div class="distributor-name">吴娟</div>
+              <div class="distributor-meta">加入时间：2026-03-08</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥2,150.00</div>
+            </div>
+            <div class="distributor-level level-silver">白银</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">郑</div>
+            <div class="distributor-info">
+              <div class="distributor-name">郑浩</div>
+              <div class="distributor-meta">加入时间：2026-03-05</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥890.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Level 3 -->
+      <div class="tab-content" id="level3">
+        <div class="distributor-list">
+          <div class="distributor-item">
+            <div class="distributor-avatar">冯</div>
+            <div class="distributor-info">
+              <div class="distributor-name">冯雪</div>
+              <div class="distributor-meta">加入时间：2026-03-22</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥650.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">褚</div>
+            <div class="distributor-info">
+              <div class="distributor-name">褚卫</div>
+              <div class="distributor-meta">加入时间：2026-03-19</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥420.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">蒋</div>
+            <div class="distributor-info">
+              <div class="distributor-name">蒋丽</div>
+              <div class="distributor-meta">加入时间：2026-03-14</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥780.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">沈</div>
+            <div class="distributor-info">
+              <div class="distributor-name">沈强</div>
+              <div class="distributor-meta">加入时间：2026-03-10</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥1,120.00</div>
+            </div>
+            <div class="distributor-level level-silver">白银</div>
+          </div>
+          <div class="distributor-item">
+            <div class="distributor-avatar">韩</div>
+            <div class="distributor-info">
+              <div class="distributor-name">韩梅</div>
+              <div class="distributor-meta">加入时间：2026-03-06</div>
+            </div>
+            <div class="distributor-contribution">
+              <div class="contribution-label">累计贡献</div>
+              <div class="contribution-value">¥560.00</div>
+            </div>
+            <div class="distributor-level level-bronze">青铜</div>
+          </div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- Stats Section -->
-  <section class="stats-section">
-    <h2 class="section-title">分销商收益数据</h2>
-    <div class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-value blue">10,000+</div>
-        <div class="stat-label">注册分销商</div>
+    <!-- Withdrawal Records -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">💰 提现记录</div>
       </div>
-      <div class="stat-item">
-        <div class="stat-value green">¥500 万+</div>
-        <div class="stat-label">累计发放佣金</div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>提现单号</th>
+              <th>提现金额</th>
+              <th>手续费</th>
+              <th>实收金额</th>
+              <th>提现方式</th>
+              <th>状态</th>
+              <th>申请时间</th>
+              <th>到账时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>WD20260408001</td>
+              <td>¥1,500.00</td>
+              <td>¥0.00</td>
+              <td>¥1,500.00</td>
+              <td>支付宝</td>
+              <td><span class="status-badge status-completed">已完成</span></td>
+              <td>2026-04-08 14:30</td>
+              <td>2026-04-08 16:45</td>
+            </tr>
+            <tr>
+              <td>WD20260401002</td>
+              <td>¥2,000.00</td>
+              <td>¥0.00</td>
+              <td>¥2,000.00</td>
+              <td>微信</td>
+              <td><span class="status-badge status-completed">已完成</span></td>
+              <td>2026-04-01 10:15</td>
+              <td>2026-04-01 11:30</td>
+            </tr>
+            <tr>
+              <td>WD20260325003</td>
+              <td>¥800.00</td>
+              <td>¥0.00</td>
+              <td>¥800.00</td>
+              <td>银行卡</td>
+              <td><span class="status-badge status-completed">已完成</span></td>
+              <td>2026-03-25 09:20</td>
+              <td>2026-03-25 15:00</td>
+            </tr>
+            <tr>
+              <td>WD20260318004</td>
+              <td>¥1,200.00</td>
+              <td>¥0.00</td>
+              <td>¥1,200.00</td>
+              <td>支付宝</td>
+              <td><span class="status-badge status-completed">已完成</span></td>
+              <td>2026-03-18 16:45</td>
+              <td>2026-03-18 18:20</td>
+            </tr>
+            <tr>
+              <td>WD20260310005</td>
+              <td>¥500.00</td>
+              <td>¥0.00</td>
+              <td>¥500.00</td>
+              <td>微信</td>
+              <td><span class="status-badge status-completed">已完成</span></td>
+              <td>2026-03-10 11:30</td>
+              <td>2026-03-10 13:15</td>
+            </tr>
+            <tr>
+              <td>WD20260305006</td>
+              <td>¥1,800.00</td>
+              <td>¥0.00</td>
+              <td>¥1,800.00</td>
+              <td>银行卡</td>
+              <td><span class="status-badge status-completed">已完成</span></td>
+              <td>2026-03-05 14:00</td>
+              <td>2026-03-05 17:30</td>
+            </tr>
+            <tr>
+              <td>WD20260228007</td>
+              <td>¥1,500.00</td>
+              <td>¥0.00</td>
+              <td>¥1,500.00</td>
+              <td>支付宝</td>
+              <td><span class="status-badge status-pending">处理中</span></td>
+              <td>2026-02-28 10:20</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="stat-item">
-        <div class="stat-value orange">¥50,000+</div>
-        <div class="stat-label">最高个人收益</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value purple">24 小时</div>
-        <div class="stat-label">快速提现到账</div>
+      <div class="withdraw-section">
+        <button class="btn-withdraw" onclick="openWithdrawModal()">💰 申请提现</button>
       </div>
     </div>
-  </section>
 
-  <!-- FAQ Section -->
-  <section class="faq-section">
-    <h2 class="section-title">常见问题</h2>
-    <ul class="faq-list">
-      <li class="faq-item">
-        <div class="faq-question">Q: 如何成为分销商？</div>
-        <p class="faq-answer">A: 只需注册账户，在用户中心申请成为分销商即可，无需任何费用。</p>
-      </li>
-      <li class="faq-item">
-        <div class="faq-question">Q: 佣金如何提现？</div>
-        <p class="faq-answer">A: 佣金满¥100 即可申请提现，支持支付宝、微信、银行卡等多种方式，24 小时内到账。</p>
-      </li>
-      <li class="faq-item">
-        <div class="faq-question">Q: 推广链接有效期多久？</div>
-        <p class="faq-answer">A: 推广链接永久有效，客户通过您的链接注册后，其消费将永久计入您的佣金。</p>
-      </li>
-      <li class="faq-item">
-        <div class="faq-question">Q: 可以多个账号推广吗？</div>
-        <p class="faq-answer">A: 每个用户只能有一个分销账号，请妥善保管您的推广码和链接。</p>
-      </li>
-    </ul>
-  </section>
+  </div>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-content">
-      <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
-      <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
-        <div class="footer-section">
-          <div class="footer-section-title">产品服务</div>
-          <ul class="footer-section-links">
-            <li><a href="rental.html">设备租赁</a></li>
-                <li><a href="token.html">Token 工厂</a></li>
-            <li><a href="services.html">AI 技术服务</a></li>
-            <li><a href="community.html">OPC 社区</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <div class="footer-section-title">用户服务</div>
-          <ul class="footer-section-links">
-            <li><a href="user.html">用户中心</a></li>
-            
-            <li><a href="affiliate.html" class="active">分销合作</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <div class="footer-section-title">支持</div>
-          <ul class="footer-section-links">
-            <li><a href="#">产品文档</a></li>
-            <li><a href="#">价格方案</a></li>
-            <li><a href="#">关于我们</a></li>
-            <li><a href="#">联系我们</a></li>
-          </ul>
-        </div>
+      <div class="footer-section">
+        <div class="footer-logo">🚀 AI 租易用</div>
       </div>
-      <div class="footer-copy">© 2026 AI 租易用。All rights reserved.</div>
+      <div class="footer-section">
+        <div class="footer-section-title">产品服务</div>
+        <ul class="footer-section-links">
+          <li><a href="rental.html">设备租赁</a></li>
+          <li><a href="token.html">Token 工厂</a></li>
+          <li><a href="services.html">AI 技术服务</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <div class="footer-section-title">支持文档</div>
+        <ul class="footer-section-links">
+          <li><a href="help.html">帮助中心</a></li>
+          <li><a href="community.html">社区论坛</a></li>
+          <li><a href="contact.html">联系我们</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <div class="footer-section-title">法律条款</div>
+        <ul class="footer-section-links">
+          <li><a href="terms.html">服务条款</a></li>
+          <li><a href="privacy.html">隐私政策</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 AI 租易用。All rights reserved.
     </div>
   </footer>
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-container">
-            <button class="modal-close" onclick="closeLoginModal()">×</button>
-            <h2 class="modal-title">欢迎回来</h2>
-            <p class="modal-subtitle">使用手机号验证码登录或注册</p>
-            
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label class="form-label" for="phone">手机号</label>
-                    <input type="tel" id="phone" class="form-input" placeholder="请输入 11 位手机号" maxlength="11" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="code">验证码</label>
-                    <div class="form-row">
-                        <input type="text" id="code" class="form-input" placeholder="6 位验证码" maxlength="6" required>
-                        <button type="button" class="btn-code" id="getCodeBtn" onclick="sendCode()">获取验证码</button>
-                    </div>
-                </div>
-                
-                <div class="form-agreement">
-                    <input type="checkbox" id="agreement" required>
-                    <label for="agreement">我已阅读并同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a></label>
-                </div>
-                
-                <button type="submit" class="btn-submit">登录/注册</button>
-            </form>
+
+  <!-- Login Modal -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal-container">
+      <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+      <h2 class="modal-title">欢迎回来</h2>
+      <p class="modal-subtitle">登录您的账户继续操作</p>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">手机号 / 邮箱</label>
+          <input type="text" class="form-input" placeholder="请输入手机号或邮箱" required>
         </div>
-    </div>
-
-    <!-- User Center Modal -->
-    <div class="modal-overlay" id="userCenterModal">
-        <div class="modal-container user-center-modal">
-            <button class="modal-close" onclick="closeUserCenter()">×</button>
-            <div class="user-center-header">
-                <div class="user-center-avatar" id="centerAvatar">U</div>
-                <div class="user-center-name" id="centerName">用户</div>
-                <div class="user-center-phone" id="centerPhone">138****0000</div>
-            </div>
-            
-            <div class="user-center-grid">
-                <a href="pages/enterprise/index.html" class="user-center-card enterprise">
-                    <div class="user-center-icon">🏢</div>
-                    <div>
-                        <h4>企业后台</h4>
-                        <p>管理企业资源与数据</p>
-                    </div>
-                </a>
-                <a href="#" class="user-center-card">
-                    <div class="user-center-icon">📊</div>
-                    <div>
-                        <h4>使用统计</h4>
-                        <p>查看 API 调用情况</p>
-                    </div>
-                </a>
-                <a href="#" class="user-center-card">
-                    <div class="user-center-icon">💳</div>
-                    <div>
-                        <h4>账户充值</h4>
-                        <p>管理余额与套餐</p>
-                    </div>
-                </a>
-                <a href="#" class="user-center-card">
-                    <div class="user-center-icon">⚙️</div>
-                    <div>
-                        <h4>账户设置</h4>
-                        <p>修改个人信息</p>
-                    </div>
-                </a>
-            </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input type="password" class="form-input" placeholder="请输入密码" required>
         </div>
+        <button type="submit" class="btn-submit">登录</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
-    
-    <script>
-        let currentUser = null;
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem('aiZuyiyongUser');
-            if (savedUser) { currentUser = JSON.parse(savedUser); updateUIForLoggedInUser(); }
-        });
-        function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
-        function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
-        document.getElementById('loginModal').addEventListener('click', (e) => { if (e.target.id === 'loginModal') closeLoginModal(); });
-        document.getElementById('userCenterModal').addEventListener('click', (e) => { if (e.target.id === 'userCenterModal') closeUserCenter(); });
-        let codeSent = false, countdown = 0;
-        function sendCode() {
-            const phone = document.getElementById('phone').value;
-            if (!/^1[3-9]\d{9}$/.test(phone)) { showToast('请输入正确的 11 位手机号', 'error'); return; }
-            if (codeSent && countdown > 0) return;
-            const btn = document.getElementById('getCodeBtn'); btn.disabled = true; countdown = 60; btn.textContent = `${countdown}s 后重试`;
-            setTimeout(() => {
-                showToast('验证码已发送：123456（演示用）', 'success'); codeSent = true;
-                const timer = setInterval(() => { countdown--; if (countdown <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = '获取验证码'; } else { btn.textContent = `${countdown}s 后重试`; } }, 1000);
-            }, 500);
-        }
-        function handleLogin(event) {
-            event.preventDefault();
-            const phone = document.getElementById('phone').value, code = document.getElementById('code').value, agreement = document.getElementById('agreement').checked;
-            if (!agreement) { showToast('请先同意用户协议和隐私政策', 'error'); return; }
-            if (!/^1[3-9]\d{9}$/.test(phone)) { showToast('请输入正确的 11 位手机号', 'error'); return; }
-            if (code.length !== 6) { showToast('请输入 6 位验证码', 'error'); return; }
-            setTimeout(() => {
-                const user = { phone, name: phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), avatar: phone.charAt(phone.length - 1) % 2 === 0 ? '👨' : '👩' };
-                currentUser = user; localStorage.setItem('aiZuyiyongUser', JSON.stringify(user)); updateUIForLoggedInUser(); closeLoginModal(); showToast('登录成功！', 'success');
-                document.getElementById('loginForm').reset(); codeSent = false; document.getElementById('getCodeBtn').disabled = false; document.getElementById('getCodeBtn').textContent = '获取验证码';
-            }, 500);
-        }
-        function updateUIForLoggedInUser() { if (!currentUser) return; const btn = document.querySelector('.nav-right-wrapper .btn-primary'); if (btn) btn.style.display = 'none'; }
-        function openUserCenter() { if (!currentUser) { openLoginModal(); return; } document.getElementById('userCenterModal').classList.add('active'); }
-        function closeUserCenter() { document.getElementById('userCenterModal').classList.remove('active'); }
-        function logout() { currentUser = null; localStorage.removeItem('aiZuyiyongUser'); const btn = document.querySelector('.nav-right-wrapper .btn-primary'); if (btn) btn.style.display = 'inline-block'; showToast('已退出登录', 'success'); }
-        function showToast(message, type = 'success') { const t = document.getElementById('toast'); t.textContent = message; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3000); }
-    </script>
+  <!-- Withdraw Modal -->
+  <div class="modal-overlay" id="withdrawModal">
+    <div class="modal-container">
+      <button class="modal-close" onclick="closeModal('withdrawModal')">&times;</button>
+      <h2 class="modal-title">💰 申请提现</h2>
+      <p class="modal-subtitle">当前可提现金额：¥3,280.00</p>
+      <form onsubmit="handleWithdraw(event)">
+        <div class="form-group">
+          <label class="form-label">提现金额</label>
+          <input type="number" class="form-input" placeholder="最低提现¥100" min="100" max="3280" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">提现方式</label>
+          <select class="form-input" required>
+            <option value="">请选择提现方式</option>
+            <option value="alipay">支付宝</option>
+            <option value="wechat">微信</option>
+            <option value="bank">银行卡</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">收款账号</label>
+          <input type="text" class="form-input" placeholder="请输入收款账号" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">真实姓名</label>
+          <input type="text" class="form-input" placeholder="请输入真实姓名" required>
+        </div>
+        <button type="submit" class="btn-submit">确认提现</button>
+      </form>
+    </div>
+  </div>
 
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Copy Code
+    function copyCode(elementId, btn) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '已复制';
+        btn.classList.add('copied');
+        showToast('复制成功！', 'success');
+        setTimeout(() => {
+          btn.textContent = '复制';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        showToast('复制失败，请手动复制', 'error');
+      });
+    }
+
+    // Modal Functions
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.add('active');
+    }
+
+    function openWithdrawModal() {
+      document.getElementById('withdrawModal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Form Handlers
+    function handleLogin(event) {
+      event.preventDefault();
+      closeModal('loginModal');
+      showToast('登录成功！', 'success');
+    }
+
+    function handleWithdraw(event) {
+      event.preventDefault();
+      closeModal('withdrawModal');
+      showToast('提现申请已提交，预计 2 小时内到账', 'success');
+    }
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast show ' + type;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Close modal on outside click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.classList.remove('active');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

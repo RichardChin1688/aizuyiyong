@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI 定制开发 - AI 租易用 | 专业团队 专属方案</title>
+  <title>AI 技术服务 - AI 租易用 | 企业级 AI 解决方案</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -16,6 +16,9 @@
       --text-light: #F1F5F9;
       --text-muted: #94A3B8;
       --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
     }
     
     body {
@@ -23,6 +26,8 @@
       background: var(--bg-dark);
       color: var(--text-light);
       line-height: 1.7;
+      margin-top: 0;
+      padding-top: 0;
     }
     
     body::before {
@@ -35,12 +40,11 @@
       z-index: -1;
     }
     
-    /* Navigation */
     .navbar {
       position: fixed;
       top: 0;
       width: 100%;
-      padding: 1rem 5%;
+      padding: 0.75rem 5%;
       background: rgba(11, 17, 32, 0.95);
       backdrop-filter: blur(20px);
       display: flex;
@@ -48,6 +52,11 @@
       align-items: center;
       z-index: 1000;
       border-bottom: 1px solid rgba(255,255,255,0.08);
+      height: 70px;
+    }
+    
+    .navbar + .page-hero {
+      padding-top: 8rem;
     }
     
     .nav-logo-wrapper { position: absolute; left: 5%; }
@@ -64,7 +73,6 @@
     }
     
     .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
-    
     .nav-links a {
       color: var(--text-muted);
       text-decoration: none;
@@ -73,13 +81,10 @@
       font-weight: 500;
       transition: all 0.3s;
     }
-    
     .nav-links a:hover, .nav-links a.active {
       color: var(--text-light);
       background: rgba(14, 165, 233, 0.12);
     }
-    
-
     
     .btn {
       padding: 0.75rem 1.5rem;
@@ -90,936 +95,492 @@
       border: none;
       cursor: pointer;
     }
-    
     .btn-primary {
       background: var(--gradient);
       color: white;
       box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
     }
-    
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
     
-    /* Page Hero */
     .page-hero {
-      padding: 10rem 5% 3rem;
+      padding: 8rem 5% 2rem;
       text-align: center;
+      background: radial-gradient(ellipse at 50% 0%, rgba(14, 165, 233, 0.15) 0%, transparent 50%);
     }
-    
     .page-hero h1 {
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: 800;
       margin-bottom: 1rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    
     .page-hero p {
       color: var(--text-muted);
-      font-size: 1.2rem;
-    }
-    
-    .breadcrumb {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-      font-size: 0.9rem;
-    }
-    
-    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
-    .breadcrumb a:hover { color: var(--primary); }
-    
-    /* Process Section */
-    .process-section {
-      padding: 4rem 5%;
-      max-width: 1200px;
+      font-size: 1.1rem;
+      max-width: 700px;
       margin: 0 auto;
     }
     
-    .section-title {
-      font-size: 2rem;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 3rem;
+    .category-nav {
+      position: sticky;
+      top: 70px;
+      background: rgba(11, 17, 32, 0.98);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      z-index: 99;
+      padding: 0.5rem 5%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     
-    .process-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 1.5rem;
+    .category-tabs {
+      display: flex;
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
     }
     
-    .process-item {
-      text-align: center;
-      padding: 2rem;
-      background: var(--bg-card);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.06);
+    .services-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 5% 3rem;
+      position: relative;
+      z-index: 1;
     }
-    
-    .process-number {
-      width: 60px;
-      height: 60px;
+    .category-tabs {
+      display: flex;
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .category-tab {
+      padding: 0.5rem 1.25rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50px;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.3s;
+    }
+    .category-tab:hover, .category-tab.active {
       background: var(--gradient);
-      border-radius: 50%;
+      color: white;
+      border-color: transparent;
+    }
+    
+    .services-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 4rem 5% 3rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .category-section {
+      margin-bottom: 4rem;
+    }
+    .category-header {
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(14, 165, 233, 0.3);
+    }
+    .category-icon {
+      font-size: 2rem;
+    }
+    .category-title {
       font-size: 1.5rem;
-      font-weight: 800;
-      margin: 0 auto 1.5rem;
-      box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
-    }
-    
-    .process-title {
-      font-size: 1.1rem;
       font-weight: 700;
-      margin-bottom: 0.5rem;
     }
-    
-    .process-desc {
+    .category-desc {
       color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-    
-    /* Services Section */
-    .services-section {
-      padding: 4rem 5%;
-    }
-    
-    .services-wrapper {
-      position: relative;
-      max-width: 1200px;
-      margin: 0 auto;
+      font-size: 0.95rem;
     }
     
     .services-grid {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 1.5rem;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      padding: 1rem 0;
-    }
-    
-    .services-grid::-webkit-scrollbar {
-      display: none;
-    }
-    
-    .services-nav-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 48px;
-      height: 48px;
-      background: var(--bg-card);
-      border: 1px solid rgba(14, 165, 233, 0.3);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10;
-      transition: all 0.3s;
-      font-size: 1.5rem;
-      color: var(--primary);
-    }
-    
-    .services-nav-btn:hover {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-    
-    .services-nav-btn.prev {
-      left: -24px;
-    }
-    
-    .services-nav-btn.next {
-      right: -24px;
-    }
-    
-    .services-nav-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
     }
     
     .service-card {
       background: var(--bg-card);
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.08);
-      padding: 2rem;
+      padding: 1.5rem;
       transition: all 0.3s;
-      flex: 0 0 280px;
-      scroll-snap-align: start;
     }
-    
     .service-card:hover {
       transform: translateY(-4px);
-      border-color: rgba(14, 165, 233, 0.4);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-color: rgba(14, 165, 233, 0.3);
+      box-shadow: 0 10px 40px rgba(14, 165, 233, 0.15);
     }
-    
     .service-icon {
-      width: 56px;
-      height: 56px;
-      background: rgba(14, 165, 233, 0.1);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      margin-bottom: 1.25rem;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
     }
-    
-    .service-title {
-      font-size: 1.25rem;
+    .service-name {
+      font-size: 1.2rem;
       font-weight: 700;
       margin-bottom: 0.75rem;
     }
-    
     .service-desc {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
       margin-bottom: 1rem;
     }
-    
     .service-features {
-      list-style: none;
-    }
-    
-    .service-features li {
-      padding: 0.4rem 0;
-      color: var(--text-muted);
-      font-size: 0.9rem;
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       gap: 0.5rem;
     }
-    
-    .service-features li::before {
-      content: '✓';
+    .feature-tag {
+      padding: 0.25rem 0.75rem;
+      background: rgba(14, 165, 233, 0.1);
       color: var(--primary);
-      font-weight: 700;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 500;
     }
     
-    /* Form Section */
-    .form-section {
-      padding: 4rem 5%;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .form-card {
-      background: var(--bg-card);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 2.5rem;
-    }
-    
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-    }
-    
-    .form-label {
-      display: block;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--text-light);
-    }
-    
-    .form-input, .form-select, .form-textarea {
-      width: 100%;
-      padding: 0.875rem 1.25rem;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: var(--bg-dark);
-      color: var(--text-light);
-      font-size: 0.95rem;
-      font-family: inherit;
-    }
-    
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .form-textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-    
-    .form-submit {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1rem;
-    }
-    
-    /* Quick Links */
-    .quick-links-section {
-      padding: 4rem 5%;
+    .solution-section {
       max-width: 1200px;
-      margin: 0 auto;
+      margin: 4rem auto;
+      padding: 0 5%;
     }
-    
-    .quick-links-card {
-      background: rgba(14, 165, 233, 0.08);
-      border-radius: 16px;
-      border: 1px solid rgba(14, 165, 233, 0.15);
-      padding: 2rem;
-    }
-    
-    .quick-links-title {
-      font-size: 1.25rem;
+    .solution-section h2 {
+      text-align: center;
+      font-size: 2rem;
       font-weight: 700;
-      margin-bottom: 1.5rem;
+      margin-bottom: 3rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    
-    .quick-links-grid {
+    .solutions-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-    
-    .quick-link-item {
-      display: flex;
-      align-items: center;
-      padding: 1rem;
-      background: var(--bg-card);
-      border-radius: 12px;
-      text-decoration: none;
-      color: var(--text-light);
-      transition: all 0.3s;
-    }
-    
-    .quick-link-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    
-    .quick-link-icon {
-      font-size: 1.5rem;
-      margin-right: 0.75rem;
-    }
-    
-    /* Footer */
-    .footer {
-      padding: 4rem 5% 3rem;
-      background: #0B1120;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
     }
-    
-    .footer-logo {
-      font-size: 1.4rem;
+    .solution-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .solution-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+    .solution-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 4px;
+      background: var(--gradient);
+    }
+    .solution-card.premium::before {
+      background: linear-gradient(135deg, #F59E0B, #EF4444);
+    }
+    .solution-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .solution-size {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .solution-price {
+      font-size: 2rem;
       font-weight: 800;
       background: var(--gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    
-    .footer-section {
       margin-bottom: 1.5rem;
     }
-    
-    .footer-section-title {
-      color: var(--text-light);
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      font-size: 0.95rem;
+    .solution-features {
+      text-align: left;
+      margin-bottom: 1.5rem;
+      flex: 1;
     }
     
-    .footer-section-links {
-      display: flex;
-      gap: 1.5rem;
+    .solution-actions {
+      margin-top: auto;
+    }
+    .solution-features li {
+      padding: 0.5rem 0;
+      color: var(--text-muted);
       list-style: none;
-      flex-wrap: wrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .solution-features li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 700;
     }
     
-    .footer-section-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.875rem;
-      transition: color 0.3s;
-    }
-    
-    .footer-section-links a:hover { color: var(--primary); }
-    
-    .footer-copy {
-      color: var(--text-muted);
-      font-size: 0.875rem;
+    .cta-section {
       text-align: center;
-      width: 100%;
-      margin-top: 2rem;
+      padding: 4rem 5%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+    }
+    .cta-section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .cta-section p {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
     }
     
     @media (max-width: 768px) {
       .nav-links { display: none; }
-      .page-hero h1 { font-size: 2rem; }
-      .process-grid { grid-template-columns: repeat(3, 1fr); }
-      .service-card { flex: 0 0 260px; }
-      .quick-links-grid { grid-template-columns: repeat(2, 1fr); }
-      .form-row { grid-template-columns: 1fr; }
-      .services-nav-btn { display: none; }
+      .services-grid { grid-template-columns: 1fr; }
+      .category-tabs { justify-content: flex-start; }
     }
-    
-    @media (max-width: 480px) {
-      .process-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-          /* Login Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-container {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 420px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .modal-close:hover {
-            color: var(--text-light);
-        }
-
-        .modal-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal-subtitle {
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-light);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.875rem 1.125rem;
-            border-radius: 10px;
-            border: 2px solid rgba(255,255,255,0.15);
-            background: var(--bg-dark);
-            color: var(--text-light);
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .form-row .form-input {
-            flex: 1;
-        }
-
-        .btn-code {
-            padding: 0.875rem 1.25rem;
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .btn-code:hover {
-            background: rgba(14, 165, 233, 0.1);
-        }
-
-        .btn-code:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 0.5rem;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
-        }
-
-
-    </style>
+  </style>
 </head>
 <body>
-  <!-- Navigation -->
   <nav class="navbar">
     <div class="nav-logo-wrapper">
       <a href="index.html" class="logo">🚀 AI 租易用</a>
     </div>
     <div class="nav-container">
       <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
         <li><a href="rental.html">设备租赁</a></li>
-                <li><a href="token.html">Token 工厂</a></li>
-        <li><a href="index.html" class="active">AI 技术服务</a></li>
+        <li><a href="token.html">Token 工厂</a></li>
+        <li><a href="services.html" class="active">技术服务</a></li>
         <li><a href="community.html">OPC 社区</a></li>
       </ul>
     </div>
     <div class="nav-right-wrapper">
-      <button class="btn btn-primary" onclick="openLoginModal()">登录 / 注册</button>
+      <a href="user.html" class="btn btn-primary">用户中心</a>
     </div>
   </nav>
 
-  <!-- Page Hero -->
   <section class="page-hero">
- 
-    <h1>🛠️ AI 技术服务</h1>
-    <p>专业团队，为您打造专属 AI 解决方案</p>
+    <h1>🛠️ 企业级 AI 技术服务</h1>
+    <p>让每一家企业，都拥有一支不用发工资、24 小时在岗、绝对安全可控的 AI 智能团队</p>
   </section>
 
-  <!-- Process Section -->
-  <section class="process-section">
-    <h2 class="section-title">服务流程</h2>
-    <div class="process-grid">
-      <div class="process-item">
-        <div class="process-number">1</div>
-        <h3 class="process-title">需求沟通</h3>
-        <p class="process-desc">了解您的业务需求</p>
+  <div class="category-nav">
+    <div class="category-tabs">
+      <div class="category-tab active" data-category="all">全部服务</div>
+      <div class="category-tab" data-category="basic">🏗️ 基础层</div>
+      <div class="category-tab" data-category="capability">⚡ 能力层</div>
+      <div class="category-tab" data-category="governance">🛡️ 治理层</div>
+      <div class="category-tab" data-category="operation">📦 托管层</div>
+      <div class="category-tab" data-category="strategy">💡 战略层</div>
+    </div>
+  </div>
+
+  <div class="services-container" id="servicesContainer">
+    <!-- 服务列表将通过 JavaScript 动态渲染 -->
+  </div>
+
+  <div class="solution-section">
+    <h2>📦 标准化解决方案</h2>
+    <div class="solutions-grid">
+      <div class="solution-card">
+        <h3 class="solution-name">小微企业方案</h3>
+        <p class="solution-size">适合 ＜30 人团队</p>
+        <div class="solution-price" style="color:var(--text-muted);font-size:1.2rem;">📩 咨询获取报价</div>
+        <ul class="solution-features">
+          <li>OpenClaw 专业工作站 ×1</li>
+          <li>Token 工厂企业版</li>
+          <li>基础业务 Skill ×2</li>
+          <li>国内 GEO 优化</li>
+          <li>年度 AI 代运维</li>
+        </ul>
+        <div class="solution-actions">
+          <a href="contact.html" class="btn btn-primary" style="width:100%;">立即咨询</a>
+        </div>
       </div>
-      <div class="process-item">
-        <div class="process-number">2</div>
-        <h3 class="process-title">方案报价</h3>
-        <p class="process-desc">提供技术方案和报价</p>
+      
+      <div class="solution-card premium">
+        <h3 class="solution-name">中型企业方案</h3>
+        <p class="solution-size">适合 30-200 人团队</p>
+        <div class="solution-price" style="color:var(--text-muted);font-size:1.2rem;">📩 咨询获取报价</div>
+        <ul class="solution-features">
+          <li>3 机智能集群</li>
+          <li>全球 Token 中转 + 安全风控</li>
+          <li>行业 Skill 套件</li>
+          <li>中型私有知识库</li>
+          <li>私有化部署 + 安全合规全套</li>
+          <li>年度陪跑服务</li>
+        </ul>
+        <div class="solution-actions">
+          <a href="contact.html" class="btn btn-primary" style="width:100%;">立即咨询</a>
+        </div>
       </div>
-      <div class="process-item">
-        <div class="process-number">3</div>
-        <h3 class="process-title">签订合同</h3>
-        <p class="process-desc">明确双方权责</p>
-      </div>
-      <div class="process-item">
-        <div class="process-number">4</div>
-        <h3 class="process-title">开发实施</h3>
-        <p class="process-desc">专业团队开发</p>
-      </div>
-      <div class="process-item">
-        <div class="process-number">5</div>
-        <h3 class="process-title">交付售后</h3>
-        <p class="process-desc">持续技术支持</p>
+      
+      <div class="solution-card premium">
+        <h3 class="solution-name">大型企业方案</h3>
+        <p class="solution-size">适合 200 人以上</p>
+        <div class="solution-price" style="color:var(--text-muted);font-size:1.2rem;">📩 咨询获取报价</div>
+        <ul class="solution-features">
+          <li>全栈治理体系</li>
+          <li>多智能体集群调度</li>
+          <li>全球 GEO 加速</li>
+          <li>全系统 AI 化集成</li>
+          <li>合规审计 + 安全加固</li>
+          <li>专属客户成功团队</li>
+          <li>效果保底承诺</li>
+        </ul>
+        <div class="solution-actions">
+          <a href="contact.html" class="btn btn-primary" style="width:100%;">立即咨询</a>
+        </div>
       </div>
     </div>
+  </div>
+
+  <section class="cta-section">
+    <h2>🚀 开启您的 AI 转型之旅</h2>
+    <p>专业团队一对一咨询，定制最适合您的 AI 解决方案</p>
+    <a href="contact.html" class="btn btn-primary" style="padding:1rem 3rem;font-size:1.1rem;">免费获取方案</a>
   </section>
 
-  <!-- Services Section -->
-  <section class="services-section">
-    <h2 class="section-title">服务项目</h2>
-    <div class="services-wrapper">
-      <button class="services-nav-btn prev" onclick="scrollServices(-1)">‹</button>
-      <div class="services-grid" id="servicesGrid">
-      <div class="service-card">
-        <div class="service-icon">🤖</div>
-        <h3 class="service-title">AI 应用开发</h3>
-        <p class="service-desc">定制化 AI 应用开发，包括智能客服、图像识别、自然语言处理等</p>
-        <ul class="service-features">
-          <li>智能对话系统</li>
-          <li>图像识别与处理</li>
-          <li>数据分析与预测</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">🔧</div>
-        <h3 class="service-title">OpenClaw 定制</h3>
-        <p class="service-desc">基于 OpenClaw 框架的深度定制，打造专属 AI 助手</p>
-        <ul class="service-features">
-          <li>技能开发</li>
-          <li>工作流定制</li>
-          <li>系统集成</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">📊</div>
-        <h3 class="service-title">数据服务</h3>
-        <p class="service-desc">数据采集、清洗、标注及模型训练服务</p>
-        <ul class="service-features">
-          <li>数据集构建</li>
-          <li>模型微调</li>
-          <li>性能优化</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">🎓</div>
-        <h3 class="service-title">技术咨询</h3>
-        <p class="service-desc">AI 技术选型、架构设计、团队培训</p>
-        <ul class="service-features">
-          <li>技术方案设计</li>
-          <li>架构咨询</li>
-          <li>技术培训</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">📦</div>
-        <h3 class="service-title">OpenClaw 安装</h3>
-        <p class="service-desc">专业团队上门或远程安装 OpenClaw，开箱即用</p>
-        <ul class="service-features">
-          <li>环境配置</li>
-          <li>技能部署</li>
-          <li>使用培训</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">🔧</div>
-        <h3 class="service-title">OpenClaw 调试</h3>
-        <p class="service-desc">解决 OpenClaw 运行问题，优化配置和性能</p>
-        <ul class="service-features">
-          <li>故障排查</li>
-          <li>性能调优</li>
-          <li>技能调试</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">🧠</div>
-        <h3 class="service-title">大模型部署</h3>
-        <p class="service-desc">本地/私有化大模型部署，包括 Qwen、Llama 等</p>
-        <ul class="service-features">
-          <li>模型选型</li>
-          <li>本地部署</li>
-          <li>API 集成</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">💻</div>
-        <h3 class="service-title">设备批量租赁</h3>
-        <p class="service-desc">为企业提供大规模设备租赁服务，支持定制化配置</p>
-        <ul class="service-features">
-          <li>批量折扣优惠</li>
-          <li>专属客户经理</li>
-          <li>灵活租期选择</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">📚</div>
-        <h3 class="service-title">技术培训服务</h3>
-        <p class="service-desc">为企业团队提供 AI 技术培训和认证</p>
-        <ul class="service-features">
-          <li>定制化培训课程</li>
-          <li>实战项目演练</li>
-          <li>培训认证证书</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">☁️</div>
-        <h3 class="service-title">企业私有化部署</h3>
-        <p class="service-desc">支持本地化部署，保障企业数据安全</p>
-        <ul class="service-features">
-          <li>数据完全私有</li>
-          <li>内网隔离部署</li>
-          <li>安全合规认证</li>
-        </ul>
-      </div>
-
-      <div class="service-card">
-        <div class="service-icon">🤝</div>
-        <h3 class="service-title">战略合作伙伴</h3>
-        <p class="service-desc">长期合作，共享 AI 发展红利</p>
-        <ul class="service-features">
-          <li>优先技术支持</li>
-          <li>联合市场推广</li>
-          <li>收益分成计划</li>
-        </ul>
-      </div>
-      <button class="services-nav-btn next" onclick="scrollServices(1)">›</button>
-    </div>
-  </section>
-
-  <!-- Form Section -->
-  <section class="form-section" id="contact">
-    <div class="form-card">
-      <h2 class="section-title" style="margin-bottom: 2rem;">提交需求</h2>
-      <form class="space-y-6">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">姓名</label>
-            <input type="text" class="form-input" placeholder="您的姓名">
-          </div>
-          <div class="form-group">
-            <label class="form-label">联系方式</label>
-            <input type="text" class="form-input" placeholder="手机/微信">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">公司名称</label>
-          <input type="text" class="form-input" placeholder="选填">
-        </div>
-        <div class="form-group">
-          <label class="form-label">项目类型</label>
-          <select class="form-select">
-            <option>请选择项目类型</option>
-            <option>AI 应用开发</option>
-            <option>OpenClaw 定制</option>
-            <option>OpenClaw 安装</option>
-            <option>OpenClaw 调试</option>
-            <option>数据服务</option>
-            <option>大模型部署</option>
-            <option>技术咨询</option>
-            <option>设备批量租赁</option>
-            <option>技术培训服务</option>
-            <option>企业私有化部署</option>
-            <option>战略合作伙伴</option>
-            <option>其他</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">需求描述</label>
-          <textarea class="form-textarea" placeholder="请详细描述您的需求"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary form-submit">提交需求</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-content">
-      <a href="index.html" class="footer-logo">🚀 AI 租易用</a>
-      <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
-        <div class="footer-section">
-          <div class="footer-section-title">产品服务</div>
-          <ul class="footer-section-links">
-            <li><a href="rental.html">设备租赁</a></li>
-                <li><a href="token.html">Token 工厂</a></li>
-            <li><a href="services.html" class="active">AI 技术服务</a></li>
-            <li><a href="community.html">OPC 社区</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <div class="footer-section-title">用户服务</div>
-          <ul class="footer-section-links">
-            <li><a href="user.html">用户中心</a></li>
-            
-            <li><a href="affiliate.html">分销合作</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <div class="footer-section-title">支持</div>
-          <ul class="footer-section-links">
-            <li><a href="#">产品文档</a></li>
-            <li><a href="#">价格方案</a></li>
-            <li><a href="#">关于我们</a></li>
-            <li><a href="#">联系我们</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-copy">© 2026 AI 租易用。All rights reserved.</div>
-    </div>
-  </footer>
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-container">
-            <button class="modal-close" onclick="closeLoginModal()">×</button>
-            <h2 class="modal-title">欢迎回来</h2>
-            <p class="modal-subtitle">使用手机号验证码登录或注册</p>
-            
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label class="form-label" for="phone">手机号</label>
-                    <input type="tel" id="phone" class="form-input" placeholder="请输入 11 位手机号" maxlength="11" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="code">验证码</label>
-                    <div class="form-row">
-                        <input type="text" id="code" class="form-input" placeholder="6 位验证码" maxlength="6" required>
-                        <button type="button" class="btn-code" id="getCodeBtn" onclick="sendCode()">获取验证码</button>
-                    </div>
-                </div>
-                
-                <div class="form-agreement">
-                    <input type="checkbox" id="agreement" required>
-                    <label for="agreement">我已阅读并同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a></label>
-                </div>
-                
-                <button type="submit" class="btn-submit">登录/注册</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- User Center Modal -->
-    <div class="modal-overlay" id="userCenterModal">
-        <div class="modal-container user-center-modal">
-            <button class="modal-close" onclick="closeUserCenter()">×</button>
-            <div class="user-center-header">
-                <div class="user-center-avatar" id="centerAvatar">U</div>
-                <div class="user-center-name" id="centerName">用户</div>
-                <div class="user-center-phone" id="centerPhone">138****0000</div>
-            </div>
-            
-            <div class="user-center-grid">
-                <a href="pages/enterprise/index.html" class="user-center-card enterprise">
-                    <div class="user-center-icon">🏢</div>
-                    <div>
-                        <h4>企业后台</h4>
-                        <p>管理企业资源与数据</p>
-                    </div>
-                </a>
-                <a href="#" class="user-center-card">
-                    <div class="user-center-icon">📊</div>
-                    <div>
-                        <h4>使用统计</h4>
-                        <p>查看 API 调用情况</p>
-                    </div>
-                </a>
-                <a href="#" class="user-center-card">
-                    <div class="user-center-icon">💳</div>
-                    <div>
-                        <h4>账户充值</h4>
-                        <p>管理余额与套餐</p>
-                    </div>
-                </a>
-                <a href="#" class="user-center-card">
-                    <div class="user-center-icon">⚙️</div>
-                    <div>
-                        <h4>账户设置</h4>
-                        <p>修改个人信息</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
+  <script>
+    // 服务数据（按 5 层架构分类）
+    const servicesData = [
+      // 基础层服务
+      { id: 1, category: 'basic', icon: '🖥️', name: 'AI 智能体设备租赁', desc: '开箱即用的 OpenClaw 企业智能硬件，预装完整 AI 系统，数据本地化存储，按月租赁。', features: ['开箱即用', '数据本地', '弹性扩容', '全周期维护'] },
+      { id: 2, category: 'basic', icon: '🎫', name: 'Token 工厂服务', desc: '统一 API 网关聚合多模型，智能路由、请求缓存、成本监控，降低 AI 成本 30%-70%。', features: ['统一入口', '智能缓存', '成本优化', '用量可视'] },
+      { id: 3, category: 'basic', icon: '🌐', name: 'Geo 优化服务', desc: 'AI 专用全球加速网络，智能就近接入、故障自动切换，响应速度提升 40%-80%。', features: ['就近接入', '自动容灾', '全链路监控', '全球加速'] },
+      { id: 4, category: 'basic', icon: '🔒', name: '私有化/隔离部署', desc: '私有云/VPC/本地服务器部署，数据完全隔离，满足等保、行业监管要求。', features: ['纯内网部署', '数据不触公网', '自主可控', '最高安全'] },
+      
+      // 能力构建层
+      { id: 5, category: 'capability', icon: '🤖', name: '智能体定制开发', desc: '根据业务场景开发专属 AI Skill，让 AI 从通用对话升级为可执行的业务助手。', features: ['Skill 定制', '工作流编排', '系统对接', '快速落地'] },
+      { id: 6, category: 'capability', icon: '📚', name: '企业私有知识库', desc: '将企业制度、产品手册、技术文档向量化，构建企业内部 AI 大脑，人走知识不走。', features: ['海量文档', '智能问答', '持续更新', '知识沉淀'] },
+      { id: 7, category: 'capability', icon: '👨‍💼', name: '数字员工定制', desc: '封装可直接上岗的 AI 数字员工，替代人工完成高重复、标准化岗位，24 小时在岗。', features: ['AI 客服', '销售 SOP', '运营自动化', '成本降 50%'] },
+      { id: 8, category: 'capability', icon: '⚙️', name: 'AI 工作流自动化', desc: '跨系统、跨平台、多步骤业务流程端到端全自动执行，无需人工干预。', features: ['跨系统打通', '自动触发', '异常处理', '全流程可视'] },
+      { id: 9, category: 'capability', icon: '🔄', name: '系统 AI 化升级', desc: '将 ERP/CRM/OA 等老系统封装为 AI 可调用接口，不换系统、低成本智能化升级。', features: ['老系统封装', '安全权限', '数据打通', '保护投资'] },
+      
+      // 治理与风控层
+      { id: 10, category: 'governance', icon: '🔐', name: '账号安全与风控', desc: 'API Key 加密存储、分级授权、异常流量检测，防止泄露、盗用、盗刷。', features: ['加密存储', '分级授权', '盗刷预警', '全程审计'] },
+      { id: 11, category: 'governance', icon: '✅', name: '合规与数据安全审计', desc: '对 AI 使用行为、数据流向、内容安全进行全面诊断审计，输出专业报告。', features: ['合规检查', '数据审计', '敏感过滤', '整改建议'] },
+      { id: 12, category: 'governance', icon: '📹', name: 'AI 行为审计', desc: '全链路留存智能体操作记录，相当于给 AI 装上"行车记录仪"，可追溯可审计。', features: ['日志留存', '敏感拦截', '审计报告', '监管查验'] },
+      { id: 13, category: 'governance', icon: '🚧', name: '权限围栏设计', desc: '按部门、岗位、角色设置最小权限，数据隔离、功能隔离，AI 能力安全释放。', features: ['分级权限', '数据隔离', '不可越权', '安全最大化'] },
+      { id: 14, category: 'governance', icon: '🛑', name: '熔断降级机制', desc: 'AI 异常时自动暂停、降级、通知，防止错误扩大，保障业务连续性。', features: ['异常检测', '自动熔断', '自动降级', '实时通知'] },
+      { id: 15, category: 'governance', icon: '📊', name: '智能体 KPI 评估', desc: '建立 AI 效果、效率、成本、ROI 量化指标，让 AI 像员工一样可考核。', features: ['指标建模', '自动统计', '可视化报表', '持续优化'] },
+      { id: 16, category: 'governance', icon: '👥', name: '多智能体协同', desc: '多台 AI 智能体组成协同团队，任务自动分配、负载均衡，像人类团队一样高效。', features: ['任务分发', '负载均衡', '状态同步', '大规模并发'] },
+      { id: 17, category: 'governance', icon: '🧠', name: '业务本体建模', desc: '将企业隐性业务规则转化为机器可理解的结构化模型，让 AI 真正懂生意。', features: ['规则抽取', '关系建模', '动态更新', '复杂逻辑'] },
+      
+      // 托管运营层
+      { id: 18, category: 'operation', icon: '🎯', name: 'AI 员工托管服务', desc: '提供完整 AI 数字员工代运营，企业只提需求，我们负责训练、维护、优化、迭代。', features: ['代运营', '7x24 监控', 'SLA 保障', '持续迭代'] },
+      { id: 19, category: 'operation', icon: '🔧', name: 'AI 代运维与托管', desc: '全生命周期运维：实时监控、版本升级、故障处理、性能调优、安全加固。', features: ['实时监控', '故障响应', '性能优化', '安全巡检'] },
+      { id: 20, category: 'operation', icon: '🎓', name: '内部 AI 培训与陪跑', desc: '从管理层到执行层的 AI 能力培训，实操训练、落地陪跑，让团队真正会用 AI。', features: ['定制课程', '实操教学', '落地陪跑', '案例输出'] },
+      
+      // 战略咨询层
+      { id: 21, category: 'strategy', icon: '📈', name: 'SaaS 到 GaaS 转型咨询', desc: '帮助传统软件企业从"卖工具"转向"卖结果"，抓住 AI 时代商业模式升级机遇。', features: ['转型规划', '产品 AI 化', '定价设计', '落地支持'] },
+      { id: 22, category: 'strategy', icon: '💰', name: '效果付费模式设计', desc: '设计可度量、可验证、可分成的 AI 效果付费模式，风险共担、收益共享。', features: ['指标设计', '计量系统', '分成机制', '合规方案'] },
+      { id: 23, category: 'strategy', icon: '🎤', name: '高管 AI 认知工作坊', desc: '面向决策层的 AI 战略闭门培训，帮助高管看懂 AI、投对 AI、用 AI 驱动增长。', features: ['认知升级', '路径设计', '风险规划', '实战方法'] },
+    ];
     
-    <script>
-        let currentUser = null;
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem('aiZuyiyongUser');
-            if (savedUser) { currentUser = JSON.parse(savedUser); updateUIForLoggedInUser(); }
+    // 渲染服务
+    function renderServices(category = 'all') {
+      const container = document.getElementById('servicesContainer');
+      const filtered = category === 'all' 
+        ? servicesData 
+        : servicesData.filter(s => s.category === category);
+      
+      // 按类别分组渲染
+      const categories = {
+        basic: { icon: '🏗️', title: '基础层服务', desc: '让企业零门槛、低成本、安全用上 AI' },
+        capability: { icon: '⚡', title: '能力构建层', desc: '让 AI 真正为业务干活、创造价值' },
+        governance: { icon: '🛡️', title: '治理与风控层', desc: '安全、合规、可控、不背锅' },
+        operation: { icon: '📦', title: '托管运营层', desc: '企业不用管，我们全包' },
+        strategy: { icon: '💡', title: '战略咨询层', desc: '升维・转型・增长・模式创新' }
+      };
+      
+      if (category === 'all') {
+        let html = '';
+        Object.keys(categories).forEach(catKey => {
+          const catServices = filtered.filter(s => s.category === catKey);
+          if (catServices.length === 0) return;
+          
+          const cat = categories[catKey];
+          html += `
+            <div class="category-section">
+              <div class="category-header">
+                <span class="category-icon">${cat.icon}</span>
+                <div>
+                  <h3 class="category-title">${cat.title}</h3>
+                  <p class="category-desc">${cat.desc}</p>
+                </div>
+              </div>
+              <div class="services-grid">
+                ${catServices.map(s => renderServiceCard(s)).join('')}
+              </div>
+            </div>
+          `;
         });
-        function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
-        function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
-        document.getElementById('loginModal').addEventListener('click', (e) => { if (e.target.id === 'loginModal') closeLoginModal(); });
-        document.getElementById('userCenterModal').addEventListener('click', (e) => { if (e.target.id === 'userCenterModal') closeUserCenter(); });
-        let codeSent = false, countdown = 0;
-        function sendCode() {
-            const phone = document.getElementById('phone').value;
-            if (!/^1[3-9]\d{9}$/.test(phone)) { showToast('请输入正确的 11 位手机号', 'error'); return; }
-            if (codeSent && countdown > 0) return;
-            const btn = document.getElementById('getCodeBtn'); btn.disabled = true; countdown = 60; btn.textContent = `${countdown}s 后重试`;
-            setTimeout(() => {
-                showToast('验证码已发送：123456（演示用）', 'success'); codeSent = true;
-                const timer = setInterval(() => { countdown--; if (countdown <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = '获取验证码'; } else { btn.textContent = `${countdown}s 后重试`; } }, 1000);
-            }, 500);
-        }
-        function handleLogin(event) {
-            event.preventDefault();
-            const phone = document.getElementById('phone').value, code = document.getElementById('code').value, agreement = document.getElementById('agreement').checked;
-            if (!agreement) { showToast('请先同意用户协议和隐私政策', 'error'); return; }
-            if (!/^1[3-9]\d{9}$/.test(phone)) { showToast('请输入正确的 11 位手机号', 'error'); return; }
-            if (code.length !== 6) { showToast('请输入 6 位验证码', 'error'); return; }
-            setTimeout(() => {
-                const user = { phone, name: phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), avatar: phone.charAt(phone.length - 1) % 2 === 0 ? '👨' : '👩' };
-                currentUser = user; localStorage.setItem('aiZuyiyongUser', JSON.stringify(user)); updateUIForLoggedInUser(); closeLoginModal(); showToast('登录成功！', 'success');
-                document.getElementById('loginForm').reset(); codeSent = false; document.getElementById('getCodeBtn').disabled = false; document.getElementById('getCodeBtn').textContent = '获取验证码';
-            }, 500);
-        }
-        function updateUIForLoggedInUser() { if (!currentUser) return; const btn = document.querySelector('.nav-right-wrapper .btn-primary'); if (btn) btn.style.display = 'none'; }
-        function openUserCenter() { if (!currentUser) { openLoginModal(); return; } document.getElementById('userCenterModal').classList.add('active'); }
-        function closeUserCenter() { document.getElementById('userCenterModal').classList.remove('active'); }
-        function logout() { currentUser = null; localStorage.removeItem('aiZuyiyongUser'); const btn = document.querySelector('.nav-right-wrapper .btn-primary'); if (btn) btn.style.display = 'inline-block'; showToast('已退出登录', 'success'); }
-        function showToast(message, type = 'success') { const t = document.getElementById('toast'); t.textContent = message; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3000); }
-        
-        // Services scroll navigation
-        function scrollServices(direction) {
-            const grid = document.getElementById('servicesGrid');
-            const scrollAmount = 300;
-            grid.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-        }
-    </script>
-
+        container.innerHTML = html;
+      } else if (category === 'solution') {
+        container.innerHTML = '<div style="text-align:center;padding:4rem;color:var(--text-muted);"><p>请查看下方"标准化解决方案"区域</p></div>';
+      } else {
+        container.innerHTML = `
+          <div class="category-section">
+            <div class="category-header">
+              <span class="category-icon">${categories[category]?.icon || ''}</span>
+              <div>
+                <h3 class="category-title">${categories[category]?.title || ''}</h3>
+                <p class="category-desc">${categories[category]?.desc || ''}</p>
+              </div>
+            </div>
+            <div class="services-grid">
+              ${filtered.map(s => renderServiceCard(s)).join('')}
+            </div>
+          </div>
+        `;
+      }
+    }
+    
+    function renderServiceCard(service) {
+      return `
+        <div class="service-card">
+          <div class="service-icon">${service.icon}</div>
+          <h3 class="service-name">${service.name}</h3>
+          <p class="service-desc">${service.desc}</p>
+          <div class="service-features">
+            ${service.features.map(f => `<span class="feature-tag">${f}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+    
+    // 分类切换
+    document.querySelectorAll('.category-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        renderServices(this.dataset.category);
+      });
+    });
+    
+    // 初始化
+    renderServices('all');
+  </script>
 </body>
 </html>

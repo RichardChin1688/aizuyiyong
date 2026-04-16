@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>奖励活动 - AI 租易用 | 企业用户专属奖励</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #0EA5E9;
+      --primary-dark: #0C4A6E;
+      --accent: #F59E0B;
+      --bg-dark: #0B1120;
+      --bg-card: #1E293B;
+      --text-light: #F1F5F9;
+      --text-muted: #94A3B8;
+      --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+      --gradient-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      --gradient-green: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    }
+    
+    body {
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.7;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 70% 30%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 5%;
+      background: rgba(11, 17, 32, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .nav-logo-wrapper { position: absolute; left: 5%; }
+    .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+    .nav-right-wrapper { position: absolute; right: 5%; }
+    
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+    
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text-light);
+      background: rgba(14, 165, 233, 0.12);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+    }
+    
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+    
+    .btn-gold {
+      background: var(--gradient-gold);
+      color: white;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+    }
+    
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4); }
+    
+    /* Page Hero */
+    .page-hero {
+      padding: 10rem 5% 2rem;
+      text-align: center;
+    }
+    
+    .breadcrumb {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    
+    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--primary); }
+    
+    .page-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    
+    /* Main Container */
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 5%;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 1.5rem;
+      height: fit-content;
+    }
+    
+    .user-profile {
+      text-align: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 1.5rem;
+    }
+    
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 auto 1rem;
+    }
+    
+    .user-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .user-level {
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .sidebar-nav {
+      list-style: none;
+    }
+    
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      padding: 0.875rem 1rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: all 0.3s;
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: rgba(14, 165, 233, 0.12);
+      color: var(--text-light);
+    }
+    
+    .sidebar-nav .icon {
+      margin-right: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    /* Main Content */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    
+    /* Content Card */
+    .content-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    
+    /* Activity Cards */
+    .activity-list {
+      padding: 1.5rem;
+      display: grid;
+      gap: 1.5rem;
+    }
+    
+    .activity-card {
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.3s;
+    }
+    
+    .activity-card:hover {
+      border-color: rgba(14, 165, 233, 0.3);
+      background: rgba(255,255,255,0.04);
+    }
+    
+    .activity-card.active {
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.05);
+    }
+    
+    .activity-card.ended {
+      opacity: 0.7;
+      border-color: rgba(255,255,255,0.04);
+    }
+    
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .activity-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .activity-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .activity-badge.ongoing {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10B981;
+    }
+    
+    .activity-badge.ended {
+      background: rgba(148, 163, 184, 0.15);
+      color: #94A3B8;
+    }
+    
+    .activity-description {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    
+    .activity-info {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .activity-info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    
+    .activity-info-item .icon {
+      font-size: 1.1rem;
+    }
+    
+    .reward-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 8px;
+      color: #F59E0B;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    .activity-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table th, .data-table td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      vertical-align: middle;
+    }
+    
+    .data-table th {
+      background: rgba(255,255,255,0.02);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    
+    .data-table td {
+      border-top: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9rem;
+    }
+    
+    .data-table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .status-badge.pending { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+    .status-badge.completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+    .status-badge.processing { background: rgba(14, 165, 233, 0.15); color: #0EA5E9; }
+    .status-badge.expired { background: rgba(148, 163, 184, 0.15); color: #94A3B8; }
+    
+    /* Reward Items */
+    .reward-list {
+      padding: 1.5rem;
+      display: grid;
+      gap: 1rem;
+    }
+    
+    .reward-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.3s;
+    }
+    
+    .reward-item:hover {
+      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.05);
+    }
+    
+    .reward-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .reward-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-gold);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .reward-details h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .reward-details p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    .reward-amount {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #F59E0B;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--text-muted);
+    }
+    
+    .empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    .empty-state p {
+      font-size: 0.95rem;
+    }
+    
+    /* Footer */
+    .footer {
+      margin-top: 4rem;
+      padding: 3rem 5%;
+      background: rgba(11, 17, 32, 0.8);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+    
+    .footer-section h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-light);
+    }
+    
+    .footer-section ul {
+      list-style: none;
+    }
+    
+    .footer-section li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-section a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+    
+    .footer-section a:hover {
+      color: var(--primary);
+    }
+    
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 2rem auto 0;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 968px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+      
+      .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .page-hero h1 {
+        font-size: 1.8rem;
+      }
+      
+      .activity-info {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-logo-wrapper">
+      <a href="index.html" class="logo">AI 租易用</a>
+    </div>
+    <div class="nav-container">
+      <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="services.html">产品服务</a></li>
+        <li><a href="rental.html">租赁方案</a></li>
+        <li><a href="community.html">社区</a></li>
+        <li><a href="help.html">帮助中心</a></li>
+      </ul>
+    </div>
+    <div class="nav-right-wrapper">
+      <a href="user.html" class="btn btn-primary">用户中心</a>
+    </div>
+  </nav>
+
+  <!-- Page Hero -->
+  <section class="page-hero">
+    <div class="breadcrumb">
+      <a href="index.html">首页</a>
+      <span>/</span>
+      <a href="user.html">用户中心</a>
+      <span>/</span>
+      <span>奖励活动</span>
+    </div>
+    <h1>🎁 奖励活动</h1>
+    <p>企业用户专属奖励计划，推荐客户赢取丰厚回报</p>
+  </section>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="user-profile">
+        <div class="user-avatar">企</div>
+        <div class="user-name">企业用户</div>
+        <div class="user-level">⭐ 金牌合作伙伴</div>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="user.html"><span class="icon">👤</span> 账户概览</a></li>
+        <li><a href="invoice.html"><span class="icon">📄</span> 发票管理</a></li>
+        <li><a href="order-detail.html"><span class="icon">📦</span> 订单管理</a></li>
+        <li><a href="coupon.html"><span class="icon">🎫</span> 优惠券</a></li>
+        <li><a href="token.html"><span class="icon">💰</span> Token 充值</a></li>
+        <li><a href="affiliate.html"><span class="icon">🤝</span> 分销合作</a></li>
+        <li><a href="rewards.html" class="active"><span class="icon">🎁</span> 奖励活动</a></li>
+        <li><a href="help.html"><span class="icon">❓</span> 帮助中心</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Current Activity List -->
+      <section class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">🔥 当前活动</h2>
+        </div>
+        <div class="activity-list">
+          <!-- Activity Card 1 -->
+          <div class="activity-card active">
+            <div class="activity-header">
+              <h3 class="activity-title">企业推荐奖励计划</h3>
+              <span class="activity-badge ongoing">进行中</span>
+            </div>
+            <div class="reward-type">
+              <span>🎫</span> 奖励类型：优惠券 + Token
+            </div>
+            <p class="activity-description">
+              推荐新客户完成首单租赁，即可获得高额奖励。每成功推荐一家企业客户，
+              可获得 500 元优惠券及 1000 Token 奖励，上不封顶！
+            </p>
+            <div class="activity-info">
+              <div class="activity-info-item">
+                <span class="icon">📅</span>
+                <span>活动时间：2026-04-01 至 2026-06-30</span>
+              </div>
+              <div class="activity-info-item">
+                <span class="icon">👥</span>
+                <span>已参与：1,234 人</span>
+              </div>
+            </div>
+            <div class="activity-actions">
+              <a href="affiliate.html" class="btn btn-primary">立即参与</a>
+              <a href="#rules" class="btn" style="background: rgba(255,255,255,0.1); color: var(--text-light);">查看规则</a>
+            </div>
+          </div>
+
+          <!-- Activity Card 2 -->
+          <div class="activity-card">
+            <div class="activity-header">
+              <h3 class="activity-title">季度消费返利</h3>
+              <span class="activity-badge ongoing">进行中</span>
+            </div>
+            <div class="reward-type">
+              <span>💰</span> 奖励类型：Token 返利
+            </div>
+            <p class="activity-description">
+              Q2 季度累计消费满 10,000 Token，即可享受 10% Token 返利。
+              消费越高，返利越多，最高可达 20%！
+            </p>
+            <div class="activity-info">
+              <div class="activity-info-item">
+                <span class="icon">📅</span>
+                <span>活动时间：2026-04-01 至 2026-06-30</span>
+              </div>
+              <div class="activity-info-item">
+                <span class="icon">📊</span>
+                <span>当前进度：3,500 / 10,000 Token</span>
+              </div>
+            </div>
+            <div class="activity-actions">
+              <a href="token.html" class="btn btn-primary">查看详情</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- My Referral Records -->
+      <section class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">📋 我的推荐记录</h2>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>推荐客户</th>
+                <th>推荐时间</th>
+                <th>客户状态</th>
+                <th>奖励状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>上海某某科技有限公司</td>
+                <td>2026-04-08 14:30</td>
+                <td><span class="status-badge completed">已完成首单</span></td>
+                <td><span class="status-badge completed">已发放</span></td>
+                <td><a href="#" style="color: var(--primary); text-decoration: none;">查看详情</a></td>
+              </tr>
+              <tr>
+                <td>北京创新网络有限公司</td>
+                <td>2026-04-05 09:15</td>
+                <td><span class="status-badge completed">已完成首单</span></td>
+                <td><span class="status-badge completed">已发放</span></td>
+                <td><a href="#" style="color: var(--primary); text-decoration: none;">查看详情</a></td>
+              </tr>
+              <tr>
+                <td>深圳智能科技集团</td>
+                <td>2026-04-03 16:45</td>
+                <td><span class="status-badge processing">注册未下单</span></td>
+                <td><span class="status-badge pending">待发放</span></td>
+                <td><a href="#" style="color: var(--primary); text-decoration: none;">提醒客户</a></td>
+              </tr>
+              <tr>
+                <td>杭州数据服务有限公司</td>
+                <td>2026-03-28 11:20</td>
+                <td><span class="status-badge completed">已完成首单</span></td>
+                <td><span class="status-badge completed">已发放</span></td>
+                <td><a href="#" style="color: var(--primary); text-decoration: none;">查看详情</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Rewards Received -->
+      <section class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">🏆 已获奖励</h2>
+        </div>
+        <div class="reward-list">
+          <!-- Reward Item 1 -->
+          <div class="reward-item">
+            <div class="reward-info">
+              <div class="reward-icon">🎫</div>
+              <div class="reward-details">
+                <h4>企业优惠券</h4>
+                <p>企业推荐奖励计划 · 2026-04-08</p>
+              </div>
+            </div>
+            <div class="reward-amount">¥500</div>
+          </div>
+
+          <!-- Reward Item 2 -->
+          <div class="reward-item">
+            <div class="reward-info">
+              <div class="reward-icon">💰</div>
+              <div class="reward-details">
+                <h4>Token 奖励</h4>
+                <p>企业推荐奖励计划 · 2026-04-08</p>
+              </div>
+            </div>
+            <div class="reward-amount">1,000 Token</div>
+          </div>
+
+          <!-- Reward Item 3 -->
+          <div class="reward-item">
+            <div class="reward-info">
+              <div class="reward-icon">🎫</div>
+              <div class="reward-details">
+                <h4>企业优惠券</h4>
+                <p>企业推荐奖励计划 · 2026-04-05</p>
+              </div>
+            </div>
+            <div class="reward-amount">¥500</div>
+          </div>
+
+          <!-- Reward Item 4 -->
+          <div class="reward-item">
+            <div class="reward-info">
+              <div class="reward-icon">💰</div>
+              <div class="reward-details">
+                <h4>Token 奖励</h4>
+                <p>企业推荐奖励计划 · 2026-04-05</p>
+              </div>
+            </div>
+            <div class="reward-amount">1,000 Token</div>
+          </div>
+
+          <!-- Reward Item 5 -->
+          <div class="reward-item">
+            <div class="reward-info">
+              <div class="reward-icon">🎫</div>
+              <div class="reward-details">
+                <h4>企业优惠券</h4>
+                <p>企业推荐奖励计划 · 2026-03-28</p>
+              </div>
+            </div>
+            <div class="reward-amount">¥500</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity History -->
+      <section class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">📜 活动历史</h2>
+        </div>
+        <div class="activity-list">
+          <!-- Ended Activity 1 -->
+          <div class="activity-card ended">
+            <div class="activity-header">
+              <h3 class="activity-title">新年开门红活动</h3>
+              <span class="activity-badge ended">已结束</span>
+            </div>
+            <p class="activity-description">
+              2026 新年特别活动，推荐客户即可获得双倍奖励。活动已圆满结束，
+              感谢各位合作伙伴的积极参与！
+            </p>
+            <div class="activity-info">
+              <div class="activity-info-item">
+                <span class="icon">📅</span>
+                <span>活动时间：2026-01-01 至 2026-01-31</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ended Activity 2 -->
+          <div class="activity-card ended">
+            <div class="activity-header">
+              <h3 class="activity-title">Q1 季度冲刺奖励</h3>
+              <span class="activity-badge ended">已结束</span>
+            </div>
+            <p class="activity-description">
+              第一季度消费冲刺活动，累计消费达到指定额度即可获得额外 Token 奖励。
+              活动已结束，奖励已全部发放。
+            </p>
+            <div class="activity-info">
+              <div class="activity-info-item">
+                <span class="icon">📅</span>
+                <span>活动时间：2026-01-01 至 2026-03-31</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>产品服务</h4>
+        <ul>
+          <li><a href="services.html">算力租赁</a></li>
+          <li><a href="services.html">GPU 云服务</a></li>
+          <li><a href="services.html">AI 训练平台</a></li>
+          <li><a href="services.html">推理服务</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>支持文档</h4>
+        <ul>
+          <li><a href="docs/">使用文档</a></li>
+          <li><a href="help.html">帮助中心</a></li>
+          <li><a href="community.html">社区论坛</a></li>
+          <li><a href="contact.html">联系我们</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>商务合作</h4>
+        <ul>
+          <li><a href="affiliate.html">分销合作</a></li>
+          <li><a href="about.html">关于我们</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>法律条款</h4>
+        <ul>
+          <li><a href="terms.html">服务条款</a></li>
+          <li><a href="privacy.html">隐私政策</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 AI 租易用。All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

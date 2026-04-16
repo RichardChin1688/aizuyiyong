@@ -79,8 +79,83 @@
             background: rgba(14, 165, 233, 0.12);
         }
         
-
+        .user-menu {
+            position: relative;
+            display: none;
+        }
         
+        .user-menu.active {
+            display: block;
+        }
+        
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            border-radius: 10px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .user-btn:hover {
+            background: rgba(14, 165, 233, 0.2);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 0.75rem 0;
+            min-width: 180px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: none;
+            z-index: 1001;
+        }
+        
+        .user-dropdown.active {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(14, 165, 233, 0.1);
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 0.5rem 0;
+        }
+
         .btn {
             padding: 0.75rem 1.5rem;
             border-radius: 10px;
@@ -547,6 +622,123 @@
             box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
         }
 
+        .user-center-modal {
+            display: none;
+        }
+
+        .user-center-modal.active {
+            display: block;
+        }
+
+        .user-center-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-center-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .user-center-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-center-phone {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .user-center-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .user-center-card {
+            background: var(--bg-dark);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-center-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .user-center-card.enterprise {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+
+        .user-center-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .user-center-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-center-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: var(--text-light);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            transition: transform 0.3s;
+            z-index: 3000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            border-color: #10B981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .toast.error {
+            border-color: #EF4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
 
     </style>
 </head>
@@ -565,7 +757,43 @@
             </ul>
         </div>
         <div class="nav-right-wrapper">
-            <button class="btn btn-primary" onclick="openLoginModal()">登录 / 注册</button>
+            <!-- Login button (shown when not logged in) -->
+            <button class="btn btn-primary" id="loginBtn" onclick="openLoginModal()">登录 / 注册</button>
+            <!-- User menu (shown when logged in) -->
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <div class="user-btn" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">用户</span>
+                    <span style="font-size: 0.75rem;">▼</span>
+                </div>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="user.html" class="dropdown-item">
+                        <span>👤</span> 用户中心
+                    </a>
+                    <a href="rental-manage.html" class="dropdown-item">
+                        <span>📋</span> 租赁管理
+                    </a>
+                    <a href="token-manage.html" class="dropdown-item">
+                        <span>🎫</span> Token 管理
+                    </a>
+                    <a href="services-manage.html" class="dropdown-item">
+                        <span>🛠️</span> 服务/工单
+                    </a>
+                    <a href="community.html" class="dropdown-item">
+                        <span>🏘️</span> OPC 社区
+                    </a>
+                    <a href="profile.html" class="dropdown-item">
+                        <span>✏️</span> 编辑资料
+                    </a>
+                    <a href="notification.html" class="dropdown-item">
+                        <span>🔔</span> 消息通知
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" onclick="logout()">
+                        <span>🚪</span> 退出登录
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -576,29 +804,27 @@
     </section>
 
     <!-- Filter Section -->
+    <!-- Filter Section -->
     <div class="filter-section">
         <div class="filter-card">
-            <select class="filter-select">
-                <option>设备类型</option>
-                <option>笔记本电脑</option>
-                
-                <option>苹果MINI 小主机</option>
-            
+            <select class="filter-select" id="filterType">
+                <option value="">设备类型</option>
+                <option value="笔记本电脑">笔记本电脑</option>
+                <option value="mini 小主机">mini 小主机</option>
             </select>
-            <select class="filter-select">
-                <option>操作系统</option>
-               
-                <option>windows 系统</option>
-                <option>MAC OS  系统</option>
-               
+            <select class="filter-select" id="filterOS">
+                <option value="">操作系统</option>
+                <option value="windows 系统">windows 系统</option>
+                <option value="MAC OS 系统">MAC OS 系统</option>
             </select>
-            <select class="filter-select">
-                <option>价格区间</option>
-                <option>¥ 0 - ¥300/月</option>
-                <option>¥ 300 - ¥900/月</option>
-                <option>¥ 900+ /月</option>
+            <select class="filter-select" id="filterPrice">
+                <option value="">价格区间</option>
+                <option value="0-300">¥ 0 - ¥300/月</option>
+                <option value="300-900">¥ 300 - ¥900/月</option>
+                <option value="900-999999">¥ 900+ /月</option>
             </select>
-            <button class="btn btn-primary">筛选</button>
+            <button class="btn btn-primary" onclick="filterDevices()">筛选</button>
+            <button class="btn" style="background:rgba(255,255,255,0.1);color:var(--text-light);" onclick="resetFilter()">重置</button>
         </div>
     </div>
 
@@ -948,21 +1174,40 @@
             countdown = 60;
             btn.textContent = `${countdown}s 后重试`;
             
-            setTimeout(() => {
-                showToast('验证码已发送：123456（演示用）', 'success');
-                codeSent = true;
-                
-                const timer = setInterval(() => {
-                    countdown--;
-                    if (countdown <= 0) {
-                        clearInterval(timer);
-                        btn.disabled = false;
-                        btn.textContent = '获取验证码';
-                    } else {
-                        btn.textContent = `${countdown}s 后重试`;
-                    }
-                }, 1000);
-            }, 500);
+            // 调用后端 API 发送验证码
+            fetch('http://localhost:3000/api/v1/sms/send-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.mock ? `验证码已发送（模拟模式）` : '验证码已发送', 'success');
+                    codeSent = true;
+                } else {
+                    showToast(data.message || '发送失败', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '获取验证码';
+                }
+            })
+            .catch(err => {
+                console.error('发送验证码错误:', err);
+                showToast('网络错误，请稍后重试', 'error');
+                btn.disabled = false;
+                btn.textContent = '获取验证码';
+            });
+            
+            const timer = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    btn.disabled = false;
+                    btn.textContent = '获取验证码';
+                } else {
+                    btn.textContent = `${countdown}s 后重试`;
+                }
+            }, 1000);
         }
 
         // Handle login/registration
@@ -988,7 +1233,20 @@
                 return;
             }
 
-            setTimeout(() => {
+            // 先验证验证码
+            fetch('http://localhost:3000/api/v1/sms/verify-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone, code: code })
+            })
+            .then(res => res.json())
+            .then(verifyData => {
+                if (!verifyData.success) {
+                    showToast(verifyData.message || '验证码错误', 'error');
+                    return;
+                }
+                
+                // 验证成功后创建用户
                 const user = {
                     phone: phone,
                     name: phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
@@ -1006,18 +1264,45 @@
                 codeSent = false;
                 document.getElementById('getCodeBtn').disabled = false;
                 document.getElementById('getCodeBtn').textContent = '获取验证码';
-            }, 500);
+            })
+            .catch(err => {
+                console.error('验证错误:', err);
+                showToast('网络错误，请稍后重试', 'error');
+            });
         }
 
         // Update UI for logged in user
         function updateUIForLoggedInUser() {
             if (!currentUser) return;
 
-            const loginBtn = document.querySelector('.nav-right-wrapper .btn-primary');
-            if (loginBtn) {
-                loginBtn.style.display = 'none';
+            // Desktop nav
+            const loginBtn = document.getElementById('loginBtn');
+            const userMenu = document.getElementById('userMenu');
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (userMenu) {
+                userMenu.style.display = 'block';
+                userMenu.classList.add('active');
             }
+            document.getElementById('userAvatar').textContent = currentUser.avatar || 'U';
+            document.getElementById('userName').textContent = currentUser.name;
+
+            // User center
+            document.getElementById('centerAvatar').textContent = currentUser.avatar || 'U';
+            document.getElementById('centerName').textContent = currentUser.name;
+            document.getElementById('centerPhone').textContent = currentUser.phone;
         }
+
+        // Toggle user dropdown
+        function toggleUserDropdown() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-btn') && !e.target.closest('.user-dropdown')) {
+                document.getElementById('userDropdown').classList.remove('active');
+            }
+        });
 
         // Open user center
         function openUserCenter() {
@@ -1026,6 +1311,7 @@
                 return;
             }
             document.getElementById('userCenterModal').classList.add('active');
+            document.getElementById('userDropdown').classList.remove('active');
         }
 
         function closeUserCenter() {
@@ -1037,10 +1323,16 @@
             currentUser = null;
             localStorage.removeItem('aiZuyiyongUser');
             
-            const loginBtn = document.querySelector('.nav-right-wrapper .btn-primary');
-            if (loginBtn) {
-                loginBtn.style.display = 'inline-block';
+            // Desktop nav
+            const loginBtn = document.getElementById('loginBtn');
+            const userMenu = document.getElementById('userMenu');
+            if (loginBtn) loginBtn.style.display = 'inline-block';
+            if (userMenu) {
+                userMenu.style.display = 'none';
+                userMenu.classList.remove('active');
             }
+            
+            document.getElementById('userDropdown').classList.remove('active');
             
             showToast('已退出登录', 'success');
         }
@@ -1055,6 +1347,139 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+        
+        // ========== 设备列表动态渲染和筛选 ==========
+        let allDevices = [];
+        
+        // 从 localStorage 加载设备数据
+        function loadDevices() {
+            const devicesData = localStorage.getItem('aiZuyiyongDevices');
+            if (devicesData) {
+                allDevices = JSON.parse(devicesData);
+            } else {
+                // 默认模拟数据（如果后台没有录入设备）
+                allDevices = [
+                    {
+                        id: 1,
+                        name: 'MacBook Pro 14"',
+                        type: '笔记本电脑',
+                        os: 'MAC OS 系统',
+                        purchasePrice: 15000,
+                        stock: 10,
+                        monthlyRent: 1350,
+                        deposit: 18240,
+                        serviceFee: 3500,
+                        image: ''
+                    },
+                    {
+                        id: 2,
+                        name: 'Mac mini M2',
+                        type: 'mini 小主机',
+                        os: 'MAC OS 系统',
+                        purchasePrice: 5000,
+                        stock: 20,
+                        monthlyRent: 450,
+                        deposit: 6080,
+                        serviceFee: 1500,
+                        image: ''
+                    },
+                    {
+                        id: 3,
+                        name: 'ThinkPad X1 Carbon',
+                        type: '笔记本电脑',
+                        os: 'windows 系统',
+                        purchasePrice: 12000,
+                        stock: 15,
+                        monthlyRent: 1080,
+                        deposit: 14592,
+                        serviceFee: 2900,
+                        image: ''
+                    }
+                ];
+            }
+            renderDevices(allDevices);
+        }
+        
+        // 渲染设备列表
+        function renderDevices(devices) {
+            const grid = document.querySelector('.device-grid');
+            if (!grid) return;
+            
+            if (devices.length === 0) {
+                grid.innerHTML = '<div style="text-align:center;padding:4rem;color:var(--text-muted);"><div style="font-size:3rem;margin-bottom:1rem;">📦</div><p>暂无符合条件的设备</p></div>';
+                return;
+            }
+            
+            let html = '';
+            devices.forEach(device => {
+                const imageHtml = device.image 
+                    ? `<img src="${device.image}" alt="${device.name}" style="width:100%;height:200px;object-fit:cover;border-radius:12px 12px 0 0;">`
+                    : '<div style="width:100%;height:200px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:4rem;">🖥️</div>';
+                
+                html += `
+                    <div class="device-card">
+                        <div class="device-image" style="padding:0;">
+                            ${imageHtml}
+                            ${device.stock > 0 ? '<span class="device-badge" style="background:var(--success);">可租</span>' : '<span class="device-badge" style="background:var(--danger);">缺货</span>'}
+                        </div>
+                        <div class="device-info">
+                            <div class="device-category">${device.type} · ${device.os}</div>
+                            <h3 class="device-title">${device.name}</h3>
+                            <div class="device-specs">
+                                <ul style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.9rem;">
+                                    <li>💰 采购：¥${device.purchasePrice.toLocaleString()}</li>
+                                    <li>📦 库存：${device.stock}台</li>
+                                    <li>💳 押金：¥${device.deposit.toLocaleString()}</li>
+                                    <li>🔧 服务费：¥${device.serviceFee.toLocaleString()}</li>
+                                </ul>
+                            </div>
+                            <div class="device-footer">
+                                <div class="device-price">¥${device.monthlyRent.toLocaleString()}<span>/月</span></div>
+                                <a href="checkout.html?deviceId=${device.id}" class="btn btn-primary" ${device.stock === 0 ? 'style="opacity:0.5;pointer-events:none;"' : ''}>${device.stock > 0 ? '立即租赁' : '暂时缺货'}</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+        
+        // 筛选设备
+        function filterDevices() {
+            const typeFilter = document.getElementById('filterType').value;
+            const osFilter = document.getElementById('filterOS').value;
+            const priceRange = document.getElementById('filterPrice').value;
+            
+            let filtered = allDevices.filter(device => {
+                // 类型筛选
+                if (typeFilter && device.type !== typeFilter) return false;
+                // 操作系统筛选
+                if (osFilter && device.os !== osFilter) return false;
+                // 价格筛选
+                if (priceRange) {
+                    const [min, max] = priceRange.split('-').map(Number);
+                    if (device.monthlyRent < min || device.monthlyRent > max) return false;
+                }
+                return true;
+            });
+            
+            renderDevices(filtered);
+            showToast(`找到 ${filtered.length} 台设备`, 'success');
+        }
+        
+        // 重置筛选
+        function resetFilter() {
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterOS').value = '';
+            document.getElementById('filterPrice').value = '';
+            renderDevices(allDevices);
+            showToast('已显示全部设备', 'success');
+        }
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDevices();
+        });
     </script>
 
 </body>

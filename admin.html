@@ -365,6 +365,12 @@
                     </a>
                 </li>
                 <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link" data-section="services">
+                        <span class="admin-menu-icon">🛠️</span>
+                        <span>技术服务</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
                     <a href="#" class="admin-menu-link" data-section="orders">
                         <span class="admin-menu-icon">📦</span>
                         <span>订单管理</span>
@@ -653,11 +659,15 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>设备</th>
-                            <th>型号</th>
+                            <th>设备名称</th>
+                            <th>设备类型</th>
+                            <th>操作系统</th>
+                            <th>采购价格</th>
                             <th>库存</th>
-                            <th>日租金</th>
-                            <th>状态</th>
+                            <th>月租金 (年租)</th>
+                            <th>押金</th>
+                            <th>技术服务费</th>
+                            <th>样机图片</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -710,6 +720,34 @@
                                 <a href="#" class="action-btn action-btn-primary">详情</a>
                             </td>
                         </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <!-- 技术服务管理 -->
+        <main class="admin-content admin-section" data-section="services">
+            <div class="page-header">
+                <h1 class="page-title">🛠️ 技术服务管理</h1>
+                <p class="page-subtitle">管理 AI 技术服务项目和价格</p>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">服务列表</h2>
+                    <button class="btn btn-primary" id="addServiceBtn">+ 添加服务</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>服务图标</th>
+                            <th>服务名称</th>
+                            <th>简介</th>
+                            <th>特点</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servicesTableBody">
                     </tbody>
                 </table>
             </div>
@@ -886,6 +924,46 @@
         });
         
         // ========== 设备管理功能 ==========
+        // 图片预览函数
+        function previewDeviceImage(input) {
+            const previewContainer = input.parentElement.querySelector('.image-preview-container');
+            if (input.files && input.files[0] && previewContainer) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewContainer.innerHTML = `<img src="${e.target.result}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        // 计算租金和押金的函数（根据陛下的公式）
+        function calculateRentAndDeposit(row, purchasePrice) {
+            const monthlyRentInput = row.querySelector('.monthly-rent-input');
+            const depositInput = row.querySelector('.deposit-input');
+            const serviceFeeInput = row.querySelector('.service-fee-input');
+            
+            if (!purchasePrice || purchasePrice <= 0) {
+                if (monthlyRentInput) { monthlyRentInput.value = ''; monthlyRentInput.placeholder = '自动计算'; }
+                if (depositInput) { depositInput.value = ''; depositInput.placeholder = '自动计算'; }
+                if (serviceFeeInput) { serviceFeeInput.value = ''; serviceFeeInput.placeholder = '自动计算'; }
+                return;
+            }
+            
+            // 公式 1：采购价格 * 9% = 月租金（年租）
+            const monthlyRentYearly = purchasePrice * 0.09;
+            
+            // 公式 6：采购费 * 0.2 + 500 = 技术服务费
+            const serviceFee = purchasePrice * 0.2 + 500;
+            
+            // 公式 4：采购价格 + 月租金（年租）* 2.4 = 设备押金（年租）
+            const depositYearly = purchasePrice + monthlyRentYearly * 2.4;
+            
+            // 填充输入框
+            if (monthlyRentInput) monthlyRentInput.value = Math.round(monthlyRentYearly);
+            if (depositInput) depositInput.value = Math.round(depositYearly);
+            if (serviceFeeInput) serviceFeeInput.value = Math.round(serviceFee);
+        }
+        
         const addDeviceBtn = document.getElementById('addDeviceBtn');
         const devicesTableBody = document.getElementById('devicesTableBody');
         
@@ -894,20 +972,45 @@
                 const newRow = document.createElement('tr');
                 newRow.className = 'editing-row';
                 newRow.innerHTML = `
-                    <td><input type="text" class="edit-input" placeholder="设备名称" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
-                    <td><input type="text" class="edit-input" placeholder="型号" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
-                    <td><input type="number" class="edit-input" placeholder="库存" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
-                    <td><input type="text" class="edit-input" placeholder="日租金" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
-                    <td><span class="status-badge status-success">充足</span></td>
+                    <td><input type="text" class="edit-input device-name-input" placeholder="设备名称" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
                     <td>
-                        <a href="#" class="action-btn action-btn-primary save-device-btn">保存</a>
-                        <a href="#" class="action-btn action-btn-danger delete-device-btn" style="margin-left:0.5rem;">删除</a>
+                        <select class="edit-input device-type-input" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);">
+                            <option value="笔记本电脑">笔记本电脑</option>
+                            <option value="mini 小主机">mini 小主机</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="edit-input device-os-input" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);">
+                            <option value="windows 系统">windows 系统</option>
+                            <option value="MAC OS 系统">MAC OS 系统</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="edit-input purchase-price-input" placeholder="采购价 (元)" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="number" class="edit-input stock-input" placeholder="库存" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="number" class="edit-input monthly-rent-input" placeholder="自动计算" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(14,165,233,0.3);background:rgba(14,165,233,0.08);color:var(--primary);font-weight:600;text-align:center;"></td>
+                    <td><input type="number" class="edit-input deposit-input" placeholder="自动计算" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);color:var(--accent);font-weight:600;text-align:center;"></td>
+                    <td><input type="number" class="edit-input service-fee-input" placeholder="自动计算" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(148,163,184,0.3);background:rgba(148,163,184,0.08);color:var(--text-muted);font-weight:600;text-align:center;"></td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <input type="file" class="device-image-input" accept="image/*" style="display:none;" onchange="previewDeviceImage(this)">
+                        <button type="button" class="btn" style="padding:0.3rem 0.6rem;font-size:0.8rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:var(--text-light);border-radius:6px;cursor:pointer;" onclick="this.previousElementSibling.click()">📷</button>
+                        <div class="image-preview-container" style="margin-top:0.3rem;"></div>
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;white-space:nowrap;">
+                        <a href="#" class="action-btn action-btn-primary save-device-btn" style="padding:0.4rem 0.8rem;font-size:0.85rem;">保存</a>
+                        <a href="#" class="action-btn action-btn-danger delete-device-btn" style="margin-left:0.5rem;padding:0.4rem 0.8rem;font-size:0.85rem;">删除</a>
                     </td>
                 `;
                 devicesTableBody.appendChild(newRow);
                 
+                // 监听采购价格输入，自动计算租金和押金
+                const priceInput = newRow.querySelector('.purchase-price-input');
+                priceInput.addEventListener('input', function() {
+                    const price = parseFloat(this.value) || 0;
+                    calculateRentAndDeposit(newRow, price);
+                });
+                
                 // 聚焦到第一个输入框
-                newRow.querySelector('.edit-input').focus();
+                newRow.querySelector('.device-name-input').focus();
             });
             
             // 保存设备
@@ -915,23 +1018,34 @@
                 if (e.target.classList.contains('save-device-btn')) {
                     e.preventDefault();
                     const row = e.target.closest('tr');
-                    const inputs = row.querySelectorAll('.edit-input');
-                    const deviceName = inputs[0].value.trim();
-                    const model = inputs[1].value.trim();
-                    const stock = inputs[2].value.trim();
-                    const price = inputs[3].value.trim();
+                    const deviceName = row.querySelector('.device-name-input')?.value.trim();
+                    const deviceType = row.querySelector('.device-type-input')?.value;
+                    const deviceOS = row.querySelector('.device-os-input')?.value;
+                    const purchasePrice = parseFloat(row.querySelector('.purchase-price-input')?.value) || 0;
+                    const stock = row.querySelector('.stock-input')?.value.trim();
+                    const monthlyRent = row.querySelector('.monthly-rent-input')?.value || 0;
+                    const deposit = row.querySelector('.deposit-input')?.value || 0;
+                    const serviceFee = row.querySelector('.service-fee-input')?.value || 0;
+                    const imagePreview = row.querySelector('.image-preview-container img');
+                    const imageSrc = imagePreview?.src || '';
                     
-                    if (!deviceName || !model || !stock || !price) {
+                    if (!deviceName || !purchasePrice || !stock) {
                         alert('请填写完整信息！');
                         return;
                     }
                     
+                    const imageHtml = imageSrc ? `<img src="${imageSrc}" alt="样机" style="width:60px;height:40px;object-fit:cover;border-radius:6px;">` : '<span style="color:var(--text-muted);">无图片</span>';
+                    
                     row.innerHTML = `
                         <td>${deviceName}</td>
-                        <td>${model}</td>
+                        <td>${deviceType}</td>
+                        <td>${deviceOS}</td>
+                        <td>¥${purchasePrice.toLocaleString()}</td>
                         <td>${stock}</td>
-                        <td>${price}</td>
-                        <td><span class="status-badge status-success">充足</span></td>
+                        <td style="text-align:center;color:var(--primary);font-weight:600;">¥${parseInt(monthlyRent).toLocaleString()}</td>
+                        <td style="text-align:center;color:var(--accent);font-weight:600;">¥${parseInt(deposit).toLocaleString()}</td>
+                        <td style="text-align:center;color:var(--text-muted);font-weight:600;">¥${parseInt(serviceFee).toLocaleString()}</td>
+                        <td style="text-align:center;">${imageHtml}</td>
                         <td>
                             <a href="#" class="action-btn action-btn-primary edit-device-btn">编辑</a>
                         </td>
@@ -953,21 +1067,53 @@
                     const row = e.target.closest('tr');
                     const cells = row.querySelectorAll('td');
                     const deviceName = cells[0].textContent;
-                    const model = cells[1].textContent;
-                    const stock = cells[2].textContent;
-                    const price = cells[3].textContent;
+                    const deviceType = cells[1].textContent;
+                    const deviceOS = cells[2].textContent;
+                    const purchasePriceText = cells[3].textContent.replace(/[¥,]/g, '');
+                    const purchasePrice = parseFloat(purchasePriceText) || 0;
+                    const stock = cells[4].textContent;
+                    const monthlyRentText = cells[5].textContent.replace(/[¥,]/g, '');
+                    const depositText = cells[6].textContent.replace(/[¥,]/g, '');
+                    const serviceFeeText = cells[7].textContent.replace(/[¥,]/g, '');
+                    const existingImage = cells[8].querySelector('img');
+                    const existingImageSrc = existingImage ? existingImage.src : '';
                     
                     row.innerHTML = `
-                        <td><input type="text" class="edit-input" value="${deviceName}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
-                        <td><input type="text" class="edit-input" value="${model}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
-                        <td><input type="number" class="edit-input" value="${stock}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
-                        <td><input type="text" class="edit-input" value="${price}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
-                        <td><span class="status-badge status-success">充足</span></td>
+                        <td><input type="text" class="edit-input device-name-input" value="${deviceName}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td>
+                            <select class="edit-input device-type-input" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);">
+                                <option value="笔记本电脑" ${deviceType==='笔记本电脑'?'selected':''}>笔记本电脑</option>
+                                <option value="mini 小主机" ${deviceType==='mini 小主机'?'selected':''}>mini 小主机</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="edit-input device-os-input" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);">
+                                <option value="windows 系统" ${deviceOS==='windows 系统'?'selected':''}>windows 系统</option>
+                                <option value="MAC OS 系统" ${deviceOS==='MAC OS 系统'?'selected':''}>MAC OS 系统</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="edit-input purchase-price-input" value="${purchasePrice}" placeholder="采购价 (元)" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="number" class="edit-input stock-input" value="${stock}" placeholder="库存" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="number" class="edit-input monthly-rent-input" value="${monthlyRentText}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(14,165,233,0.3);background:rgba(14,165,233,0.08);color:var(--primary);font-weight:600;text-align:center;"></td>
+                        <td><input type="number" class="edit-input deposit-input" value="${depositText}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);color:var(--accent);font-weight:600;text-align:center;"></td>
+                        <td><input type="number" class="edit-input service-fee-input" value="${serviceFeeText}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(148,163,184,0.3);background:rgba(148,163,184,0.08);color:var(--text-muted);font-weight:600;text-align:center;"></td>
+                        <td style="text-align:center;">
+                            <input type="file" class="device-image-input" accept="image/*" style="display:none;" onchange="previewDeviceImage(this)">
+                            <button type="button" class="btn" style="padding:0.4rem 0.8rem;font-size:0.85rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:var(--text-light);border-radius:6px;cursor:pointer;" onclick="this.previousElementSibling.click()">📷 上传图片</button>
+                            <div class="image-preview-container" style="margin-top:0.5rem;">${existingImageSrc ? `<img src="${existingImageSrc}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;">` : ''}</div>
+                        </td>
                         <td>
                             <a href="#" class="action-btn action-btn-primary save-device-btn">保存</a>
                             <a href="#" class="action-btn action-btn-danger cancel-device-btn" style="margin-left:0.5rem;">取消</a>
                         </td>
                     `;
+                    
+                    // 重新计算租金和押金（如果用户修改采购价）
+                    const priceInput = row.querySelector('.purchase-price-input');
+                    priceInput.addEventListener('input', function() {
+                        const price = parseFloat(this.value) || 0;
+                        calculateRentAndDeposit(row, price);
+                    });
                 }
                 
                 // 取消编辑
@@ -1065,6 +1211,203 @@
                     location.reload();
                 }
             });
+        }
+        
+        // Toast 提示函数
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position:fixed;top:80px;right:20px;padding:1rem 1.5rem;background:var(--success);color:white;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,0.3);z-index:9999;animation:slideIn 0.3s ease;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+        
+        // ========== 技术服务管理功能 ==========
+        const addServiceBtn = document.getElementById('addServiceBtn');
+        const servicesTableBody = document.getElementById('servicesTableBody');
+        
+        if (addServiceBtn && servicesTableBody) {
+            // 加载已有服务
+            function loadServices() {
+                const servicesData = localStorage.getItem('aiZuyiyongServices');
+                let services = [];
+                if (servicesData) {
+                    services = JSON.parse(servicesData);
+                } else {
+                    // 默认服务（23 项核心服务）
+                    services = [
+                        { id: 1, icon: '🖥️', name: 'AI 智能体设备租赁', description: '开箱即用的 OpenClaw 企业智能硬件，预装完整 AI 系统，数据本地化存储', features: '开箱即用、数据本地、弹性扩容、全周期维护' },
+                        { id: 2, icon: '🎫', name: 'Token 工厂服务', description: '统一 API 网关聚合多模型，智能路由、请求缓存、成本监控', features: '统一入口、智能缓存、成本优化、用量可视' },
+                        { id: 3, icon: '🌐', name: 'Geo 优化服务', description: 'AI 专用全球加速网络，智能就近接入、故障自动切换', features: '就近接入、自动容灾、全链路监控、全球加速' },
+                        { id: 4, icon: '🔒', name: '私有化/隔离部署', description: '私有云/VPC/本地服务器部署，数据完全隔离', features: '纯内网部署、数据不触公网、自主可控、最高安全' },
+                        { id: 5, icon: '🤖', name: '智能体定制开发', description: '根据业务场景开发专属 AI Skill，让 AI 从通用对话升级为可执行的业务助手', features: 'Skill 定制、工作流编排、系统对接、快速落地' },
+                        { id: 6, icon: '📚', name: '企业私有知识库', description: '将企业制度、产品手册、技术文档向量化，构建企业内部 AI 大脑', features: '海量文档、智能问答、持续更新、知识沉淀' },
+                        { id: 7, icon: '👨‍💼', name: '数字员工定制', description: '封装可直接上岗的 AI 数字员工，替代人工完成高重复、标准化岗位', features: 'AI 客服、销售 SOP、运营自动化、成本降 50%' },
+                        { id: 8, icon: '⚙️', name: 'AI 工作流自动化', description: '跨系统、跨平台、多步骤业务流程端到端全自动执行', features: '跨系统打通、自动触发、异常处理、全流程可视' },
+                        { id: 9, icon: '🔄', name: '系统 AI 化升级', description: '将 ERP/CRM/OA 等老系统封装为 AI 可调用接口，不换系统低成本升级', features: '老系统封装、安全权限、数据打通、保护投资' },
+                        { id: 10, icon: '🔐', name: '账号安全与风控', description: 'API Key 加密存储、分级授权、异常流量检测，防止泄露盗用', features: '加密存储、分级授权、盗刷预警、全程审计' },
+                        { id: 11, icon: '✅', name: '合规与数据安全审计', description: '对 AI 使用行为、数据流向、内容安全进行全面诊断审计', features: '合规检查、数据审计、敏感过滤、整改建议' },
+                        { id: 12, icon: '📹', name: 'AI 行为审计', description: '全链路留存智能体操作记录，可追溯可审计', features: '日志留存、敏感拦截、审计报告、监管查验' },
+                        { id: 13, icon: '🚧', name: '权限围栏设计', description: '按部门岗位角色设置最小权限，数据隔离功能隔离', features: '分级权限、数据隔离、不可越权、安全最大化' },
+                        { id: 14, icon: '🛑', name: '熔断降级机制', description: 'AI 异常时自动暂停降级通知，防止错误扩大', features: '异常检测、自动熔断、自动降级、实时通知' },
+                        { id: 15, icon: '📊', name: '智能体 KPI 评估', description: '建立 AI 效果效率成本 ROI 量化指标，让 AI 像员工一样可考核', features: '指标建模、自动统计、可视化报表、持续优化' },
+                        { id: 16, icon: '👥', name: '多智能体协同', description: '多台 AI 智能体组成协同团队，任务自动分配负载均衡', features: '任务分发、负载均衡、状态同步、大规模并发' },
+                        { id: 17, icon: '🧠', name: '业务本体建模', description: '将企业隐性业务规则转化为机器可理解的结构化模型', features: '规则抽取、关系建模、动态更新、复杂逻辑' },
+                        { id: 18, icon: '🎯', name: 'AI 员工托管服务', description: '提供完整 AI 数字员工代运营，企业只提需求我们负责训练维护', features: '代运营、7x24 监控、SLA 保障、持续迭代' },
+                        { id: 19, icon: '🔧', name: 'AI 代运维与托管', description: '全生命周期运维：实时监控版本升级故障处理性能调优', features: '实时监控、故障响应、性能优化、安全巡检' },
+                        { id: 20, icon: '🎓', name: '内部 AI 培训与陪跑', description: '从管理层到执行层的 AI 能力培训，实操训练落地陪跑', features: '定制课程、实操教学、落地陪跑、案例输出' },
+                        { id: 21, icon: '📈', name: 'SaaS 到 GaaS 转型咨询', description: '帮助传统软件企业从卖工具转向卖结果', features: '转型规划、产品 AI 化、定价设计、落地支持' },
+                        { id: 22, icon: '💰', name: '效果付费模式设计', description: '设计可度量可验证可分成的 AI 效果付费模式', features: '指标设计、计量系统、分成机制、合规方案' },
+                        { id: 23, icon: '🎤', name: '高管 AI 认知工作坊', description: '面向决策层的 AI 战略闭门培训', features: '认知升级、路径设计、风险规划、实战方法' }
+                    ];
+                    localStorage.setItem('aiZuyiyongServices', JSON.stringify(services));
+                }
+                renderServices(services);
+            }
+            
+            function renderServices(services) {
+                servicesTableBody.innerHTML = '';
+                services.forEach(service => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="font-size:2rem;text-align:center;">${service.icon}</td>
+                        <td>${service.name}</td>
+                        <td>${service.description}</td>
+                        <td>${service.features}</td>
+                        <td>
+                            <a href="#" class="action-btn action-btn-primary edit-service-btn">编辑</a>
+                            <a href="#" class="action-btn action-btn-danger delete-service-btn" style="margin-left:0.5rem;">删除</a>
+                        </td>
+                    `;
+                    servicesTableBody.appendChild(row);
+                });
+            }
+            
+            addServiceBtn.addEventListener('click', function() {
+                const newRow = document.createElement('tr');
+                newRow.className = 'editing-row';
+                newRow.innerHTML = `
+                    <td style="text-align:center;">
+                        <select class="edit-input service-icon-input" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);font-size:1.5rem;">
+                            <option value="🤖">🤖</option>
+                            <option value="🔧">🔧</option>
+                            <option value="📚">📚</option>
+                            <option value="💻">💻</option>
+                            <option value="🚀">🚀</option>
+                            <option value="⚙️">⚙️</option>
+                            <option value="📊">📊</option>
+                            <option value="🎯">🎯</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="edit-input service-name-input" placeholder="服务名称" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="text" class="edit-input service-desc-input" placeholder="简介" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td><input type="text" class="edit-input service-features-input" placeholder="特点（用逗号分隔）" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                    <td>
+                        <a href="#" class="action-btn action-btn-primary save-service-btn">保存</a>
+                        <a href="#" class="action-btn action-btn-danger delete-service-btn" style="margin-left:0.5rem;">删除</a>
+                    </td>
+                `;
+                servicesTableBody.appendChild(newRow);
+                newRow.querySelector('.service-name-input').focus();
+            });
+            
+            servicesTableBody.addEventListener('click', function(e) {
+                // 保存服务
+                if (e.target.classList.contains('save-service-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    const icon = row.querySelector('.service-icon-input')?.value;
+                    const name = row.querySelector('.service-name-input')?.value.trim();
+                    const description = row.querySelector('.service-desc-input')?.value.trim();
+                    const features = row.querySelector('.service-features-input')?.value.trim();
+                    
+                    if (!name || !description) {
+                        alert('请填写完整信息！');
+                        return;
+                    }
+                    
+                    // 保存到 localStorage
+                    const servicesData = localStorage.getItem('aiZuyiyongServices');
+                    let services = servicesData ? JSON.parse(servicesData) : [];
+                    const newService = {
+                        id: Date.now(),
+                        icon: icon || '🤖',
+                        name: name,
+                        description: description,
+                        features: features
+                    };
+                    services.push(newService);
+                    localStorage.setItem('aiZuyiyongServices', JSON.stringify(services));
+                    
+                    loadServices();
+                    showToast('服务添加成功！', 'success');
+                }
+                
+                // 删除服务
+                if (e.target.classList.contains('delete-service-btn')) {
+                    e.preventDefault();
+                    if (confirm('确定删除此服务吗？')) {
+                        const row = e.target.closest('tr');
+                        const serviceName = row.querySelector('.service-name-input')?.value || row.cells[1]?.textContent;
+                        
+                        // 从 localStorage 删除
+                        const servicesData = localStorage.getItem('aiZuyiyongServices');
+                        if (servicesData) {
+                            let services = JSON.parse(servicesData);
+                            services = services.filter(s => s.name !== serviceName);
+                            localStorage.setItem('aiZuyiyongServices', JSON.stringify(services));
+                        }
+                        
+                        row.remove();
+                        showToast('服务已删除', 'success');
+                    }
+                }
+                
+                // 编辑服务
+                if (e.target.classList.contains('edit-service-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    const icon = cells[0].textContent.trim();
+                    const name = cells[1].textContent;
+                    const description = cells[2].textContent;
+                    const features = cells[3].textContent;
+                    
+                    row.innerHTML = `
+                        <td style="text-align:center;">
+                            <select class="edit-input service-icon-input" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);font-size:1.5rem;">
+                                <option value="🤖" ${icon==='🤖'?'selected':''}>🤖</option>
+                                <option value="🔧" ${icon==='🔧'?'selected':''}>🔧</option>
+                                <option value="📚" ${icon==='📚'?'selected':''}>📚</option>
+                                <option value="💻" ${icon==='💻'?'selected':''}>💻</option>
+                                <option value="🚀" ${icon==='🚀'?'selected':''}>🚀</option>
+                                <option value="⚙️" ${icon==='⚙️'?'selected':''}>⚙️</option>
+                                <option value="📊" ${icon==='📊'?'selected':''}>📊</option>
+                                <option value="🎯" ${icon==='🎯'?'selected':''}>🎯</option>
+                            </select>
+                        </td>
+                        <td><input type="text" class="edit-input service-name-input" value="${name}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="text" class="edit-input service-desc-input" value="${description}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td><input type="text" class="edit-input service-features-input" value="${features}" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--bg-dark);color:var(--text-light);"></td>
+                        <td>
+                            <a href="#" class="action-btn action-btn-primary save-service-btn">保存</a>
+                            <a href="#" class="action-btn action-btn-danger cancel-service-btn" style="margin-left:0.5rem;">取消</a>
+                        </td>
+                    `;
+                }
+                
+                // 取消编辑
+                if (e.target.classList.contains('cancel-service-btn')) {
+                    e.preventDefault();
+                    loadServices();
+                }
+            });
+            
+            // 初始化加载服务
+            loadServices();
         }
     </script>
 </body>

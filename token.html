@@ -80,8 +80,83 @@
             background: rgba(14, 165, 233, 0.12);
         }
         
-
+        .user-menu {
+            position: relative;
+            display: none;
+        }
         
+        .user-menu.active {
+            display: block;
+        }
+        
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            border-radius: 10px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .user-btn:hover {
+            background: rgba(14, 165, 233, 0.2);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 0.75rem 0;
+            min-width: 180px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: none;
+            z-index: 1001;
+        }
+        
+        .user-dropdown.active {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(14, 165, 233, 0.1);
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 0.5rem 0;
+        }
+
         .btn {
             padding: 0.75rem 1.5rem;
             border-radius: 10px;
@@ -629,6 +704,123 @@
             box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
         }
 
+        .user-center-modal {
+            display: none;
+        }
+
+        .user-center-modal.active {
+            display: block;
+        }
+
+        .user-center-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-center-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .user-center-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-center-phone {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .user-center-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .user-center-card {
+            background: var(--bg-dark);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-center-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .user-center-card.enterprise {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+
+        .user-center-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .user-center-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-center-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: var(--text-light);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            transition: transform 0.3s;
+            z-index: 3000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            border-color: #10B981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .toast.error {
+            border-color: #EF4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
 
     </style>
 </head>
@@ -647,7 +839,43 @@
             </ul>
         </div>
         <div class="nav-right-wrapper">
-            <button class="btn btn-primary" onclick="openLoginModal()">登录 / 注册</button>
+            <!-- Login button (shown when not logged in) -->
+            <button class="btn btn-primary" id="loginBtn" onclick="openLoginModal()">登录 / 注册</button>
+            <!-- User menu (shown when logged in) -->
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <div class="user-btn" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">用户</span>
+                    <span style="font-size: 0.75rem;">▼</span>
+                </div>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="user.html" class="dropdown-item">
+                        <span>👤</span> 用户中心
+                    </a>
+                    <a href="rental-manage.html" class="dropdown-item">
+                        <span>📋</span> 租赁管理
+                    </a>
+                    <a href="token-manage.html" class="dropdown-item">
+                        <span>🎫</span> Token 管理
+                    </a>
+                    <a href="services-manage.html" class="dropdown-item">
+                        <span>🛠️</span> 服务/工单
+                    </a>
+                    <a href="community.html" class="dropdown-item">
+                        <span>🏘️</span> OPC 社区
+                    </a>
+                    <a href="profile.html" class="dropdown-item">
+                        <span>✏️</span> 编辑资料
+                    </a>
+                    <a href="notification.html" class="dropdown-item">
+                        <span>🔔</span> 消息通知
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" onclick="logout()">
+                        <span>🚪</span> 退出登录
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -992,13 +1220,34 @@
 
         function updateUIForLoggedInUser() {
             if (!currentUser) return;
-            const loginBtn = document.querySelector('.nav-right-wrapper .btn-primary');
+            const loginBtn = document.getElementById('loginBtn');
+            const userMenu = document.getElementById('userMenu');
             if (loginBtn) loginBtn.style.display = 'none';
+            if (userMenu) {
+                userMenu.style.display = 'block';
+                userMenu.classList.add('active');
+            }
+            document.getElementById('userAvatar').textContent = currentUser.avatar || 'U';
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('centerAvatar').textContent = currentUser.avatar || 'U';
+            document.getElementById('centerName').textContent = currentUser.name;
+            document.getElementById('centerPhone').textContent = currentUser.phone;
         }
+
+        function toggleUserDropdown() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-btn') && !e.target.closest('.user-dropdown')) {
+                document.getElementById('userDropdown').classList.remove('active');
+            }
+        });
 
         function openUserCenter() {
             if (!currentUser) { openLoginModal(); return; }
             document.getElementById('userCenterModal').classList.add('active');
+            document.getElementById('userDropdown').classList.remove('active');
         }
 
         function closeUserCenter() {
@@ -1008,8 +1257,14 @@
         function logout() {
             currentUser = null;
             localStorage.removeItem('aiZuyiyongUser');
-            const loginBtn = document.querySelector('.nav-right-wrapper .btn-primary');
+            const loginBtn = document.getElementById('loginBtn');
+            const userMenu = document.getElementById('userMenu');
             if (loginBtn) loginBtn.style.display = 'inline-block';
+            if (userMenu) {
+                userMenu.style.display = 'none';
+                userMenu.classList.remove('active');
+            }
+            document.getElementById('userDropdown').classList.remove('active');
             showToast('已退出登录', 'success');
         }
 

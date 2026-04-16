@@ -1,0 +1,499 @@
+// AI 租易用 - Prisma Schema
+// 基于 PostgreSQL + Supabase 方案
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// 1️⃣ 用户模块 (User)
+// ============================================
+
+/// 用户基础表
+model User {
+  id        BigInt   @id @default(autoincrement())
+  phone     String   @unique @db.VarChar(11)
+  nickname  String?  @db.VarChar(50)
+  avatar    String?  @db.VarChar(255)
+  gender    Int      @default(0) // 0:未知 1:男 2:女
+  userType  Int      @default(1) // 1:个人 2:企业
+  status    Int      @default(1) // 0:禁用 1:正常
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile         UserProfile?
+  authLogs        UserAuthLog[]
+  rentalOrders    RentalOrder[]
+  orders          Order[]
+  tokenWallet     UserTokenWallet?
+  tokenTransactions TokenTransaction[]
+  notifications   Notification[]
+  tickets         Ticket[]
+  posts           CommunityPost[]
+  comments        CommunityComment[]
+  affiliateCode   AffiliateCode?
+  invitedRecords  AffiliateRecord[] @relation("invitee")
+  affiliateRecords AffiliateRecord[] @relation("inviter")
+  invoices        Invoice[]
+  coupons         UserCoupon[]
+
+  @@index([phone])
+  @@map("users")
+}
+
+/// 用户详情表
+model UserProfile {
+  id                   BigInt   @id @default(autoincrement())
+  userId               BigInt   @unique
+  email                String?  @db.VarChar(100)
+  realName             String?  @db.VarChar(50)
+  idCard               String?  @db.VarChar(18) // 加密存储
+  companyName          String?  @db.VarChar(100)
+  companyLicense       String?  @db.VarChar(255)
+  certificationStatus Int      @default(0) // 0:未认证 1:审核中 2:已认证
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+/// 登录日志表
+model UserAuthLog {
+  id        BigInt   @id @default(autoincrement())
+  userId    BigInt
+  loginType Int      // 1:验证码 2:密码
+  ipAddress String?  @db.VarChar(45)
+  userAgent String?  @db.VarChar(500)
+  loginAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([loginAt])
+  @@map("user_auth_logs")
+}
+
+// ============================================
+// 2️⃣ 设备租赁模块 (Device Rental)
+// ============================================
+
+/// 设备库表
+model Device {
+  id             BigInt   @id @default(autoincrement())
+  name           String   @db.VarChar(100)
+  category       String   @db.VarChar(50) // 工作站/开发板/机器人/边缘设备
+  brand          String?  @db.VarChar(50)
+  model          String?  @db.VarChar(100)
+  specs          Json?
+  imageUrls      Json?
+  dailyPrice     Decimal  @db.Decimal(10, 2)
+  weeklyPrice    Decimal? @db.Decimal(10, 2)
+  monthlyPrice   Decimal? @db.Decimal(10, 2)
+  deposit        Decimal  @db.Decimal(10, 2)
+  stockTotal     Int      @default(0)
+  stockAvailable Int      @default(0)
+  status         Int      @default(1) // 0:下架 1:上架
+  isHot          Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  rentalOrders RentalOrder[]
+
+  @@index([category])
+  @@map("devices")
+}
+
+/// 租赁订单表
+model RentalOrder {
+  id            BigInt   @id @default(autoincrement())
+  orderNo       String   @unique @db.VarChar(32)
+  userId        BigInt
+  deviceId      BigInt
+  rentalType    Int      // 1:日租 2:周租 3:月租
+  rentalDays    Int
+  unitPrice     Decimal  @db.Decimal(10, 2)
+  totalAmount   Decimal  @db.Decimal(10, 2)
+  depositAmount Decimal  @db.Decimal(10, 2)
+  startDate     DateTime
+  endDate       DateTime
+  status        Int      // 0:待支付 1:待发货 2:租赁中 3:待归还 4:已完成 5:已取消
+  paidAt        DateTime?
+  shippedAt     DateTime?
+  receivedAt    DateTime?
+  returnedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user     User           @relation(fields: [userId], references: [id])
+  device   Device         @relation(fields: [deviceId], references: [id])
+  address  RentalAddress?
+
+  @@index([userId])
+  @@index([orderNo])
+  @@index([status])
+  @@map("rental_orders")
+}
+
+/// 租赁地址表
+model RentalAddress {
+  id            BigInt  @id @default(autoincrement())
+  rentalOrderId BigInt  @unique
+  receiverName  String  @db.VarChar(50)
+  receiverPhone String  @db.VarChar(20)
+  province      String  @db.VarChar(50)
+  city          String  @db.VarChar(50)
+  district      String  @db.VarChar(50)
+  detailAddress String  @db.VarChar(255)
+  expressCompany String? @db.VarChar(50)
+  expressNo     String? @db.VarChar(50)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  rentalOrder RentalOrder @relation(fields: [rentalOrderId], references: [id], onDelete: Cascade)
+
+  @@map("rental_addresses")
+}
+
+// ============================================
+// 3️⃣ Token 模块 (Token Management)
+// ============================================
+
+/// Token 套餐表
+model TokenPackage {
+  id           BigInt   @id @default(autoincrement())
+  name         String   @db.VarChar(50)
+  tokenAmount  BigInt
+  price        Decimal  @db.Decimal(10, 2)
+  validityDays Int?
+  isPopular    Boolean  @default(false)
+  status       Int      @default(1) // 0:下架 1:上架
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orderItems OrderItem[]
+
+  @@map("token_packages")
+}
+
+/// 用户 Token 钱包表
+model UserTokenWallet {
+  id             BigInt   @id @default(autoincrement())
+  userId         BigInt   @unique
+  balance        BigInt   @default(0)
+  frozen         BigInt   @default(0)
+  totalRecharged BigInt   @default(0)
+  totalConsumed  BigInt   @default(0)
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_token_wallets")
+}
+
+/// Token 流水表
+model TokenTransaction {
+  id            BigInt   @id @default(autoincrement())
+  userId        BigInt
+  type          Int      // 1:充值 2:消费 3:退款 4:赠送
+  amount        BigInt
+  balanceAfter  BigInt
+  relatedOrderNo String? @db.VarChar(32)
+  description   String?  @db.VarChar(255)
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("token_transactions")
+}
+
+// ============================================
+// 4️⃣ 订单支付模块 (Order & Payment)
+// ============================================
+
+/// 综合订单表
+model Order {
+  id             BigInt   @id @default(autoincrement())
+  orderNo        String   @unique @db.VarChar(32)
+  userId         BigInt
+  orderType      Int      // 1:设备租赁 2:Token 充值 3:技术服务
+  totalAmount    Decimal  @db.Decimal(10, 2)
+  discountAmount Decimal  @default(0) @db.Decimal(10, 2)
+  payableAmount  Decimal  @db.Decimal(10, 2)
+  status         Int      // 0:待支付 1:已支付 2:已完成 3:已取消 4:退款中 5:已退款
+  paymentMethod  Int?     // 1:微信 2:支付宝 3:银行卡
+  paidAt         DateTime?
+  remark         String?  @db.VarChar(500)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id])
+  items    OrderItem[]
+  payments Payment[]
+
+  @@index([userId])
+  @@index([orderNo])
+  @@index([status])
+  @@map("orders")
+}
+
+/// 订单明细表
+model OrderItem {
+  id          BigInt  @id @default(autoincrement())
+  orderId     BigInt
+  productType String  @db.VarChar(50) // device/token/service
+  productId   BigInt
+  productName String  @db.VarChar(100)
+  quantity    Int     @default(1)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  subtotal    Decimal @db.Decimal(10, 2)
+
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tokenPackage TokenPackage? @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+/// 支付记录表
+model Payment {
+  id           BigInt   @id @default(autoincrement())
+  orderNo      String   @unique @db.VarChar(32)
+  paymentNo    String?  @db.VarChar(64) // 第三方流水号
+  paymentMethod Int
+  amount       Decimal  @db.Decimal(10, 2)
+  status       Int      // 0:待支付 1:成功 2:失败
+  paidAt       DateTime?
+  callbackData Json?
+  createdAt    DateTime @default(now())
+
+  order Order @relation(fields: [orderNo], references: [orderNo], onDelete: Cascade)
+
+  @@index([orderNo])
+  @@map("payments")
+}
+
+// ============================================
+// 5️⃣ 工单客服模块 (Support Ticket)
+// ============================================
+
+/// 工单表
+model Ticket {
+  id         BigInt   @id @default(autoincrement())
+  ticketNo   String   @unique @db.VarChar(32)
+  userId     BigInt
+  category   String   @db.VarChar(50) // 设备/Token/支付/技术/其他
+  title      String   @db.VarChar(200)
+  content    String?
+  status     Int      @default(0) // 0:待处理 1:处理中 2:已解决 3:已关闭
+  priority   Int      @default(2) // 1:低 2:中 3:高
+  assignedTo BigInt?
+  createdAt  DateTime @default(now())
+  resolvedAt DateTime?
+
+  user     User           @relation(fields: [userId], references: [id])
+  messages TicketMessage[]
+
+  @@index([userId])
+  @@map("tickets")
+}
+
+/// 工单消息表
+model TicketMessage {
+  id         BigInt   @id @default(autoincrement())
+  ticketId   BigInt
+  senderType Int      // 1:用户 2:客服
+  senderId   BigInt
+  content    String
+  attachments Json?
+  createdAt  DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_messages")
+}
+
+// ============================================
+// 6️⃣ 消息通知模块 (Notification)
+// ============================================
+
+/// 通知表
+model Notification {
+  id        BigInt   @id @default(autoincrement())
+  userId    BigInt
+  type      String   @db.VarChar(50) // order/payment/system/promotion
+  title     String?  @db.VarChar(200)
+  content   String?
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+  linkUrl   String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ============================================
+// 7️⃣ 分销系统模块 (Affiliate)
+// ============================================
+
+/// 分销码表
+model AffiliateCode {
+  id              BigInt   @id @default(autoincrement())
+  userId          BigInt   @unique
+  code            String   @unique @db.VarChar(20)
+  commissionRate  Decimal  @default(10.00) @db.Decimal(5, 2)
+  totalInvited    Int      @default(0)
+  totalEarnings   Decimal  @default(0) @db.Decimal(10, 2)
+  status          Int      @default(1) // 0:禁用 1:启用
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("affiliate_codes")
+}
+
+/// 分销记录表
+model AffiliateRecord {
+  id           BigInt   @id @default(autoincrement())
+  inviterId    BigInt
+  inviteeId    BigInt
+  orderNo      String   @db.VarChar(32)
+  orderAmount  Decimal  @db.Decimal(10, 2)
+  commission   Decimal  @db.Decimal(10, 2)
+  status       Int      // 0:待结算 1:已结算 2:已失效
+  settledAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  inviter User @relation("inviter", fields: [inviterId], references: [id])
+  invitee User @relation("invitee", fields: [inviteeId], references: [id])
+
+  @@index([inviterId])
+  @@map("affiliate_records")
+}
+
+// ============================================
+// 8️⃣ 优惠券模块 (Coupon)
+// ============================================
+
+/// 优惠券模板表
+model Coupon {
+  id            BigInt   @id @default(autoincrement())
+  name          String   @db.VarChar(100)
+  type          Int      // 1:满减 2:折扣 3:无门槛
+  discountValue Decimal  @db.Decimal(10, 2)
+  minAmount     Decimal  @default(0) @db.Decimal(10, 2)
+  maxDiscount   Decimal? @db.Decimal(10, 2)
+  totalCount    Int
+  issuedCount   Int      @default(0)
+  validFrom     DateTime
+  validTo       DateTime
+  status        Int      // 0:下架 1:上架
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userCoupons UserCoupon[]
+
+  @@map("coupons")
+}
+
+/// 用户优惠券表
+model UserCoupon {
+  id           BigInt   @id @default(autoincrement())
+  userId       BigInt
+  couponId     BigInt
+  couponCode   String   @unique @db.VarChar(32)
+  status       Int      @default(0) // 0:未使用 1:已使用 2:已过期
+  usedAt       DateTime?
+  usedOrderNo  String?  @db.VarChar(32)
+  createdAt    DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupon Coupon @relation(fields: [couponId], references: [id])
+
+  @@index([userId])
+  @@map("user_coupons")
+}
+
+// ============================================
+// 9️⃣ 发票模块 (Invoice)
+// ============================================
+
+/// 发票表
+model Invoice {
+  id          BigInt   @id @default(autoincrement())
+  userId      BigInt
+  orderNo     String   @db.VarChar(32)
+  invoiceType Int      // 1:电子普票 2:电子专票 3:纸质普票
+  invoiceTitle String  @db.VarChar(200)
+  taxId       String?  @db.VarChar(50)
+  amount      Decimal  @db.Decimal(10, 2)
+  status      Int      // 0:申请中 1:已开票 2:已寄出 3:已完成
+  invoiceUrl  String?  @db.VarChar(255)
+  expressNo   String?  @db.VarChar(50)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("invoices")
+}
+
+// ============================================
+// 🔟 社区模块 (OPC Community)
+// ============================================
+
+/// 帖子表
+model CommunityPost {
+  id           BigInt   @id @default(autoincrement())
+  userId       BigInt
+  title        String   @db.VarChar(200)
+  content      String
+  category     String?  @db.VarChar(50)
+  viewCount    Int      @default(0)
+  likeCount    Int      @default(0)
+  commentCount Int      @default(0)
+  isPinned     Boolean  @default(false)
+  isLocked     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user     User              @relation(fields: [userId], references: [id])
+  comments CommunityComment[]
+
+  @@index([userId])
+  @@map("community_posts")
+}
+
+/// 评论表
+model CommunityComment {
+  id        BigInt   @id @default(autoincrement())
+  postId    BigInt
+  userId    BigInt
+  parentId  BigInt?
+  content   String
+  likeCount Int      @default(0)
+  createdAt DateTime @default(now())
+
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id])
+  parent CommunityComment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies CommunityComment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@map("community_comments")
+}

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分销设置 - AI 租易用管理后台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0C4A6E;
+            --accent: #F59E0B;
+            --bg-dark: #0B1120;
+            --bg-card: #1E293B;
+            --text-light: #F1F5F9;
+            --text-muted: #94A3B8;
+            --gradient: linear-gradient(135deg, #0EA5E9 0%, #7C3AED 100%);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+        
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 10%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .nav-logo-wrapper { position: absolute; left: 5%; }
+        .nav-container { display: flex; align-items: center; gap: 3rem; flex: 1; justify-content: center; }
+        .nav-right-wrapper { position: absolute; right: 5%; }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-light);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4); }
+        
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+            padding-top: 72px;
+        }
+        
+        .admin-sidebar {
+            background: var(--bg-card);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            padding: 2rem 1.5rem;
+            position: fixed;
+            top: 72px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 72px);
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .admin-menu {
+            list-style: none;
+        }
+        
+        .admin-menu-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .admin-menu-link:hover, .admin-menu-link.active {
+            background: rgba(14, 165, 233, 0.12);
+            color: var(--text-light);
+        }
+        
+        .admin-menu-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .admin-content {
+            margin-left: 260px;
+            padding: 2rem 5%;
+            max-width: calc(100% - 260px);
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .form-label .hint {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(11, 17, 32, 0.6);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .data-table tr:hover {
+            background: rgba(14, 165, 233, 0.05);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .status-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .status-muted { background: rgba(100, 116, 139, 0.15); color: #64748B; }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .action-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .action-btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .action-btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+        
+        .action-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+        
+        .action-btn-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+        
+        .action-btn-warning:hover {
+            background: rgba(245, 158, 11, 0.25);
+        }
+        
+        .btn-save {
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast-success {
+            border-left: 4px solid var(--success);
+        }
+        
+        @media (max-width: 1200px) {
+            .form-row { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-layout { grid-template-columns: 1fr; }
+            .admin-sidebar { display: none; }
+            .admin-content { margin-left: 0; }
+            .form-row { grid-template-columns: 1fr; }
+            .nav-container { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo-wrapper">
+            <a href="../index.html" class="logo">🚀 AI 租易用</a>
+        </div>
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">首页</a></li>
+                <li><a href="../rental.html">设备租赁</a></li>
+                <li><a href="../token.html">Token 工厂</a></li>
+                <li><a href="../services.html">AI 技术服务</a></li>
+                <li><a href="../community.html">OPC 社区</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-wrapper">
+            <a href="../user.html" class="btn btn-primary">用户中心</a>
+        </div>
+    </nav>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <ul class="admin-menu">
+                <li class="admin-menu-item">
+                    <a href="../admin.html" class="admin-menu-link">
+                        <span class="admin-menu-icon">📊</span>
+                        <span>数据概览</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">👥</span>
+                        <span>用户管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">💻</span>
+                        <span>设备管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">📦</span>
+                        <span>订单管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">🎫</span>
+                        <span>Token 管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">💰</span>
+                        <span>财务管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link active">
+                        <span class="admin-menu-icon">🤝</span>
+                        <span>分销管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="rewards-activity.html" class="admin-menu-link">
+                        <span class="admin-menu-icon">🎁</span>
+                        <span>活动管理</span>
+                    </a>
+                </li>
+                <li class="admin-menu-item">
+                    <a href="#" class="admin-menu-link">
+                        <span class="admin-menu-icon">⚙️</span>
+                        <span>系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="admin-content">
+            <div class="page-header">
+                <h1 class="page-title">🤝 分销设置</h1>
+                <p class="page-subtitle">配置分销奖励比例和提现规则</p>
+            </div>
+
+            <!-- 分销比例设置 -->
+            <div class="content-section">
+                <h2 class="section-title">📊 分销奖励比例</h2>
+                <form id="affiliate-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                一级分销奖励比例
+                                <span class="hint">直接邀请人获得的奖励</span>
+                            </label>
+                            <input type="number" class="form-input" id="level1-rate" value="10" min="0" max="100" step="0.1" placeholder="10">
+                            <span style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; display: block;">%</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                二级分销奖励比例
+                                <span class="hint">间接邀请人获得的奖励</span>
+                            </label>
+                            <input type="number" class="form-input" id="level2-rate" value="5" min="0" max="100" step="0.1" placeholder="5">
+                            <span style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; display: block;">%</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                三级分销奖励比例
+                                <span class="hint">三级邀请人获得的奖励</span>
+                            </label>
+                            <input type="number" class="form-input" id="level3-rate" value="2" min="0" max="100" step="0.1" placeholder="2">
+                            <span style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; display: block;">%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="max-width: 400px;">
+                        <label class="form-label">
+                            最低提现金额
+                            <span class="hint">分销商可申请提现的最低额度</span>
+                        </label>
+                        <input type="number" class="form-input" id="min-withdraw" value="100" min="0" step="10" placeholder="100">
+                        <span style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; display: block;">元</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-save">💾 保存设置</button>
+                </form>
+            </div>
+
+            <!-- 分销商等级管理 -->
+            <div class="content-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 class="section-title" style="margin-bottom: 0;">👥 分销商等级管理</h2>
+                    <button class="action-btn action-btn-primary" onclick="showAddLevelModal()">➕ 添加等级</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>等级名称</th>
+                            <th>等级标识</th>
+                            <th>额外奖励比例</th>
+                            <th>最低业绩要求</th>
+                            <th>分销商数量</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>青铜分销商</td>
+                            <td><span class="status-badge status-muted">🥉 青铜</span></td>
+                            <td>0%</td>
+                            <td>¥0</td>
+                            <td>1,247</td>
+                            <td><span class="status-badge status-success">正常</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">编辑</a>
+                                <a href="#" class="action-btn action-btn-warning" style="margin-left: 0.5rem;">禁用</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>白银分销商</td>
+                            <td><span class="status-badge status-muted">🥈 白银</span></td>
+                            <td>2%</td>
+                            <td>¥5,000</td>
+                            <td>523</td>
+                            <td><span class="status-badge status-success">正常</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">编辑</a>
+                                <a href="#" class="action-btn action-btn-warning" style="margin-left: 0.5rem;">禁用</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>黄金分销商</td>
+                            <td><span class="status-badge status-warning">🥇 黄金</span></td>
+                            <td>5%</td>
+                            <td>¥20,000</td>
+                            <td>186</td>
+                            <td><span class="status-badge status-success">正常</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">编辑</a>
+                                <a href="#" class="action-btn action-btn-warning" style="margin-left: 0.5rem;">禁用</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>钻石分销商</td>
+                            <td><span class="status-badge" style="background: rgba(124, 58, 237, 0.15); color: #7C3AED;">💎 钻石</span></td>
+                            <td>10%</td>
+                            <td>¥100,000</td>
+                            <td>42</td>
+                            <td><span class="status-badge status-success">正常</span></td>
+                            <td>
+                                <a href="#" class="action-btn action-btn-primary">编辑</a>
+                                <a href="#" class="action-btn action-btn-warning" style="margin-left: 0.5rem;">禁用</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分销数据概览 -->
+            <div class="content-section">
+                <h2 class="section-title">📈 分销数据概览</h2>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div style="background: rgba(11, 17, 32, 0.6); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.08);">
+                        <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">总分销商数</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--text-light);">1,998</div>
+                        <div style="color: var(--success); font-size: 0.85rem; margin-top: 0.5rem;">↑ 12.3% 较上月</div>
+                    </div>
+                    <div style="background: rgba(11, 17, 32, 0.6); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.08);">
+                        <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">本月分销订单</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--text-light);">3,847</div>
+                        <div style="color: var(--success); font-size: 0.85rem; margin-top: 0.5rem;">↑ 8.7% 较上月</div>
+                    </div>
+                    <div style="background: rgba(11, 17, 32, 0.6); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.08);">
+                        <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">本月分销佣金</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--text-light);">¥48,520</div>
+                        <div style="color: var(--success); font-size: 0.85rem; margin-top: 0.5rem;">↑ 15.2% 较上月</div>
+                    </div>
+                    <div style="background: rgba(11, 17, 32, 0.6); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.08);">
+                        <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem">待结算佣金</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--warning);">¥12,380</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">预计 7 日内结算</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast toast-success" id="toast">
+        <span style="font-size: 1.25rem;">✅</span>
+        <span id="toast-message">设置已保存</span>
+    </div>
+
+    <script>
+        // 表单提交处理
+        document.getElementById('affiliate-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const level1Rate = document.getElementById('level1-rate').value;
+            const level2Rate = document.getElementById('level2-rate').value;
+            const level3Rate = document.getElementById('level3-rate').value;
+            const minWithdraw = document.getElementById('min-withdraw').value;
+            
+            // 验证：总比例不能超过 100%
+            const totalRate = parseFloat(level1Rate) + parseFloat(level2Rate) + parseFloat(level3Rate);
+            if (totalRate > 100) {
+                alert('三级分销奖励比例总和不能超过 100%！');
+                return;
+            }
+            
+            // 模拟保存
+            console.log('保存分销设置:', {
+                level1Rate,
+                level2Rate,
+                level3Rate,
+                minWithdraw
+            });
+            
+            // 显示成功提示
+            showToast('✅ 分销设置已保存成功！');
+        });
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        function showAddLevelModal() {
+            alert('添加等级功能开发中...');
+        }
+        
+        // 页面加载时显示欢迎提示
+        window.addEventListener('load', function() {
+            console.log('分销设置页面已加载');
+        });
+    </script>
+</body>
+</html>
